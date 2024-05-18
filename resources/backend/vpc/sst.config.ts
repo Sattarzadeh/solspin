@@ -5,7 +5,7 @@ export default {
   config(_input) {
     return {
       name: "vpc",
-      region: "eu-west-1",
+      region: "eu-west-2",
     };
   },
   stacks(app) {
