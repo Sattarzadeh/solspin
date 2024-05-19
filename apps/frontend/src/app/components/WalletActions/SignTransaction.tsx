@@ -24,7 +24,7 @@ export const SignTransaction: FC = () => {
 
       const { blockhash } = await connection.getLatestBlockhash();
 
-      let transactionAmount = 1;
+      const transactionAmount = 0.001;
       const transferInstruction = SystemProgram.transfer({
         fromPubkey: publicKey,
         toPubkey: PublicKey.unique(),
@@ -34,7 +34,6 @@ export const SignTransaction: FC = () => {
         recentBlockhash: blockhash,
         feePayer: publicKey,
       }).add(transferInstruction);
-      console.log(transaction);
       transaction = await signTransaction(transaction);
 
       if (!transaction.signature) throw new Error('Transaction not signed!');
