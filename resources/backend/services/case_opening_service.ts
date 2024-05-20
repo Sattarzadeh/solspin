@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-class CaseOpeningService {
+export class CaseOpeningService {
     private clientSeed: string;
     private serverSeed: string;
     private combinedSeed: string;
