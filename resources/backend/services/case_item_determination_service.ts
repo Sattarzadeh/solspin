@@ -1,6 +1,6 @@
 import {CaseItem} from "../models/case_item_model"
 import { Case } from "../models/case_model";
-class CaseItemDeterminationService {
+export class CaseItemDeterminationService {
 
     private findItem(rollNumber: number, prefixSums: Array<number>): number {
         let leftPointer: number = 0;
