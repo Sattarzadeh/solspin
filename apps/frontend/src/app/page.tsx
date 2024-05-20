@@ -9,8 +9,6 @@ import {
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
-import type { AppProps } from 'next/app';
-import type { FC } from 'react';
 import React, { useMemo } from 'react';
 import { SignTransaction } from './components/WalletActions/SignTransaction';
 
@@ -24,7 +22,7 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
-const App: FC<AppProps> = ({ Component, pageProps }) => {
+const App = () => {
   // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
   const network = WalletAdapterNetwork.Devnet;
 
