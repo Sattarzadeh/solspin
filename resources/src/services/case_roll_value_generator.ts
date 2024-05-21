@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-export class CaseOpeningService {
+export class CaseRollValueGenerator {
     private clientSeed: string;
     private serverSeed: string;
     private combinedSeed: string;

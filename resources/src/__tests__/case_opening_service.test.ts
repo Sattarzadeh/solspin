@@ -1,12 +1,12 @@
 
 import crypto from 'crypto';
-import { CaseOpeningService } from '../services/case_opening_service';
+import { CaseRollValueGenerator } from '../services/case_roll_value_generator'
 
-describe('CaseOpeningService', () => {
-  let service: CaseOpeningService;
+describe('CaseRollValueGenerator', () => {
+  let service: CaseRollValueGenerator;
 
   beforeEach(() => {
-    service = new CaseOpeningService();
+    service = new CaseRollValueGenerator();
   });
 
   it('should generate a valid client seed', () => {

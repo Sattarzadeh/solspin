@@ -8,13 +8,13 @@ interface BaseCaseItem {
     number_range: object;
     rarity: string;
 }
-export interface CsgoCaseItem extends BaseCaseItem{
+interface CsgoCaseItem extends BaseCaseItem{
     is_stattrak: boolean;
     is_souvenir: boolean;
     item_wear: string;
 }
 
-export type NftCaseItem = BaseCaseItem;
+ type NftCaseItem = BaseCaseItem;
 
 export type CaseItem = CsgoCaseItem | NftCaseItem
 
