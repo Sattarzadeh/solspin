@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { CaseOpeningService } from '../services/case_opening_service';
 import { CaseDataService } from '../services/case_data_service';
-
+import { validateCaseName } from '../middlewares/validateCaseName';
 class CaseController {
     public router = Router();
     private caseOpeningService: CaseOpeningService;
@@ -15,21 +15,21 @@ class CaseController {
 
     private initializeRoutes() {
         // this.router.get('/', this.getAllCases);
-        // this.router.get('/:caseName', this.getCaseByName);
-        this.router.post('/:caseName/demospin', this.demoSpinCase);
+        this.router.get('/:caseName', validateCaseName, this.getCaseByName);
+        this.router.post('/:caseName/demospin', validateCaseName, this.demoSpinCase);
     }
 
-    // private getCaseByName = async (req: Request, res: Response) => {
-    //     const { caseName } = req.params;
+    private getCaseByName = async (req: Request, res: Response) => {
+        const { caseName } = req.params;
 
-    //     const data = await this.caseDataService.getCase(caseName);
-    //     if (data) {
-    //         res.status(200).json(data)
-    //     } else {
-    //         res.status(404).json({message: "Case not found"})
-    //     }
+        const data = await this.caseDataService.getCase(caseName);
+        if (data) {
+            res.status(200).json(data)
+        } else {
+            res.status(404).json({message: "Case not found"})
+        }
 
-    // };
+    };
 
     // private getAllCases = async (req: Request, res: Response) => {
     //     try {
