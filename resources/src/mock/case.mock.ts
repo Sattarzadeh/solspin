@@ -1,5 +1,6 @@
 import { CaseItem } from "../models/case_item_model";
 import { Case } from "../models/case_model";
+import { CaseType } from "../enums/caseType";
 
 
 const mockCsgoCaseItem1: CaseItem = {
@@ -78,7 +79,7 @@ const mockNftCaseItem3: CaseItem = {
 };
 
 const mockCase: Case = {
-    case_type: 'csgo',
+    case_type: CaseType.CSGO,
     case_name: 'test-case',
     case_price: 2.5,
     image_url: 'https://example.com/bravo_case.png',

@@ -1,21 +1,27 @@
 import { Case } from "../models/case_model";
+import { mockCase } from "../mock/case_pot_of_gold.mock";
+
 
 export class CaseDataService {
 
-    public getCase(caseName: string): Case {
-        /*
-            Access datastore (or cache) which should be indexed by caseName for efficiency and check if the caseName exists, 
-            if it does return the case object if not throw error
-        */
-        return
+
+    public async getCase(caseName: string): Promise<Case | null> {
+        try {
+        console.log(mockCase)
+        return mockCase["case_name"] == caseName ? mockCase : null;
+        } catch (error) {
+        console.error("Error reading case data:", error);
+        throw new Error("Could not read case data");
+        }
     }
 
-    public getAllCases(): Array<Case> {
-        /*
-            Access datastore return all cases (pagination)
-        */
-
-        return
+    public async getAllCases(): Promise<Array<Case>> {
+        try {
+        const caseData = await mockCase;
+        return Object.values(caseData);
+        } catch (error) {
+        console.error("Error reading all cases:", error);
+        throw new Error("Could not read all cases");
+        }
     }
-
 }

@@ -6,6 +6,8 @@ export class CaseDoesNotExistError extends CustomError {
         super(`Case with name ${caseName} not found`)
         this.name = 'CaseNotFoundError'
         this.statusCode = 404
+
+        Object.setPrototypeOf(this, CaseDoesNotExistError.prototype);
     }
 
     serializeErrors() {

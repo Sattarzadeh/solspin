@@ -1,6 +1,6 @@
 import { CaseItem } from "./case_item_model";
+import { CaseType } from "../enums/caseType";
 
-type CaseType = "nft" | "csgo";
 
 interface BaseCase {
     case_type: CaseType;

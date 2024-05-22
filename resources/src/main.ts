@@ -1,6 +1,6 @@
 import express from 'express';
 import { json } from 'body-parser';
-import { caseController } from './controllers/case.controller';
+import { caseController } from './controllers/caseController';
 import { pageNotFound } from './middlewares/pageNotFound';
 import { errorHandler } from './middlewares/errorHandler';
 const app = express();

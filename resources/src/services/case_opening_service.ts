@@ -1,7 +1,7 @@
 import { CaseItem } from "../models/case_item_model";
 import { CaseItemDeterminationService } from "./case_item_determination_service";
 import { CaseRollValueGenerator } from "./case_roll_value_generator";
-import { mockCase } from "../mock/case.mock";
+import { mockCase } from "../mock/case_pot_of_gold.mock";
 export class CaseOpeningService {
     private caseItemDeterminationService: CaseItemDeterminationService;
     private caseRollValueGeneratorService: CaseRollValueGenerator;
@@ -32,7 +32,7 @@ export class CaseOpeningService {
             Generate new server seed here for now. In the future, the server seed will have to already be generated when the page is loaded up to prove fairness. 
             Checks will have to be done to ensure that the server seed matches the passed in server seed to ensure no tampering has been done.
         */
-
+        
         const rollValue: number = this.caseRollValueGeneratorService.generateRollValue();
         console.log(rollValue)
         const rewardItem: CaseItem = this.caseItemDeterminationService.determineItem(rollValue, mockCase);
