@@ -33,7 +33,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/payment-e2e/**/*"]
+      "exclude": ["apps/payment-e2e/**/*", "apps/user-management-e2e/**/*"]
     },
     {
       "plugin": "@nx/next/plugin",
