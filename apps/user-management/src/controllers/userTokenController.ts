@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { JwtTokenService } from '../services/jwtTokenService';
 
-class UserController {
+class UserTokenController {
     public router = Router();
     private jwtTokenService: JwtTokenService;
 
@@ -11,8 +11,8 @@ class UserController {
     }
 
     private initializeRoutes() {
-        this.router.post('/generate-token', this.createJWTToken.bind(this));
-        this.router.post('/verify-token', this.verifyJWTToken.bind(this));
+        this.router.post('/generate', this.createJWTToken.bind(this));
+        this.router.post('/verify', this.verifyJWTToken.bind(this));
     }
 
     private async createJWTToken(req: Request, res: Response, next: NextFunction): Promise<Response> {
@@ -24,8 +24,16 @@ class UserController {
     }
 
     private async verifyJWTToken(req: Request, res: Response, next: NextFunction): Promise<Response> {
-        return res.status(200).json({ "message": "Token verification endpoint" });
+        const { token } = req.body;
+        if (!token) return res.status(400).json({ "message": "Token is required" });
+
+        try {
+            const decoded = await this.jwtTokenService.verifyToken(token);
+            return res.status(200).json({ "decoded": decoded });
+        } catch (error) {
+            return res.status(401).json({ "message": "Invalid token" });
+        }
     }
 }
 
-export const userController = new UserController().router;
+export const userTokenController = new UserTokenController().router;
