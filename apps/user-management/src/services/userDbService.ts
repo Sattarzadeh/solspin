@@ -11,7 +11,7 @@ export class UserDbService {
     }
 
     async updateUserData(key: { [key: string]: any }, updateFields: { [key: string]: any }): Promise<any> {
-        const params = this.dynamoDbService.buildUpdateParams('Users', key, updateFields);
+        const params = this.dynamoDbService.buildUpdateParams('users', key, updateFields);
         return this.dynamoDbService.updateRecord(params);
     }
 
@@ -22,20 +22,16 @@ export class UserDbService {
         await this.dynamoDbService.createWallet(walletAddress, userId);
     
         const newUser: User = {
-            userId: userId,
+            user_id: userId,
             username: walletAddress,
             discordName: "",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
     
-        const userParams = this.dynamoDbService.buildCreateParams('Users', newUser);
+        const userParams = this.dynamoDbService.buildCreateParams('users', newUser);
         return this.dynamoDbService.createRecord(userParams);
       }
     
 
-}
-
-function uuidv4() {
-    throw new Error('Function not implemented.');
 }

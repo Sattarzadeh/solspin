@@ -1,8 +1,8 @@
 export interface User {
-    userId: string;
+    user_id: string;
     createdAt: string;
     updatedAt: string;
     discordName: string;
     username: string;
-    
+
 }

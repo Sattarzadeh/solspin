@@ -62,16 +62,17 @@ export class DynamoDbService {
 
 
       async createWallet(walletAddress: string, userId: string): Promise<void> {
-        try {
-          const response = await axios.post('http://your-wallet-service-endpoint/create', {
-            walletAddress: walletAddress,
-            userId: userId
-          });
-          if (response.status !== 201) {
-            throw new Error('Failed to create wallet');
-          }
-        } catch (error) {
-          throw new Error(`Error creating wallet: ${error.message}`);
-        }
+        // try {
+        //   const response = await axios.post('http://your-wallet-service-endpoint/create', {
+        //     walletAddress: walletAddress,
+        //     userId: userId
+        //   });
+        //   if (response.status !== 201) {
+        //     throw new Error('Failed to create wallet');
+        //   }
+        // } catch (error) {
+        //   throw new Error(`Error creating wallet: ${error.message}`);
+        // }
+        return 
       }
 }

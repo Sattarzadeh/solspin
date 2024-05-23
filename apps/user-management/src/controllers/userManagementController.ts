@@ -35,17 +35,16 @@ class UserManagementController {
 
     private async createUserDocument(req: Request, res: Response, next: NextFunction): Promise<Response> {
 
-        let { userData } = req.body;
-        
-        if (!userData || !userData.walletAddress) return res.status(400).json({"message": "Some data was not included in the request..."})
+        let { walletAddress } = req.body;
+ 
+        if (!walletAddress) return res.status(400).json({"message": "Some data was not included in the request..."})
         
         
 
     
         try {
-            let userSchema: User;
             
-            await this.userDbService.createUser(userData);
+            await this.userDbService.createUser(walletAddress);
             return res.status(201).json({ message: "User data successfully updated" });
         } catch (error) {
             return res.status(500).json({ error: error.message });
