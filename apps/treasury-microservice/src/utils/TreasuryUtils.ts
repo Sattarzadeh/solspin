@@ -1,7 +1,8 @@
 import { PublicKey, Keypair } from '@solana/web3.js';
 import bs58 from 'bs58';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 // Check if the HOUSE_WALLET_ADDRESS and HOUSE_SECRET_KEY environment variables are set (NOT SURE IF THIS IS THE BEST WAY TO DO THIS)
 if (!process.env.HOUSE_WALLET_ADDRESS || !process.env.HOUSE_SECRET_KEY) {

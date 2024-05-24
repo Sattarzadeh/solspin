@@ -1,9 +1,9 @@
-import { CustomError } from "./CustomError";
+import { CustomError } from './errors/CustomError';
 
 export class InvalidResourceError extends CustomError {
   public statusCode;
 
-  constructor(message: string = "Invalid resource", statusCode: number = 404) {
+  constructor(message = 'Invalid resource', statusCode = 404) {
     super(message);
     Object.setPrototypeOf(this, InvalidResourceError.prototype);
     this.statusCode = statusCode;

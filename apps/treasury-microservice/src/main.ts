@@ -1,8 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import treasuryRoutes from './routes/TreasuryRoutes';
-require('dotenv').config();
+import dotenv from 'dotenv';
 
+dotenv.config();
 const app = express();
 
 app.use(bodyParser.json());

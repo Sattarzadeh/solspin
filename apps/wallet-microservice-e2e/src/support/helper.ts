@@ -5,10 +5,7 @@ export function spawnShellCommand(
   command: string,
   extras: SpawnOptionsWithoutStdio
 ) {
-  const parts = command.split(' ') as ArrayMinLength<string, 1>; // eslint-disable-line no-type-assertion/no-type-assertion -- split returns an array of length at least 1
-  // if (process.platform === 'win32') {
-  //     parts[0] += '.cmd'
-  // }
+  const parts = command.split(' ') as ArrayMinLength<string, 1>;
   const options = {
     shell: true,
     ...extras,

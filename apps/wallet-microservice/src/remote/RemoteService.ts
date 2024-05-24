@@ -1,5 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
-import { Currency, DepositTransactionResponse } from '../types';
+import {
+  Currency,
+  DepositTransactionResponse,
+} from '@shared-types/shared-types';
 
 class RemoteService {
   private client: AxiosInstance;
@@ -7,7 +10,6 @@ class RemoteService {
   constructor(baseURL: string) {
     this.client = axios.create({
       baseURL,
-      timeout: 30000, // Set a timeout as needed
     });
   }
 
@@ -56,6 +58,10 @@ class RemoteService {
       // Send the request to the treasury service
       const response = await this.client.post(`/deposit/${userId}`, params);
 
+      if (response && response.status !== 200) {
+        throw new Error(response.data);
+      }
+
       // Return the response data
       return response.data;
     } catch (error) {
@@ -65,7 +71,7 @@ class RemoteService {
     }
   }
 
-  private handleError(error: any): void {
+  private handleError(error: unknown): void {
     // Log the error
     if (axios.isAxiosError(error)) {
       console.error('Error response:', error.response);

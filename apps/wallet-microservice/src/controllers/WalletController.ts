@@ -1,13 +1,13 @@
 import DatabaseHandlerService from '../services/DatabaseHandlerService';
 import { Request, Response } from 'express';
-import { Currency } from '../types';
-import { SendTransactionError, Transaction } from '@solana/web3.js';
+import { Currency } from '@shared-types/shared-types';
+import { SendTransactionError } from '@solana/web3.js';
 import { errorHandler } from '../middleware/ErrorHandler';
-import { parseCurrency } from '../utils/WalletUtils';
-import { InsufficientBalanceError } from '../errors/InsufficientBalanceError';
-import { User } from '../types';
+import { parseCurrency } from '@shared-types/BlockchainUtils';
+import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
+import { User } from '@shared-types/shared-types';
 import RemoteService from '../remote/RemoteService';
-import { ResourceNotFoundError } from '../errors/ResourceNotFoundError';
+import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 
 class WalletController {
   private databaseHandlerService: DatabaseHandlerService;
@@ -31,7 +31,7 @@ class WalletController {
 
       // Switch based on currency (only SOL supported as of now)
       switch (currency) {
-        case Currency.SOL:
+        case Currency.SOL: {
           // Send the transaction to the treasury and await its response
           const depositTransactionResponse =
             await this.remoteService.broadcastDepositTransaction(
@@ -51,16 +51,18 @@ class WalletController {
 
           res.status(200).send('Deposit successful');
           break;
-        default:
+        }
+        default: {
           res.status(400).send('Invalid currency');
           break;
+        }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
       if (error instanceof SendTransactionError) {
         res.status(400).send(error.message);
       } else {
-        res.status(500).send(error.message);
+        res.status(500).send('Internal server error');
       }
     }
   };
@@ -131,7 +133,7 @@ class WalletController {
       );
 
       res.status(200).send('Withdrawal successful');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       if (error instanceof SendTransactionError) {
         res.status(400).send(error.message);
@@ -154,7 +156,7 @@ class WalletController {
 
       // Get the user and their wallets
       const user = await this.databaseHandlerService.getUser(userId);
-      let wallets = user.wallets;
+      const wallets = user.wallets;
 
       // If a currency is specified, return only that wallet
       if (currency) {
@@ -182,10 +184,12 @@ class WalletController {
 
       // Return all wallets if no currency is specified
       res.status(200).json(wallets).send();
-    } catch (error: any) {
-      // Handle any errors
-      console.log(error);
-      errorHandler(error, res);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        errorHandler(error, res);
+      } else {
+        res.status(500).send('Internal server error');
+      }
     }
   };
 
@@ -216,10 +220,14 @@ class WalletController {
 
       // Return error if no currency is specified
       res.status(400).send('Invalid currency');
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle any errors
       console.log(error);
-      errorHandler(error, res);
+      if (error instanceof Error) {
+        errorHandler(error, res);
+      } else {
+        res.status(500).send('Internal server error');
+      }
     }
   };
 

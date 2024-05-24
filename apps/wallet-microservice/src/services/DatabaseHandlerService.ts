@@ -1,13 +1,13 @@
-import { InvalidResourceError } from '../errors/InvalidResourceError';
+import { InvalidResourceError } from '@shared-errors/InvalidResourceError';
 import {
   Currency,
   User,
   Wallet,
   Transaction,
   TransactionPurpose,
-} from '../types';
+} from '@shared-types/shared-types';
 import { GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { ResourceNotFoundError } from '../errors/ResourceNotFoundError';
+import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 import dynamoDB from '../db/DbConnection';
 
 class DatabaseHandlerService {
@@ -15,8 +15,8 @@ class DatabaseHandlerService {
   private transactionTableName: string;
 
   constructor() {
-    this.walletsTableName = process.env.AWS_WALLETS_TABLE_NAME!; // Mock data
-    this.transactionTableName = process.env.AWS_TRANSACTION_TABLE_NAME!; // Mock data
+    this.walletsTableName = process.env.AWS_WALLETS_TABLE_NAME;
+    this.transactionTableName = process.env.AWS_TRANSACTION_TABLE_NAME;
   }
 
   public depositToDb = async (
@@ -58,7 +58,7 @@ class DatabaseHandlerService {
         timestamp: new Date().toISOString(),
         currency: currency,
       };
-      this.recordTransaction(transaction, user);
+      this.recordTransaction(transaction);
     } catch (error) {
       // Log and throw an error
       console.error('Error updating account:', error);
@@ -77,7 +77,9 @@ class DatabaseHandlerService {
 
     try {
       // Find the wallet with the specified currency
-      const wallet = user.wallets.find((acc: any) => acc.currency === currency);
+      const wallet = user.wallets.find(
+        (wallet: Wallet) => wallet.currency === currency
+      );
 
       // If the wallet is not found, throw an error
       if (!wallet) {
@@ -105,7 +107,7 @@ class DatabaseHandlerService {
         currency: currency,
       };
 
-      this.recordTransaction(transaction, user);
+      this.recordTransaction(transaction);
     } catch (error) {
       // Log and throw an error
       console.log('Error withdrawing from wallet:', error);
@@ -188,7 +190,9 @@ class DatabaseHandlerService {
     const user = await this.getUser(userId);
 
     // Find the wallet with the specified currency
-    const wallet = user.wallets.find((acc: any) => acc.currency === currency);
+    const wallet = user.wallets.find(
+      (wallet: Wallet) => wallet.currency === currency
+    );
 
     // If the wallet is not found, throw an error
     if (!wallet) {
@@ -208,7 +212,7 @@ class DatabaseHandlerService {
     try {
       // Fetch the user
       user = await this.getUser(userId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If the user is not found, create a new user
       if (error instanceof ResourceNotFoundError) {
         console.log('User not found, creating new user');
@@ -254,7 +258,7 @@ class DatabaseHandlerService {
     await dynamoDB.send(new PutCommand(params));
   }
 
-  async recordTransaction(transaction: Transaction, user: User) {
+  async recordTransaction(transaction: Transaction) {
     const params = {
       TableName: this.transactionTableName,
       Item: transaction,
@@ -269,7 +273,9 @@ class DatabaseHandlerService {
 
     // Find the wallet to lock
     const wallets = user.wallets;
-    const walletIndex = wallets.findIndex((w: any) => w.currency === currency);
+    const walletIndex = wallets.findIndex(
+      (wallet: Wallet) => wallet.currency === currency
+    );
 
     // If the wallet is not found, throw an error
     if (walletIndex === -1) {
@@ -294,7 +300,7 @@ class DatabaseHandlerService {
           ReturnValues: 'ALL_NEW',
         })
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Log and throw an error
       console.error('Error locking the wallet:', error);
       throw error;
@@ -312,7 +318,7 @@ class DatabaseHandlerService {
       // Find the wallet to unlock
       const wallets = user.wallets;
       const walletIndex = wallets.findIndex(
-        (w: any) => w.currency === currency
+        (w: Wallet) => w.currency === currency
       );
 
       // If the wallet is not found, throw an error
@@ -320,9 +326,9 @@ class DatabaseHandlerService {
         throw new Error('Wallet not found');
       }
       // Attempt to "unlock" the wallet by setting lockedAt to 0 (unlocked)
-      const result = await dynamoDB.send(
+      await dynamoDB.send(
         new UpdateCommand({
-          TableName: process.env.AWS_WALLETS_TABLE_NAME!,
+          TableName: process.env.AWS_WALLETS_TABLE_NAME,
           Key: { user_id: user.user_id },
           UpdateExpression: `SET wallets[${walletIndex}].lockedAt =:now`,
           ExpressionAttributeValues: {

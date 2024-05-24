@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Currency } from '../types'; // Adjust the import path as needed
+import { Currency } from '@shared-types/shared-types'; // Adjust the import path as needed
 import DatabaseHandlerService from '../services/DatabaseHandlerService'; // Adjust the import path as needed
 import { errorHandler } from './ErrorHandler'; // Adjust the import path as needed
 
@@ -40,8 +40,12 @@ export const validateUserAndWallet = (requireTransaction: boolean) => {
 
       // If everything is fine, proceed to the next middleware or controller
       next();
-    } catch (error: any) {
-      errorHandler(error, res);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        errorHandler(error, res);
+      } else {
+        res.status(500).send('Internal server error');
+      }
     }
   };
 };

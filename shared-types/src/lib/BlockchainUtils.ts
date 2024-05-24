@@ -1,5 +1,5 @@
-import { InvalidResourceError } from '@shared-errors/InvalidResourceError';
-import { Currency } from '@shared-types/shared-types';
+import { InvalidResourceError } from './errors/InvalidResourceError';
+import { Currency } from './shared-types';
 
 export function parseCurrency(currency: string): Currency | null {
   switch (currency.toUpperCase()) {

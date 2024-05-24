@@ -6,10 +6,10 @@ import {
   SystemProgram,
   Transaction,
 } from '@solana/web3.js';
-import { Currency } from '../../../wallet-microservice/src/types';
+import { Currency } from '@shared-types/shared-types';
 import bs58 from 'bs58';
 import { randomUUID } from 'crypto';
-const axios = require('axios');
+import axios, { AxiosError } from 'axios';
 
 if (!process.env.HOUSE_WALLET_ADDRESS || !process.env.HOUSE_SECRET_KEY) {
   throw new Error('Missing HOUSE_WALLET_ADDRESS or HOUSE_SECRET_KEY');
@@ -21,7 +21,7 @@ const privatKeyEncoded =
 
 const userKeyPair = Keypair.fromSecretKey(bs58.decode(privatKeyEncoded));
 
-jest.setTimeout(50000);
+jest.setTimeout(75000);
 
 describe('Deposit tests', function () {
   let connection: Connection;
@@ -91,16 +91,18 @@ describe('Deposit tests', function () {
     );
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/wallets/deposit/1',
-        {
-          walletAddress: userKeyPair.publicKey,
-          signedTransaction: transaction.serialize(),
-          currency: Currency.SOL,
-        }
-      );
-    } catch (error: any) {
-      expect(error.response.status).toBe(404);
+      await axios.post('http://localhost:3000/wallets/deposit/1', {
+        walletAddress: userKeyPair.publicKey,
+        signedTransaction: transaction.serialize(),
+        currency: Currency.SOL,
+      });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.log('Error response:', error);
+        expect(error.response.status).toBe(404);
+      } else {
+        fail('Unexpected error');
+      }
     }
   });
 
@@ -191,38 +193,44 @@ describe('Withdraw tests', function () {
         currency: Currency.SOL,
         amount: 1,
       });
-    } catch (error: any) {
-      expect(error.response.status).toBe(404);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        expect(error.response.status).toBe(404);
+      } else {
+        fail('Unexpected error');
+      }
     }
   });
 
   it('SHOULD fail WHEN withdrawal amount is less than 0.1 SOL', async () => {
     try {
-      const response = await axios.post(
-        'http://localhost:3000/wallets/withdraw/1',
-        {
-          walletAddress: userKeyPair.publicKey,
-          currency: Currency.SOL,
-          amount: 0.099,
-        }
-      );
-    } catch (error: any) {
-      expect(error.response.status).toBe(400);
+      await axios.post('http://localhost:3000/wallets/withdraw/1', {
+        walletAddress: userKeyPair.publicKey,
+        currency: Currency.SOL,
+        amount: 0.099,
+      });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        expect(error.response.status).toBe(400);
+      } else {
+        fail('Unexpected error');
+      }
     }
   });
 
   it('SHOULD fail WHEN withdrawal amount is greater than house balance', async () => {
     try {
-      const response = await axios.post(
-        'http://localhost:3000/wallets/withdraw/1',
-        {
-          walletAddress: userKeyPair.publicKey,
-          currency: Currency.SOL,
-          amount: previousBalanceHouse + LAMPORTS_PER_SOL * 1,
-        }
-      );
-    } catch (error: any) {
-      expect(error.response.status).toBe(400);
+      await axios.post('http://localhost:3000/wallets/withdraw/1', {
+        walletAddress: userKeyPair.publicKey,
+        currency: Currency.SOL,
+        amount: previousBalanceHouse + LAMPORTS_PER_SOL * 1,
+      });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        expect(error.response.status).toBe(400);
+      } else {
+        fail('Unexpected error');
+      }
     }
   });
 
@@ -239,12 +247,16 @@ describe('Withdraw tests', function () {
             amount: 1,
           })
           .then(() => successCount++)
-          .catch((error: any) => {
-            console.error(
-              'Error in first request:',
-              error.response ? error.response.data : error.message
-            );
-            failureCount++;
+          .catch((error: unknown) => {
+            if (error instanceof AxiosError) {
+              console.error(
+                'Error in first request:',
+                error.response ? error.response.data : error.message
+              );
+              failureCount++;
+            } else {
+              fail('Unexpected error');
+            }
           }),
         axios
           .post('http://localhost:3000/wallets/withdraw/1', {
@@ -253,19 +265,23 @@ describe('Withdraw tests', function () {
             amount: 2,
           })
           .then(() => successCount++)
-          .catch((error: any) => {
-            console.error(
-              'Error in second request:',
-              error.response ? error.response.data : error.message
-            );
-            failureCount++;
+          .catch((error: unknown) => {
+            if (error instanceof AxiosError) {
+              console.error(
+                'Error in second request:',
+                error.response ? error.response.data : error.message
+              );
+              failureCount++;
+            } else {
+              fail('Unexpected error');
+            }
           }),
       ]);
 
       // Assert that one request succeeded and one request failed
       expect(successCount).toBe(1);
       expect(failureCount).toBe(1);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Unexpected error:', error);
       throw error;
     }
@@ -274,7 +290,7 @@ describe('Withdraw tests', function () {
 
 describe('Create wallet endpoint tests', function () {
   it('SHOULD succeed WHEN user exists AND wallet does not exist', async () => {
-    const userId = randomUUID();
+    const userId: string = randomUUID();
     const response = await axios.post(
       `http://localhost:3000/wallets/create/${userId}`,
       {
@@ -303,8 +319,12 @@ describe('Create wallet endpoint tests', function () {
         currency: Currency.SOL,
         walletAddress: '4Z8e5K6i6MdiXxsw3czfs6hhnjPXtteFjgZMefKczq51',
       });
-    } catch (error: any) {
-      expect(error.response.status).toBe(409);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        expect(error.response.status).toBe(409);
+      } else {
+        fail('Unexpected error');
+      }
     }
   });
 });
@@ -316,7 +336,7 @@ const buildTransaction = async (
   toPublicKey: PublicKey,
   transactionAmount: number
 ): Promise<Transaction> => {
-  let transaction = new Transaction({
+  const transaction = new Transaction({
     blockhash: blockhash,
     feePayer: fromKeyPair.publicKey,
     lastValidBlockHeight: lastValidBlockHeight,

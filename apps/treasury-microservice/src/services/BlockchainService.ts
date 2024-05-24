@@ -7,13 +7,12 @@ import {
   SystemProgram,
   PublicKey,
 } from '@solana/web3.js';
-import { Currency } from '../../../wallet-microservice/src/types';
 import { BuildTransactionResponse } from '../types';
 import {
   HOUSE_WALLET_ADDRESS,
   HOUSE_WALLET_PRIVATE_KEY,
 } from '../utils/TreasuryUtils';
-import { InsufficientBalanceError } from '../../../wallet-microservice/src/errors/InsufficientBalanceError';
+import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 
 class BlockchainService {
   private connection: Connection;
@@ -34,15 +33,14 @@ class BlockchainService {
       throw new SendTransactionError('Transaction meta data not found');
     }
     const accountKeys = txDetail.transaction.message.accountKeys;
-    let depositAmount: number = 0;
+    let depositAmount = 0;
 
     // Iterate through the account keys to find the deposit amount
     accountKeys.forEach((account, index) => {
       if (account.pubkey.equals(HOUSE_WALLET_ADDRESS)) {
         // LOOK AT THIS CODE AGAIN. I DONT LIKE THE NULL ASSERTION
         depositAmount =
-          txDetail.meta!.postBalances[index] -
-          txDetail.meta!.preBalances[index];
+          txDetail.meta.postBalances[index] - txDetail.meta.preBalances[index];
       }
     });
 
@@ -86,8 +84,7 @@ class BlockchainService {
 
   public async buildTransaction(
     toWalletAddress: string,
-    amount: number,
-    currency: Currency
+    amount: number
   ): Promise<BuildTransactionResponse> {
     // Get the latest blockhash and block height from the blockchain
     const latestBlock = await this.connection.getLatestBlockhash();
@@ -99,7 +96,7 @@ class BlockchainService {
     const toPubKey = new PublicKey(toWalletAddress);
 
     // Create a temporary transaction to calculate the fee
-    let transactionTemp = new Transaction({
+    const transactionTemp = new Transaction({
       blockhash: blockhash,
       feePayer: fromPubKey,
       lastValidBlockHeight: blockHeight,
@@ -126,7 +123,7 @@ class BlockchainService {
     const fee: number = feeCalculator.value / LAMPORTS_PER_SOL;
 
     // Create a new transaction object with the adjusted amount (ensure that the fee is payed for by the user and not the house)
-    let adjustedTransaction = new Transaction({
+    const adjustedTransaction = new Transaction({
       blockhash: blockhash,
       feePayer: fromPubKey,
       lastValidBlockHeight: blockHeight,

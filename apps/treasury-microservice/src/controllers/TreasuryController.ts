@@ -1,8 +1,8 @@
 import {
   Currency,
   DepositTransactionResponse,
-} from '../../../wallet-microservice/src/types';
-import { parseCurrency } from '../../../wallet-microservice/src/utils/WalletUtils';
+} from '@shared-types/shared-types';
+import { parseCurrency } from '@shared-types/BlockchainUtils';
 import { Request, Response } from 'express';
 import BlockchainService from '../services/BlockchainService';
 import { Transaction } from '@solana/web3.js';
@@ -41,7 +41,7 @@ class TreasuryController {
 
       // Switch based on currency (only SOL supported as of now)
       switch (currency) {
-        case Currency.SOL:
+        case Currency.SOL: {
           // Build transaction and get blockhash and lastValidBlockHeight
           const {
             transactionSignature,
@@ -50,8 +50,7 @@ class TreasuryController {
           }: BuildTransactionResponse =
             await this.blockchainService.buildTransaction(
               walletAddress,
-              amount,
-              currency
+              amount
             );
 
           // Broadcast transaction and verify it was successful
@@ -69,11 +68,13 @@ class TreasuryController {
           // Return transaction signature (id) to wallet service
           res.status(200).send({ signature: signature });
           break;
-        default:
+        }
+        default: {
           res.status(400).send('Invalid currency');
           break;
+        }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
       res.status(500).send('Internal server error');
     }
@@ -106,7 +107,7 @@ class TreasuryController {
 
       // Switch based on currency (only SOL supported as of now)
       switch (parsedCurrency) {
-        case Currency.SOL:
+        case Currency.SOL: {
           // Create transaction object from base64 encoded string
           const transactionSerialized: Buffer = Buffer.from(
             base64Transaction,
@@ -151,11 +152,13 @@ class TreasuryController {
           // Return response object to wallet service
           res.status(200).send(JSON.stringify(params));
           break;
-        default:
+        }
+        default: {
           res.status(400).send('Invalid currency');
           break;
+        }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
       res.status(500).send('Internal server error');
     }
