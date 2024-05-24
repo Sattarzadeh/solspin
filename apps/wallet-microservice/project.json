@@ -1,0 +1,24 @@
+{
+  "name": "wallet-microservice",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/wallet-microservice/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "wallet-microservice:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "wallet-microservice:build:development"
+        },
+        "production": {
+          "buildTarget": "wallet-microservice:build:production"
+        }
+      }
+    }
+  }
+}

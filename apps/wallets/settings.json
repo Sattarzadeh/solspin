@@ -1,5 +1,0 @@
-{
-    "jest.runAllTestsFirst": false,
-    "jest.autoEnable": false,
-    "jest.showCoverageOnLoad": false
-}
