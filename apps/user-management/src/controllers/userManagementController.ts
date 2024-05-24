@@ -19,18 +19,23 @@ class UserManagementController {
     }
 
     private async updateUserData(req: Request, res: Response, next: NextFunction): Promise<Response> {
-        const {conditions, updateFields} = req.body;
-        
-        if (!conditions || !updateFields) return res.status(400).json({"message": "Some data was not included in the request..."})
+        const { user_id, updateFields } = req.body;
+    
 
-        try {
-            await this.userDbService.updateUserData(conditions, updateFields)
-            res.status(201).json({"message": "User data successfully updated"})
-        } catch(error) { // change this to DatabaseError error
-            return res.status(500).json({"error": error.message})
+        if (!user_id) {
+            return res.status(400).json({ "message": "user_id is required" });
         }
-
-        return 
+    
+        if (!updateFields || typeof updateFields !== 'object' || Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ "message": "updateFields must be a non-empty object" });
+        }
+    
+        try {
+            await this.userDbService.updateUserData(user_id, updateFields);
+            return res.status(200).json({ "message": "User data successfully updated" });
+        } catch (error) {
+            return res.status(500).json({ "error": error.message });
+        }
     }
 
     private async createUserDocument(req: Request, res: Response, next: NextFunction): Promise<Response> {

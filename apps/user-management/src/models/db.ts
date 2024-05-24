@@ -9,5 +9,6 @@ export interface UpdateParams {
     UpdateExpression: string;
     ExpressionAttributeNames?: { [key: string]: string };
     ExpressionAttributeValues: { [key: string]: any };
+    ConditionExpression: string;
   }
 

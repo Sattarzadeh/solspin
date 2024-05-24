@@ -23,6 +23,7 @@ export class DynamoDbService {
 
       async updateRecord(params: UpdateParams): Promise<any> {
         try {
+          console.log(params)
           const result = await dynamoDBClient.update(params).promise();
           return result.Attributes;
         } catch (error) {
@@ -40,6 +41,8 @@ export class DynamoDbService {
         const expressionAttributeNames: { [key: string]: string } = {};
         const expressionAttributeValues: { [key: string]: any } = {};
     
+        updateFields['updatedAt'] = new Date().toISOString();
+        
         Object.keys(updateFields).forEach((field, index) => {
           const attributeName = `#attr${index}`;
           const attributeValue = `:val${index}`;
@@ -48,15 +51,14 @@ export class DynamoDbService {
           expressionAttributeValues[attributeValue] = updateFields[field];
         });
     
-
         updateExpression = updateExpression.slice(0, -1);
-    
         return {
           TableName: tableName,
           Key: key,
           UpdateExpression: updateExpression,
           ExpressionAttributeNames: expressionAttributeNames,
           ExpressionAttributeValues: expressionAttributeValues,
+          ConditionExpression: 'attribute_exists(#attr0)',
         };
       }
 

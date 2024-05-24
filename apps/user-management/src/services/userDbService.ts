@@ -1,16 +1,18 @@
+import { ConfigurationServicePlaceholders } from 'aws-sdk/lib/config_service_placeholders';
 import { randomUUID } from 'crypto';
 import { User } from '../models/users';
 import { DynamoDbService } from './dynamoDbService';
 
 export class UserDbService {
-
+    // Interface for the dynamodbservice
     private dynamoDbService: DynamoDbService;
 
     constructor() {
         this.dynamoDbService = new DynamoDbService();
     }
 
-    async updateUserData(key: { [key: string]: any }, updateFields: { [key: string]: any }): Promise<any> {
+    async updateUserData(user_id, updateFields: { [key: string]: any }): Promise<any> {
+        const key = {user_id}
         const params = this.dynamoDbService.buildUpdateParams('users', key, updateFields);
         return this.dynamoDbService.updateRecord(params);
     }
