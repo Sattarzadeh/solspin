@@ -2,8 +2,8 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { CaseOpeningService } from '../services/case_opening_service';
 import { CaseDataService } from '../services/case_data_service';
 import { validateCaseName } from '../middlewares/validateCaseName';
-import { CaseDoesNotExistError } from '../errors/CaseDoesNotExistError';
-import { CustomError } from '../errors/CustomError';
+import { verifyJwtToken } from '../middlewares/verifyJwtToken';
+
 
 class CaseController {
   public router = Router();
@@ -19,7 +19,7 @@ class CaseController {
   private initializeRoutes() {
     this.router.get('/', this.getAllCases);
     this.router.get('/:caseName', validateCaseName, this.getCaseByName);
-    this.router.post('/:caseName/demospin', validateCaseName, this.demoSpinCase);
+    this.router.post('/:caseName/demospin', verifyJwtToken, validateCaseName, this.demoSpinCase);
   }
 
   private getCaseByName = async (req: Request, res: Response, next: NextFunction) => {

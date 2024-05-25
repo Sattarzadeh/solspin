@@ -7,7 +7,6 @@ export class CaseDataService {
 
     public async getCase(caseName: string): Promise<Case | null> {
         try {
-        console.log(mockCase)
         return mockCase["case_name"] == caseName ? mockCase : null;
         } catch (error) {
         console.error("Error reading case data:", error);

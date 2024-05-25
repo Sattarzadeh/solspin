@@ -36,7 +36,8 @@
       "exclude": [
         "apps/payment-e2e/**/*",
         "apps/resources/backend-e2e/**/*",
-        "resources-e2e/**/*"
+        "resources-e2e/**/*",
+        "apps/game-engine-e2e/**/*"
       ]
     },
     {
