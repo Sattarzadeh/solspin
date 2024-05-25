@@ -24,7 +24,7 @@ class DatabaseHandlerService {
     currency: Currency,
     depositAmount: number,
     signature: string | null,
-    isDeposit: boolean = true
+    isDeposit = true
   ): Promise<void> => {
     // Fetch the user
     const user = await this.getUser(userId);

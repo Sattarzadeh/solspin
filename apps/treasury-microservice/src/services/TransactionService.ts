@@ -3,12 +3,12 @@ import {
   DepositTransactionResponse,
 } from '@shared-types/shared-types';
 import BlockchainService from '../services/BlockchainService';
-import { SendTransactionError, Transaction } from '@solana/web3.js';
+import { Transaction } from '@solana/web3.js';
 import { BuildTransactionResponse } from '../types';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
 
 const DEPOSIT_COMMITMENT_LEVEL = 'finalized';
-const WITHDRAWAL_COMMITMENT_LEVEL = 'confirmed';
+const WITHDRAWAL_COMMITMENT_LEVEL = 'finalized';
 
 export class TransactionService {
   constructor(private blockchainService: BlockchainService) {}
