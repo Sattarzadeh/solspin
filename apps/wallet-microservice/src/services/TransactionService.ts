@@ -140,4 +140,12 @@ export class TransactionService {
       walletAddress
     );
   }
+
+  public async updateUserBalance(
+    userId: string,
+    currency: Currency,
+    amount: number
+  ) {
+    await this.databaseHandlerService.depositToDb(userId, currency, amount, null, false);
+  }
 }

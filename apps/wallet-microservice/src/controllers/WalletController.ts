@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { errorHandler } from '../middleware/ErrorHandler';
 import RemoteService from '../remote/RemoteService';
 import { TransactionService } from '../services/TransactionService';
+import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
 
 class WalletController {
   private transactionService: TransactionService;
@@ -112,6 +113,24 @@ class WalletController {
         walletAddress
       );
       res.status(200).send('Wallet created successfully');
+    } catch (error) {
+      errorHandler(error, res);
+    }
+  };
+
+  public updateBalance = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.userId;
+      const currency = req.body.currency;
+      const amount = req.body.amount;
+
+      if (!userId || !currency || !amount) {
+        throw new InvalidInputError('Missing required fields');
+      }
+
+      await this.transactionService.updateUserBalance(userId, currency, amount);
+
+      res.status(200).send('Balance updated successfully');
     } catch (error) {
       errorHandler(error, res);
     }
