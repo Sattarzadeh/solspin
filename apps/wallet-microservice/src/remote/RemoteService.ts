@@ -30,7 +30,7 @@ class RemoteService {
 
       // Send the request to the treasury service
       const response = await this.client.post(`/withdraw/${userId}`, params);
-
+      console.log(response);
       // Return the signature from the response
       return response.data.signature;
     } catch (error) {
@@ -59,6 +59,7 @@ class RemoteService {
       const response = await this.client.post(`/deposit/${userId}`, params);
 
       if (response && response.status !== 200) {
+        console.log(response.status, response.data);
         throw new Error(response.data);
       }
 

@@ -33,7 +33,7 @@ class DatabaseHandlerService {
       (wallet: Wallet) => wallet.currency === currency
     );
     if (!account) {
-      throw new Error('Account not found');
+      throw new ResourceNotFoundError('Account not found');
     }
 
     // Update the balance
@@ -83,12 +83,12 @@ class DatabaseHandlerService {
 
       // If the wallet is not found, throw an error
       if (!wallet) {
-        throw new Error('Wallet not found');
+        throw new ResourceNotFoundError('Wallet not found');
       }
 
       // Check if the user has sufficient balance
       if (wallet.balance < amount) {
-        throw new InvalidResourceError('Insufficient balance', 400);
+        throw new InvalidResourceError('Insufficient balance');
       }
 
       // Deduct the amount from the wallet
@@ -196,7 +196,7 @@ class DatabaseHandlerService {
 
     // If the wallet is not found, throw an error
     if (!wallet) {
-      throw new Error('Wallet not found');
+      throw new ResourceNotFoundError('Wallet not found');
     }
 
     // Return the wallet
@@ -228,7 +228,10 @@ class DatabaseHandlerService {
     );
     if (wallet) {
       console.log(wallet);
-      throw new InvalidResourceError('Wallet already exists', 409);
+      const error = new InvalidResourceError('Wallet already exists');
+      error.statusCode = 409;
+
+      throw error;
     }
 
     // Add the new wallet to the user
@@ -323,7 +326,7 @@ class DatabaseHandlerService {
 
       // If the wallet is not found, throw an error
       if (walletIndex === -1) {
-        throw new Error('Wallet not found');
+        throw new ResourceNotFoundError('Wallet not found');
       }
       // Attempt to "unlock" the wallet by setting lockedAt to 0 (unlocked)
       await dynamoDB.send(

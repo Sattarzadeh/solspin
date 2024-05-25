@@ -1,24 +1,24 @@
-import express from "express";
-import { WalletController } from "../controllers/WalletController";
-import { validateUserAndWallet } from "../middleware/WalletMiddleware";
+import express from 'express';
+import { WalletController } from '../controllers/WalletController';
+import { validateUserAndWallet } from '../middleware/WalletMiddleware';
 
 const router = express.Router();
 const walletController = new WalletController();
 router.post(
-  "/deposit/:userId",
+  '/deposit/:userId',
   validateUserAndWallet(true),
   walletController.deposit
 );
 router.post(
-  "/withdraw/:userId",
+  '/withdraw/:userId',
   validateUserAndWallet(false),
   walletController.withdraw
 );
 // Probably add a middleware to check if request maker (should be internal service) is authorised.
-router.get("/:userId", walletController.getWallets);
-router.get("/balance/:userId", walletController.balance);
+router.get('/:userId', walletController.getWallets);
+router.get('/balance/:userId', walletController.balance);
 
 // Probably add a middleware to check if request maker (should be internal service) is authorised.
-router.post("/create/:userId", walletController.createWallet);
+router.post('/create/:userId', walletController.createWallet);
 
 export default router;

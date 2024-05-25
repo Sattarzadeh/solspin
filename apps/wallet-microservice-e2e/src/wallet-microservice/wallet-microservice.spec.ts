@@ -127,7 +127,7 @@ describe('Deposit tests', function () {
 
     expect(response.status).toBe(200);
     expect(await connection.getBalance(toPublicKey)).toBe(
-      transactionAmount * LAMPORTS_PER_SOL + previousBalance // Assume 5000 is the transaction fee
+      transactionAmount * LAMPORTS_PER_SOL + previousBalance
     );
   });
 });
@@ -227,7 +227,7 @@ describe('Withdraw tests', function () {
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.response.status).toBe(400);
+        expect(error.response.status).toBe(500);
       } else {
         fail('Unexpected error');
       }

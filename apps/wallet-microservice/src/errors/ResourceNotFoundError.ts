@@ -1,11 +1,12 @@
-import { CustomError } from './CustomError';
+import { CustomError } from "./CustomError";
 
 export class ResourceNotFoundError extends CustomError {
-  statusCode = 404;
+  public statusCode;
 
-  constructor(message = 'Invalid resource') {
+  constructor(message: string = "Invalid resource", statusCode: number = 404) {
     super(message);
     Object.setPrototypeOf(this, ResourceNotFoundError.prototype);
+    this.statusCode = statusCode;
   }
 
   serializeErrors() {

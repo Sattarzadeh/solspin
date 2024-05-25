@@ -1,10 +1,15 @@
-class InsufficientBalanceError extends Error {
-  public statusCode;
+import { CustomError } from './CustomError';
 
-  constructor(message = 'Insufficient balance', statusCode = 400) {
+class InsufficientBalanceError extends CustomError {
+  statusCode = 402;
+
+  constructor(message = 'Insufficient balance') {
     super(message);
-    this.name = 'InsufficientBalanceError';
-    this.statusCode = statusCode;
+    Object.setPrototypeOf(this, InsufficientBalanceError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message }];
   }
 }
 

@@ -6,6 +6,7 @@ import {
   Transaction,
   SystemProgram,
   PublicKey,
+  Commitment,
 } from '@solana/web3.js';
 import { BuildTransactionResponse } from '../types';
 import {
@@ -13,6 +14,25 @@ import {
   HOUSE_WALLET_PRIVATE_KEY,
 } from '../utils/TreasuryUtils';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
+import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
+
+const FEE = 5000;
+
+/*
+
+  Commitment levels:
+
+  - processed: The transaction has been included in a block.
+  - confirmed: The transaction has been included in a block that has been voted on by the supermajority of the cluster.
+  - finalized: The transaction has been included in a block that has been finalized by the cluster.
+
+  We should use 'finalized' for deposits because we want to ensure deposits cannot be 
+  reverted. This prevents us from crediting the user account and then having the deposit transaction fail.
+
+  We use 'confirmed' for withdrawals because we want to have fast withdrawals to boost user satisfaction. Also, it's not as important to have withdrawals
+  finalized because if they are reverted, the funds are still in the house wallet.
+
+  */
 
 class BlockchainService {
   private connection: Connection;
@@ -46,7 +66,7 @@ class BlockchainService {
 
     // Check if the deposit amount is valid
     if (depositAmount <= 0) {
-      throw new SendTransactionError('Invalid deposit amount');
+      throw new InvalidInputError('Invalid deposit amount');
     }
     return depositAmount / LAMPORTS_PER_SOL;
   }
@@ -54,7 +74,8 @@ class BlockchainService {
   public broadcastTransactionAndVerify = async (
     transaction: Buffer,
     blockhash: string | null,
-    lastValidBlockHeight: number | null
+    lastValidBlockHeight: number | null,
+    commitment: string
   ): Promise<TransactionSignature> => {
     // Get the latest blockhash and block height if not provided (only in deposits is it not provided)
     if (!blockhash || !lastValidBlockHeight) {
@@ -70,7 +91,7 @@ class BlockchainService {
         lastValidBlockHeight: lastValidBlockHeight,
         blockhash: blockhash,
       },
-      'finalized'
+      commitment as Commitment
     );
 
     if (result.value.err) {
@@ -95,33 +116,6 @@ class BlockchainService {
     const fromPubKey = HOUSE_WALLET_ADDRESS;
     const toPubKey = new PublicKey(toWalletAddress);
 
-    // Create a temporary transaction to calculate the fee
-    const transactionTemp = new Transaction({
-      blockhash: blockhash,
-      feePayer: fromPubKey,
-      lastValidBlockHeight: blockHeight,
-    }).add(
-      SystemProgram.transfer({
-        fromPubkey: fromPubKey,
-        toPubkey: toPubKey,
-        lamports: amount * LAMPORTS_PER_SOL,
-      })
-    );
-
-    // Get the fee for the transaction
-    const feeCalculator = await this.connection.getFeeForMessage(
-      transactionTemp.compileMessage(),
-      'finalized'
-    );
-
-    // Check if the fee is valid
-    if (feeCalculator.value === null) {
-      throw new SendTransactionError('Error in fee calculation');
-    }
-
-    // Calculate the fee
-    const fee: number = feeCalculator.value / LAMPORTS_PER_SOL;
-
     // Create a new transaction object with the adjusted amount (ensure that the fee is payed for by the user and not the house)
     const adjustedTransaction = new Transaction({
       blockhash: blockhash,
@@ -131,7 +125,7 @@ class BlockchainService {
       SystemProgram.transfer({
         fromPubkey: fromPubKey,
         toPubkey: toPubKey,
-        lamports: (amount - fee) * LAMPORTS_PER_SOL,
+        lamports: amount * LAMPORTS_PER_SOL - FEE,
       })
     );
 
