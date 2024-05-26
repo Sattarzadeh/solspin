@@ -15,9 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@wallet-microservice/*": ["apps/wallet-microservice/src/*"],
-      "@shared-types/*": ["shared-types/src/lib/*"],
       "@shared-errors/*": ["shared-types/src/lib/errors/*"],
+      "@shared-types/*": ["shared-types/src/lib/*"],
+      "@wallet-microservice/*": ["apps/wallet-microservice/src/*"],
     }
   },
   "exclude": ["node_modules", "tmp"]

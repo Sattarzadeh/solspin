@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Currency } from '@shared-types/shared-types'; // Adjust the import path as needed
 import DatabaseHandlerService from '../services/DatabaseHandlerService'; // Adjust the import path as needed
-import { errorHandler } from './ErrorHandler'; // Adjust the import path as needed
+import { errorHandler } from '@shared-errors/ErrorHandler'; // Adjust the import path as needed
 
 const databaseHandlerService = new DatabaseHandlerService();
 
