@@ -1,13 +1,13 @@
 import { errorHandler } from '@shared-errors/ErrorHandler';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import BettingService from '../services/BettingService';
+import { BettingService } from '../services/BettingService';
 import { Request, Response } from 'express';
 
 class BettingController {
   private bettingService: BettingService;
 
-  constructor() {
-    this.bettingService = new BettingService();
+  constructor(bettingService: BettingService) {
+    this.bettingService = bettingService;
     this.recordBet = this.recordBet.bind(this);
     this.getBets = this.getBets.bind(this);
   }
@@ -29,7 +29,6 @@ class BettingController {
         throw new InvalidInputError('Missing required fields');
       }
 
-      console.log('Recording bet...');
       await this.bettingService.recordBet(
         userId,
         gameId,
@@ -39,7 +38,7 @@ class BettingController {
         walletCurrency
       );
 
-      res.status(200).send('Bet recorded');
+      res.status(200).json('Bet recorded').send();
     } catch (error) {
       console.log('error', error);
       errorHandler(error, res);
@@ -62,6 +61,7 @@ class BettingController {
       }
 
       const bets = await this.bettingService.getBetHistory(userId);
+
       res.status(200).json(bets).send();
     } catch (error) {
       errorHandler(error, res);

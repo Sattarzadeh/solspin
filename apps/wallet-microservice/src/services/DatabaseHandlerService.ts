@@ -172,7 +172,6 @@ class DatabaseHandlerService {
 
     // Fetch the user from the database
     const data = await dynamoDB.send(new GetCommand(params));
-
     // If the user is not found, throw an error
     if (!data.Item) {
       throw new ResourceNotFoundError('User not found');

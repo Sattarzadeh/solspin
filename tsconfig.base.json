@@ -18,6 +18,7 @@
       "@shared-errors/*": ["shared-types/src/lib/errors/*"],
       "@shared-types/*": ["shared-types/src/lib/*"],
       "@wallet-microservice/*": ["apps/wallet-microservice/src/*"],
+      "@betting-microservice/*": ["apps/betting-microservice/src/*"],
     }
   },
   "exclude": ["node_modules", "tmp"]

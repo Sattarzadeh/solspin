@@ -10,7 +10,6 @@ import { Currency } from '@shared-types/shared-types';
 import bs58 from 'bs58';
 import { randomUUID } from 'crypto';
 import axios, { AxiosError } from 'axios';
-import { setTimeout } from 'timers/promises';
 
 if (!process.env.HOUSE_WALLET_ADDRESS || !process.env.HOUSE_SECRET_KEY) {
   throw new Error('Missing HOUSE_WALLET_ADDRESS or HOUSE_SECRET_KEY');
@@ -196,7 +195,7 @@ describe('Withdraw tests', function () {
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.response.status).toBe(404);
+        expect(error.response.status).toBe(402);
       } else {
         fail('Unexpected error');
       }

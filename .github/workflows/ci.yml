@@ -30,6 +30,27 @@ jobs:
       - run: npm ci
       - uses: nrwl/nx-set-shas@v4
 
-      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-      # - run: npx nx-cloud record -- echo Hello World
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      # Build and start Docker containers
+      - name: Build and start Docker containers
+        run: docker-compose up -d
+
+      # Run lint, test, and build for affected projects
       - run: npx nx affected -t lint test build
+
+      # Run e2e tests
+      - name: Run e2e tests
+        run: npx nx e2e <your-e2e-project-name>
+
+      # Stop and remove Docker containers
+      - name: Stop and remove Docker containers
+        run: docker-compose down

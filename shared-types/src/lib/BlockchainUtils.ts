@@ -1,4 +1,4 @@
-import { InvalidResourceError } from './errors/InvalidResourceError';
+import { InvalidInputError } from '@shared-errors/InvalidInputError';
 import { Currency } from './shared-types';
 
 export function parseCurrency(currency: string): Currency | null {
@@ -10,6 +10,6 @@ export function parseCurrency(currency: string): Currency | null {
     case Currency.ETH:
       return Currency.ETH;
     default:
-      throw new InvalidResourceError('Invalid currency');
+      throw new InvalidInputError('Invalid currency');
   }
 }

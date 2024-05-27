@@ -42,7 +42,7 @@ export class DatabaseHandlerService {
   public getBetHistory = async (userId: string): Promise<Bet[]> => {
     const params = {
       TableName: this.betHistoryTableName,
-      IndexName: 'user_id-timestamp-index', // Specify the GSI name
+      IndexName: 'bet_history', // Specify the GSI name
       KeyConditionExpression: 'user_id = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
@@ -67,13 +67,12 @@ export class DatabaseHandlerService {
         bet_id: betId,
       },
     };
+    const result = await dynamoDB.send(new GetCommand(params));
 
-    try {
-      const result = await dynamoDB.send(new GetCommand(params));
-      return result.Item as Bet;
-    } catch (error) {
-      console.log(error);
-      throw new ResourceNotFoundError('Failed to get bet');
+    if (!result.Item || result.Item.length === 0) {
+      throw new ResourceNotFoundError('Bet was not found');
     }
+
+    return result.Item as Bet;
   };
 }

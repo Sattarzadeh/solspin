@@ -1,7 +1,7 @@
 import DatabaseHandlerService from '../services/DatabaseHandlerService';
 import { Request, Response } from 'express';
 import { errorHandler } from '@shared-errors/ErrorHandler';
-import RemoteService from '../remote/RemoteService';
+import RemoteService from '../services/RemoteService';
 import { TransactionService } from '../services/TransactionService';
 import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
 

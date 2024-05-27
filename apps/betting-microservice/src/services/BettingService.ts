@@ -4,17 +4,16 @@ import { RemoteService } from '../services/RemoteService';
 import { DatabaseHandlerService } from '../services/DatabaseHandlerService';
 import { Currency } from '@shared-types/shared-types';
 
-class BettingService {
+export class BettingService {
   private remoteService: RemoteService;
   private databaseHandlerService: DatabaseHandlerService;
-  private WALLET_SERVICE_URL = 'http://localhost:3000/wallets';
 
-  constructor() {
-    this.remoteService = new RemoteService(this.WALLET_SERVICE_URL);
-    this.databaseHandlerService = new DatabaseHandlerService();
-    this.getBetHistory = this.getBetHistory.bind(this);
-    this.getBet = this.getBet.bind(this);
-    this.recordBet = this.recordBet.bind(this);
+  constructor(
+    remoteService: RemoteService,
+    databaseHandlerService: DatabaseHandlerService
+  ) {
+    this.remoteService = remoteService;
+    this.databaseHandlerService = databaseHandlerService;
   }
 
   public recordBet = async (
@@ -68,5 +67,3 @@ class BettingService {
     return bet;
   };
 }
-
-export default BettingService;
