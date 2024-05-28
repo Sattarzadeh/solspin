@@ -240,7 +240,7 @@ class DatabaseHandlerService {
       balance: 0,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: Date.now().toString(),
+      lockedAt: Date.now(),
     });
 
     // Save the updated user item back to DynamoDB
@@ -271,7 +271,7 @@ class DatabaseHandlerService {
   }
 
   public async lockWallet(user: User, currency: string): Promise<void> {
-    const lockFor = 1000_00; // Lock duration in milliseconds (10 secs)
+    const lockFor = 1000; // Lock duration in milliseconds (10 secs)
     const now = Date.now();
 
     // Find the wallet to lock
@@ -297,8 +297,8 @@ class DatabaseHandlerService {
           UpdateExpression: `SET ${walletPath}.lockedAt = :now`,
           ConditionExpression: `${walletPath}.lockedAt <= :lockExpiredAt`,
           ExpressionAttributeValues: {
-            ':now': now.toString(),
-            ':lockExpiredAt': (now - lockFor).toString(),
+            ':now': now,
+            ':lockExpiredAt': now - lockFor,
           },
           ReturnValues: 'ALL_NEW',
         })
