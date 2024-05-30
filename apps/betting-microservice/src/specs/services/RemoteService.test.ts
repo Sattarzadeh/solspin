@@ -23,16 +23,20 @@ describe('RemoteService', () => {
     const currency: Currency = Currency.SOL; // Replace with appropriate currency type if needed
     const response = { success: true };
 
-    mock.onPut(`/balance/update/${userId}`, { amount, currency }).reply(200, response);
+    mock
+      .onPut(`/balance/update/${userId}`, { amount, currency })
+      .reply(200, response);
 
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
     await service.createTransactionForBet(userId, amount, currency);
 
     expect(mock.history.put.length).toBe(1);
     expect(mock.history.put[0].url).toBe(`/balance/update/${userId}`);
     expect(mock.history.put[0].data).toBe(JSON.stringify({ amount, currency }));
-    expect(consoleSpy).toHaveBeenCalledWith(expect.objectContaining({ data: response }));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ data: response })
+    );
 
     consoleSpy.mockRestore();
   });
@@ -43,9 +47,11 @@ describe('RemoteService', () => {
     const currency: Currency = Currency.SOL; // Replace with appropriate currency type if needed
     const errorResponse = { message: 'Error' };
 
-    mock.onPut(`/balance/update/${userId}`, { amount, currency }).reply(500, errorResponse);
+    mock
+      .onPut(`/balance/update/${userId}`, { amount, currency })
+      .reply(500, errorResponse);
 
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
     try {
       await service.createTransactionForBet(userId, amount, currency);
@@ -56,7 +62,9 @@ describe('RemoteService', () => {
     expect(mock.history.put.length).toBe(1);
     expect(mock.history.put[0].url).toBe(`/balance/update/${userId}`);
     expect(mock.history.put[0].data).toBe(JSON.stringify({ amount, currency }));
-    expect(consoleSpy).not.toHaveBeenCalledWith(expect.objectContaining({ data: errorResponse }));
+    expect(consoleSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ data: errorResponse })
+    );
 
     consoleSpy.mockRestore();
   });

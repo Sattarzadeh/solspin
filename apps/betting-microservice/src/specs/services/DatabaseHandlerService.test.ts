@@ -84,7 +84,7 @@ describe('DatabaseHandlerService', () => {
         expect.objectContaining({
           input: expect.objectContaining({
             TableName: 'bets',
-            IndexName: 'user_id-timestamp-index',
+            IndexName: 'bet_history',
             KeyConditionExpression: 'user_id = :userId',
             ExpressionAttributeValues: {
               ':userId': 'userId',

@@ -1,10 +1,5 @@
-import { exec, execSync } from 'child_process';
-import fs from 'fs';
+import { execSync } from 'child_process';
 import path from 'path';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
-const rmAsync = promisify(fs.rm);
 
 const folderName = 'test-ledger';
 const folderPath = path.resolve(__dirname, '../../../../', folderName);

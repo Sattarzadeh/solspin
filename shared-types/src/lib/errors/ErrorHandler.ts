@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CustomError } from '@shared-errors/CustomError';
+import { CustomError } from './CustomError';
 
 export function errorHandler(err: Error, res: Response) {
   console.log(err.message);

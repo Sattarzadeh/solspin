@@ -315,7 +315,7 @@ describe('TransactionService', () => {
       const currency = Currency.SOL;
       mockDatabaseHandlerService.getBalance.mockResolvedValue(100);
 
-      const result = await transactionService.getUserBalance(userId, 'SOL');
+      const result = await transactionService.getUserBalance(userId, currency);
       expect(result).toBe(100);
     });
 

@@ -1,11 +1,5 @@
 // test/DatabaseHandlerService.integration.test.js
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  PutCommand,
-  DeleteCommand,
-  GetCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import DatabaseHandlerService from '../../services/DatabaseHandlerService';
 import { Currency, User } from '@shared-types/shared-types';
 import dynamoDB from '../../db/DbConnection';
@@ -23,7 +17,7 @@ describe('DatabaseHandlerService Integration', () => {
           balance: 1000,
           wagerRequirement: 0,
           address: 'addr1',
-          lockedAt: 0,
+          lockedAt: '0',
         },
       ],
     };
@@ -69,7 +63,7 @@ describe('DatabaseHandlerService Integration', () => {
 
     const wallet = await service.getWallet('test-user', Currency.SOL);
     // Ensure the lock was actually acquired
-    expect(wallet.lockedAt).toBeGreaterThan(0);
+    expect(Number(wallet.lockedAt)).toBeGreaterThan(0);
   });
 
   it('should handle lock expiry correctly', async () => {

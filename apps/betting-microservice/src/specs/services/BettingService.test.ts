@@ -51,11 +51,12 @@ describe('BettingService', () => {
     });
 
     it('should create a transaction and record the bet', async () => {
-      const createTransactionForBetSpy = jest.spyOn(
-        remoteServiceMock,
-        'createTransactionForBet'
-      );
-      const recordBetSpy = jest.spyOn(databaseHandlerServiceMock, 'recordBet');
+      const createTransactionForBetSpy = jest
+        .spyOn(remoteServiceMock, 'createTransactionForBet')
+        .mockResolvedValueOnce();
+      const recordBetSpy = jest
+        .spyOn(databaseHandlerServiceMock, 'recordBet')
+        .mockResolvedValueOnce();
 
       await bettingService.recordBet(
         'userId',
@@ -83,10 +84,9 @@ describe('BettingService', () => {
 
   describe('getBetHistory', () => {
     it('should return the bet history for the given user', async () => {
-      const getBetHistorySpy = jest.spyOn(
-        databaseHandlerServiceMock,
-        'getBetHistory'
-      );
+      const getBetHistorySpy = jest
+        .spyOn(databaseHandlerServiceMock, 'getBetHistory')
+        .mockReturnValue(Promise.resolve([] as Bet[]));
       const userId = 'userId';
 
       await bettingService.getBetHistory(userId);

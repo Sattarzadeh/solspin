@@ -188,14 +188,14 @@ describe('Withdraw tests', function () {
 
   it('SHOULD fail WHEN user has insufficient balance', async () => {
     try {
-      await axios.post('http://localhost:3000/wallets/withdraw/3', {
+      await axios.post('http://localhost:3000/wallets/withdraw/4', {
         walletAddress: userKeyPair.publicKey,
         currency: Currency.SOL,
         amount: 1,
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.response.status).toBe(402);
+        expect(error.response.status).toBe(409);
       } else {
         fail('Unexpected error');
       }
@@ -204,7 +204,7 @@ describe('Withdraw tests', function () {
 
   it('SHOULD fail WHEN withdrawal amount is less than 0.1 SOL', async () => {
     try {
-      await axios.post('http://localhost:3000/wallets/withdraw/1', {
+      await axios.post('http://localhost:3000/wallets/withdraw/4', {
         walletAddress: userKeyPair.publicKey,
         currency: Currency.SOL,
         amount: 0.099,
@@ -220,14 +220,14 @@ describe('Withdraw tests', function () {
 
   it('SHOULD fail WHEN withdrawal amount is greater than house balance', async () => {
     try {
-      await axios.post('http://localhost:3000/wallets/withdraw/1', {
+      await axios.post('http://localhost:3000/wallets/withdraw/4', {
         walletAddress: userKeyPair.publicKey,
         currency: Currency.SOL,
         amount: previousBalanceHouse + LAMPORTS_PER_SOL * 1,
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.response.status).toBe(402);
+        expect(error.response.status).toBe(409);
       } else {
         fail('Unexpected error');
       }

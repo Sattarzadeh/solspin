@@ -1,4 +1,4 @@
-import { InvalidInputError } from '@shared-errors/InvalidInputError';
+import { InvalidInputError } from './errors/InvalidInputError';
 import { Currency } from './shared-types';
 
 export function parseCurrency(currency: string): Currency | null {
