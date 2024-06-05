@@ -9,14 +9,19 @@ import {
 import { GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 import dynamoDB from '../db/DbConnection';
+import { IWalletsRepository } from '@wallet-microservice/repositories/IWalletsRepository';
+import { WalletUpdate } from '@wallet-microservice/types';
+import { randomUUID } from 'crypto';
 
 class DatabaseHandlerService {
   private walletsTableName: string;
   private transactionTableName: string;
+  private walletsRepository: IWalletsRepository;
 
-  constructor() {
+  constructor(walletsRepository: IWalletsRepository) {
     this.walletsTableName = process.env.AWS_WALLETS_TABLE_NAME;
     this.transactionTableName = process.env.AWS_TRANSACTION_TABLE_NAME;
+    this.walletsRepository = walletsRepository;
   }
 
   public depositToDb = async (
@@ -25,29 +30,9 @@ class DatabaseHandlerService {
     depositAmount: number,
     signature: string
   ): Promise<void> => {
-    // Fetch the user
-    const user = await this.getUser(userId);
-
-    // Find the account with the specified currency
-    const account = user.wallets.find(
-      (wallet: Wallet) => wallet.currency === currency
-    );
-    if (!account) {
-      throw new ResourceNotFoundError('Account not found');
-    }
-
-    // Update the balance
-    account.balance += depositAmount;
-
-    // Save the updated user item back to DynamoDB
-    const params = {
-      TableName: this.walletsTableName,
-      Item: user,
-    };
-
     try {
       // Update the user's wallet
-      await dynamoDB.send(new PutCommand(params));
+      this.walletsRepository.updateWallet(userId, currency, depositAmount);
 
       // Record the transaction
       const transaction: Transaction = {
@@ -58,7 +43,7 @@ class DatabaseHandlerService {
         timestamp: new Date().toISOString(),
         currency: currency,
       };
-      this.recordTransaction(transaction);
+      await this.recordTransaction(transaction);
     } catch (error) {
       // Log and throw an error
       console.error('Error updating account:', error);
