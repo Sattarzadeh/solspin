@@ -1,5 +1,10 @@
 import { Currency } from '@shared-types/shared-types';
-import { WalletInsert, WalletSelect, WalletUpdate } from '../types';
+import {
+  BalanceAndWagerRequirement,
+  WalletInsert,
+  WalletSelect,
+  WalletUpdate,
+} from '../types';
 
 export interface IWalletsRepository {
   create(wallet: WalletInsert): Promise<void>;
@@ -9,10 +14,15 @@ export interface IWalletsRepository {
     userId: string,
     currency: string
   ): Promise<WalletSelect | null>;
-  updateWallet(
+  updateBalance(
     user_id: string,
     currency: Currency,
     amount: number
   ): Promise<void>;
   delete(userId: string, currency: Currency): Promise<void>;
+  getBalance(userId: string, currency: Currency): Promise<number>;
+  getBalanceAndWagerRequirement(
+    userId: string,
+    currency: Currency
+  ): Promise<BalanceAndWagerRequirement>;
 }

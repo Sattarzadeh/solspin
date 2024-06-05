@@ -41,6 +41,11 @@ type Transaction = {
   currency: Currency;
 };
 
+export type BalanceAndWagerRequirement = {
+  balance: number;
+  wagerRequirement: number;
+};
+
 enum TransactionPurpose {
   Deposit = 'Deposit',
   Withdraw = 'Withdraw',

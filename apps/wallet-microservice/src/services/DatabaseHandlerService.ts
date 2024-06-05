@@ -12,6 +12,7 @@ import dynamoDB from '../db/DbConnection';
 import { IWalletsRepository } from '@wallet-microservice/repositories/IWalletsRepository';
 import { WalletUpdate } from '@wallet-microservice/types';
 import { randomUUID } from 'crypto';
+import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
 
 class DatabaseHandlerService {
   private walletsTableName: string;
@@ -32,7 +33,7 @@ class DatabaseHandlerService {
   ): Promise<void> => {
     try {
       // Update the user's wallet
-      this.walletsRepository.updateWallet(userId, currency, depositAmount);
+      this.walletsRepository.updateBalance(userId, currency, depositAmount);
 
       // Record the transaction
       const transaction: Transaction = {
@@ -57,30 +58,31 @@ class DatabaseHandlerService {
     amount: number,
     signature: string
   ): Promise<void> => {
-    // Fetch the user
-    const user = await this.getUser(userId);
-
     try {
       // Find the wallet with the specified currency
-      const wallet = user.wallets.find(
-        (wallet: Wallet) => wallet.currency === currency
-      );
-
-      // If the wallet is not found, throw an error
-      if (!wallet) {
-        throw new ResourceNotFoundError('Wallet not found');
-      }
+      const { balance, wagerRequirement } =
+        await this.walletsRepository.getBalanceAndWagerRequirement(
+          userId,
+          currency
+        );
 
       // Check if the user has sufficient balance
-      if (wallet.balance < amount) {
+      if (balance < amount) {
         throw new InvalidResourceError('Insufficient balance');
       }
 
-      // Deduct the amount from the wallet
-      wallet.balance -= amount;
+      // Check if amount is greater than 0
+      if (amount <= 0.1) {
+        throw new InvalidInputError('Invalid withdrawal amount');
+      }
+
+      // Check if the user has a wager requirement
+      if (wagerRequirement > 0) {
+        throw new InvalidInputError('You still have a wager requirement');
+      }
 
       // Update the user's wallet
-      await this.updateUser(user);
+      await this.walletsRepository.updateBalance(userId, currency, amount);
 
       // Record the transaction
       const transaction: Transaction = {
@@ -120,17 +122,6 @@ class DatabaseHandlerService {
 
     // Return the wager requirement
     return wallet.wagerRequirement;
-  };
-
-  public updateWagerRequirement = async (
-    userId: string,
-    currency: Currency,
-    amount: number
-  ): Promise<void> => {
-    // Fetch the wallet
-    const wallet = await this.getWallet(userId, currency);
-    // Update the wager requirement
-    wallet.wagerRequirement += amount;
   };
 
   private addUser = async (userId: string): Promise<User> => {
