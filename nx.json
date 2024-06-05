@@ -19,6 +19,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "plugins": [
@@ -33,7 +38,11 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/payment-e2e/**/*"]
+      "exclude": [
+        "apps/payment-e2e/**/*",
+        "apps/wallet-microservice-e2e/**/*",
+        "apps/treasury-microservice-e2e/**/*"
+      ]
     },
     {
       "plugin": "@nx/next/plugin",
@@ -48,6 +57,14 @@
       "plugin": "@nx/playwright/plugin",
       "options": {
         "targetName": "e2e"
+      }
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview"
       }
     }
   ],

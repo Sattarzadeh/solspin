@@ -1,0 +1,25 @@
+{
+  "name": "wallet-microservice-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["wallet-microservice"],
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "apps/wallet-microservice-e2e/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "dependsOn": ["wallet-microservice:build"],
+      "configurations": {
+        "development": {
+          "envFile": "apps/wallet-microservice/.env.development.local"
+        },
+        "production": {
+          "envFile": "apps/wallet-microservice/.env.production.local"
+        }
+      }
+    }
+  }
+}
