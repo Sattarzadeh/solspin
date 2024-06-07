@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@vpc/core/*": ["../core/src/*"]
+      "@base-infrastructure/core/*": ["../core/src/*"]
     }
   }
 }
