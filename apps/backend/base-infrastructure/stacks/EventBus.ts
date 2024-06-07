@@ -29,3 +29,9 @@ export function Event({ stack }: StackContext) {
     eventBusArn: eventBus.eventBusArn,
   };
 }
+
+  return {
+    eventBusName: eventBus.eventBusName,
+    eventBusArn: eventBus.eventBusArn,
+  };
+}

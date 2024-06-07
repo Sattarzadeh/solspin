@@ -1,5 +1,4 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
 import { VPC } from "./stacks/Vpc";
 export default {
   config(_input) {
