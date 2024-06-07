@@ -12,13 +12,16 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "sst": "^2.43.0",
+    "@tsconfig/node18": "^18.2.4",
+    "@aws-cdk/aws-ec2": "^1.204.0",
     "aws-cdk-lib": "2.142.1",
     "constructs": "10.3.0",
-    "typescript": "^5.4.5",
-    "@tsconfig/node18": "^18.2.4"
+    "sst": "^2.43.0",
+    "typescript": "^5.4.5"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+  }
 }
