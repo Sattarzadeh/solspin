@@ -1,8 +1,6 @@
-import { SSTConfig } from 'sst';
-import { VPC } from './stacks/Vpc';
-
-require("dotenv").config();
-
+import { SSTConfig } from "sst";
+import { API } from "./stacks/MyStack";
+import { VPC } from "./stacks/Vpc";
 export default {
   config(_input) {
     return {
@@ -12,8 +10,8 @@ export default {
   },
   stacks(app) {
     app.setDefaultFunctionProps({
-      runtime:'nodejs18.x'",
-      architecture:'arm_64'",
+      runtime:'nodejs18.x',
+      architecture:'arm_64',
       environment: {
         STAGE: app.stage,
         REGION: app.region,
