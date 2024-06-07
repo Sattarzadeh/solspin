@@ -1,5 +1,5 @@
 {
-  "name": "@vpc/core",
+  "name": "@base-infrastructure/core",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -8,8 +8,8 @@
   },
   "devDependencies": {
     "vitest": "^1.6.0",
-    "@types/node": "^20.12.12",
-    "sst": "^2.41.5"
+    "@types/node": "^20.14.2",
+    "sst": "^2.43.0"
   },
   "dependencies": {
     "zod": "^3.23.8"
