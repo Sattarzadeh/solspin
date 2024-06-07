@@ -1,5 +1,6 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
+import { VPC } from "./stacks/vpc";
+import { Event } from "./stacks/EventBus"
 
 export default {
   config(_input) {
@@ -9,6 +10,15 @@ export default {
     };
   },
   stacks(app) {
-    app.stack(API);
+    app.setDefaultFunctionProps({
+      runtime: "nodejs18.x",
+      architecture: "arm_64",
+      environment: {
+        STAGE: app.stage,
+        REGION: app.region,
+      },
+    });
+
+    app.stack(VPC);
   }
 } satisfies SSTConfig;
