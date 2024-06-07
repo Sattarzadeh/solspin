@@ -1,5 +1,5 @@
 import { ApiHandler } from "sst/node/api";
-import { Todo } from "@vpc/core/todo";
+import { Todo } from "@base-infrastructure/core/todo";
 
 export const create = ApiHandler(async (_evt) => {
   await Todo.create();

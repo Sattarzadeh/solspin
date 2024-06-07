@@ -4,8 +4,8 @@ import { API } from "./stacks/MyStack";
 export default {
   config(_input) {
     return {
-      name: "vpc",
-      region: "eu-west-2",
+      name: "base-infrastructure",
+      region: "eu-west-1",
     };
   },
   stacks(app) {
