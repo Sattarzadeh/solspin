@@ -1,0 +1,56 @@
+{
+  "name": "orchestration",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/orchestration/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/orchestration",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/orchestration/src/main.ts",
+        "tsConfig": "apps/orchestration/tsconfig.app.json",
+        "assets": ["apps/orchestration/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "orchestration:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "orchestration:build:development"
+        },
+        "production": {
+          "buildTarget": "orchestration:build:production"
+        }
+      }
+    }
+  }
+}
