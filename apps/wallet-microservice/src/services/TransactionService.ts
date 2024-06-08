@@ -21,7 +21,7 @@ export class TransactionService {
     base64Transaction: string
   ): Promise<void> {
     switch (currency) {
-      case Currency.SOL:
+      case Currency.SOL: {
         const depositTransactionResponse =
           await this.remoteService.broadcastDepositTransaction(
             userId,
@@ -37,8 +37,10 @@ export class TransactionService {
           depositTransactionResponse.transactionId
         );
         break;
-      default:
+      }
+      default: {
         throw new InvalidInputError('Invalid currency');
+      }
     }
   }
 
@@ -91,8 +93,6 @@ export class TransactionService {
         amount,
         signature
       );
-    } catch (error: unknown) {
-      throw error;
     } finally {
       await this.databaseHandlerService.unlockWallet(user, currency);
     }
@@ -138,6 +138,20 @@ export class TransactionService {
       userId,
       currency,
       walletAddress
+    );
+  }
+
+  public async updateUserBalance(
+    userId: string,
+    currency: Currency,
+    amount: number
+  ) {
+    await this.databaseHandlerService.depositToDb(
+      userId,
+      currency,
+      amount,
+      null,
+      false
     );
   }
 }

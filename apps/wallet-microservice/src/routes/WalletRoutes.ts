@@ -14,11 +14,11 @@ router.post(
   validateUserAndWallet(false),
   walletController.withdraw
 );
-// Probably add a middleware to check if request maker (should be internal service) is authorised.
+
 router.get('/:userId', walletController.getWallets);
 router.get('/balance/:userId', walletController.balance);
 
-// Probably add a middleware to check if request maker (should be internal service) is authorised.
 router.post('/create/:userId', walletController.createWallet);
 
+router.put('/balance/update/:userId', walletController.updateBalance);
 export default router;

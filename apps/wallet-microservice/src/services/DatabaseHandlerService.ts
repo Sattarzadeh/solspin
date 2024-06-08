@@ -23,10 +23,16 @@ class DatabaseHandlerService {
     userId: string,
     currency: Currency,
     depositAmount: number,
-    signature: string
+    signature: string | null,
+    isDeposit = true
   ): Promise<void> => {
     // Fetch the user
     const user = await this.getUser(userId);
+
+    // Check if the signature is valid for a deposit
+    if (isDeposit && !signature) {
+      throw new InvalidResourceError('Invalid signature');
+    }
 
     // Find the account with the specified currency
     const account = user.wallets.find(
@@ -49,16 +55,16 @@ class DatabaseHandlerService {
       // Update the user's wallet
       await dynamoDB.send(new PutCommand(params));
 
-      // Record the transaction
-      const transaction: Transaction = {
-        transaction_id: signature,
-        userId: userId,
-        amount: depositAmount,
-        type: TransactionPurpose.Deposit,
-        timestamp: new Date().toISOString(),
-        currency: currency,
-      };
-      this.recordTransaction(transaction);
+      // Record the transaction if it is a deposit
+      if (isDeposit) {
+        this.recordTransaction(
+          signature,
+          userId,
+          depositAmount,
+          currency,
+          true
+        );
+      }
     } catch (error) {
       // Log and throw an error
       console.error('Error updating account:', error);
@@ -98,16 +104,7 @@ class DatabaseHandlerService {
       await this.updateUser(user);
 
       // Record the transaction
-      const transaction: Transaction = {
-        transaction_id: signature,
-        userId: userId,
-        amount: amount,
-        type: TransactionPurpose.Withdraw,
-        timestamp: new Date().toISOString(),
-        currency: currency,
-      };
-
-      this.recordTransaction(transaction);
+      this.recordTransaction(signature, userId, amount, currency, false);
     } catch (error) {
       // Log and throw an error
       console.log('Error withdrawing from wallet:', error);
@@ -261,7 +258,24 @@ class DatabaseHandlerService {
     await dynamoDB.send(new PutCommand(params));
   }
 
-  async recordTransaction(transaction: Transaction) {
+  async recordTransaction(
+    signature: string,
+    userId: string,
+    amount: number,
+    currency: Currency,
+    isDeposit: boolean
+  ) {
+    const transaction: Transaction = {
+      transaction_id: signature,
+      userId: userId,
+      amount: amount,
+      type: isDeposit
+        ? TransactionPurpose.Deposit
+        : TransactionPurpose.Withdraw,
+      timestamp: new Date().toISOString(),
+      currency: currency,
+    };
+
     const params = {
       TableName: this.transactionTableName,
       Item: transaction,
