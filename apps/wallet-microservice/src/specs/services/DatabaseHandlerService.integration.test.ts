@@ -39,6 +39,7 @@ describe('DatabaseHandlerService Integration', () => {
       })
     );
   });
+
   it('should handle concurrent lock attempts', async () => {
     const attempts = [];
     for (let i = 0; i < 10; i++) {
@@ -56,14 +57,11 @@ describe('DatabaseHandlerService Integration', () => {
     const failureCount = results.filter(
       (result) => result === 'The conditional request failed'
     ).length;
-
-    console.log('Success Count:', successCount);
-    console.log('Failure Count:', failureCount);
-
     expect(successCount).toStrictEqual(1);
     expect(failureCount).toStrictEqual(9);
 
     const wallet = await service.getWallet('test-user', Currency.SOL);
+    
     console.log('Wallet after concurrent lock attempts:', wallet);
     expect(Number(wallet.lockedAt)).toBeGreaterThan(0);
   });
@@ -79,11 +77,13 @@ describe('DatabaseHandlerService Integration', () => {
     await service.lockWallet(user, Currency.SOL);
     console.log('Wallet relocked after expiry');
 
+
     const updatedUserWallet = await service.getWallet(
       user.user_id,
       Currency.SOL
     );
     console.log('Updated User Wallet:', updatedUserWallet);
+
     expect(updatedUserWallet.lockedAt).not.toBe(0);
   });
 });

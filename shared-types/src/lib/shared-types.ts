@@ -9,7 +9,7 @@ type Wallet = {
   balance: number;
   wagerRequirement: number;
   address: string;
-  lockedAt: string;
+  lockedAt: number;
 };
 
 type User = {

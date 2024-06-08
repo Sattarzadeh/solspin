@@ -236,7 +236,7 @@ class DatabaseHandlerService {
       balance: 0,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: Date.now().toString(),
+      lockedAt: Date.now(),
     });
 
     // Save the updated user item back to DynamoDB
@@ -310,8 +310,8 @@ class DatabaseHandlerService {
           UpdateExpression: `SET ${walletPath}.lockedAt = :now`,
           ConditionExpression: `${walletPath}.lockedAt <= :lockExpiredAt`,
           ExpressionAttributeValues: {
-            ':now': now.toString(),
-            ':lockExpiredAt': (now - lockFor).toString(),
+            ':now': now,
+            ':lockExpiredAt': now - lockFor,
           },
           ReturnValues: 'ALL_NEW',
         })
