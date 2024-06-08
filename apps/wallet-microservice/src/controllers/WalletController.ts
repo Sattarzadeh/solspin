@@ -1,7 +1,7 @@
 import DatabaseHandlerService from '../services/DatabaseHandlerService';
 import { Request, Response } from 'express';
-import { errorHandler } from '../middleware/ErrorHandler';
-import RemoteService from '../remote/RemoteService';
+import { errorHandler } from '@shared-errors/ErrorHandler';
+import RemoteService from '../services/RemoteService';
 import { TransactionService } from '../services/TransactionService';
 import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
 
@@ -124,6 +124,7 @@ class WalletController {
       const currency = req.body.currency;
       const amount = req.body.amount;
 
+      console.log('Updating balance for user:', userId, currency, amount);
       if (!userId || !currency || !amount) {
         throw new InvalidInputError('Missing required fields');
       }

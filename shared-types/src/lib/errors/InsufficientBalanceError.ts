@@ -1,7 +1,7 @@
 import { CustomError } from './CustomError';
 
 class InsufficientBalanceError extends CustomError {
-  statusCode = 402;
+  statusCode = 409;
 
   constructor(message = 'Insufficient balance') {
     super(message);

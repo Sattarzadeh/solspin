@@ -3,7 +3,7 @@ import { Currency } from '@shared-types/shared-types';
 import { parseCurrency } from '@shared-types/BlockchainUtils';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import RemoteService from '../remote/RemoteService';
+import RemoteService from './RemoteService';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 
 const MIN_WITHDRAWAL_AMOUNT_SOL = 0.1;
