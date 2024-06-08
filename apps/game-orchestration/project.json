@@ -1,0 +1,56 @@
+{
+  "name": "game-orchestration",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/game-orchestration/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/game-orchestration",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/game-orchestration/src/main.ts",
+        "tsConfig": "apps/game-orchestration/tsconfig.app.json",
+        "assets": ["apps/game-orchestration/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "game-orchestration:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "game-orchestration:build:development"
+        },
+        "production": {
+          "buildTarget": "game-orchestration:build:production"
+        }
+      }
+    }
+  }
+}
