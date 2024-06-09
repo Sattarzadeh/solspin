@@ -1,0 +1,59 @@
+[NX Daemon Server] - 2024-06-08T19:31:11.451Z - Started listening on: /var/folders/22/zkhfp1qs1wq6m5_txh2zn8sw0000gn/T/52b07b6c5e6ed9103ac6/d.sock
+[NX Daemon Server] - 2024-06-08T19:31:11.453Z - [WATCHER]: Subscribed to changes within: /Users/mehransattarzadeh/Documents/Solspin/solspin (native)
+[NX Daemon Server] - 2024-06-08T19:31:11.674Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-06-08T19:31:11.675Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-06-08T19:31:11.676Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-06-08T19:31:11.678Z - [REQUEST]: Responding to the client. handleHashGlob
+[NX Daemon Server] - 2024-06-08T19:31:11.678Z - Done responding to the client handleHashGlob
+[NX Daemon Server] - 2024-06-08T19:31:11.678Z - Handled HASH_GLOB. Handling time: 2. Response time: 0.
+[NX Daemon Server] - 2024-06-08T19:31:16.452Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-06-08T19:33:00.426Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-06-08T19:37:15.900Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-06-08T19:37:15.901Z - Established a connection. Number of open connections: 3
+[NX Daemon Server] - 2024-06-08T19:37:15.901Z - Closed a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-06-08T19:37:15.903Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-06-08T19:37:16.046Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-06-08T19:37:16.046Z - [REQUEST]: 
+[NX Daemon Server] - 2024-06-08T19:37:16.046Z - [REQUEST]: 
+[NX Daemon Server] - 2024-06-08T19:37:17.377Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-06-08T19:37:17.378Z - Time taken for 'total for creating and serializing project graph' 1474.6666250228882ms
+[NX Daemon Server] - 2024-06-08T19:37:17.378Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-06-08T19:37:17.380Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-06-08T19:37:17.380Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1474. Response time: 3.
+[NX Daemon Server] - 2024-06-08T19:37:21.659Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-06-08T19:37:21.659Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.659Z - Time taken for 'total for creating and serializing project graph' 0.12099981307983398ms
+[NX Daemon Server] - 2024-06-08T19:37:21.660Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.660Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-06-08T19:37:21.674Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-06-08T19:37:21.674Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.674Z - Time taken for 'total for creating and serializing project graph' 0.09491705894470215ms
+[NX Daemon Server] - 2024-06-08T19:37:21.675Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.675Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-06-08T19:37:21.682Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-06-08T19:37:21.682Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.682Z - Time taken for 'total for creating and serializing project graph' 0.24245810508728027ms
+[NX Daemon Server] - 2024-06-08T19:37:21.683Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.684Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-06-08T19:37:21.696Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-06-08T19:37:21.696Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.697Z - Time taken for 'total for creating and serializing project graph' 0.12304186820983887ms
+[NX Daemon Server] - 2024-06-08T19:37:21.697Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.697Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-06-08T19:37:21.704Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-06-08T19:37:21.705Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.705Z - Time taken for 'total for creating and serializing project graph' 0.09770894050598145ms
+[NX Daemon Server] - 2024-06-08T19:37:21.714Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-06-08T19:37:21.714Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1. Response time: 9.
+[NX Daemon Server] - 2024-06-08T19:37:21.866Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-06-08T19:37:21.963Z - [WATCHER]: 17 file(s) created or restored, 2 file(s) modified, 0 file(s) deleted
+[NX Daemon Server] - 2024-06-08T19:37:21.964Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-06-08T19:37:22.066Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-06-08T19:37:22.066Z - [REQUEST]: apps/game-engine/src/assets/.gitkeep,apps/game-engine/src/main.ts,apps/game-engine/project.json,apps/game-engine-e2e/tsconfig.spec.json,apps/game-engine-e2e/src/support/test-setup.ts,apps/game-engine-e2e/src/support/global-setup.ts,apps/game-engine-e2e/src/game-engine/game-engine.spec.ts,apps/game-engine-e2e/tsconfig.json,apps/game-engine-e2e/.eslintrc.json,apps/game-engine/jest.config.ts,apps/game-engine/.eslintrc.json,apps/game-engine/tsconfig.spec.json,apps/game-engine/tsconfig.json,apps/game-engine/tsconfig.app.json,apps/game-engine-e2e/jest.config.ts,apps/game-engine-e2e/project.json,apps/game-engine-e2e/src/support/global-teardown.ts,nx.json,package.json
+[NX Daemon Server] - 2024-06-08T19:37:22.066Z - [REQUEST]: 
+[NX Daemon Server] - 2024-06-08T19:37:22.120Z - Time taken for 'hash changed files from watcher' 0.3909580707550049ms
+[NX Daemon Server] - 2024-06-08T19:37:22.556Z - Time taken for 'build-project-configs' 466.34220910072327ms
+[NX Daemon Server] - 2024-06-08T19:37:24.098Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-06-08T19:37:24.099Z - [WATCHER]: Stopping the watcher for /Users/mehransattarzadeh/Documents/Solspin/solspin (sources)
+[NX Daemon Server] - 2024-06-08T19:37:24.099Z - [WATCHER]: Stopping the watcher for /Users/mehransattarzadeh/Documents/Solspin/solspin (outputs)
+[NX Daemon Server] - 2024-06-08T19:37:24.099Z - Server stopped because: "LOCK_FILES_CHANGED"
