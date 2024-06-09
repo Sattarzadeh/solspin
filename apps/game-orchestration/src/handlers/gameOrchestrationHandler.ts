@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { callIsAuthorized } from '../helpers/isAuthorizedHelper';
 import { callGetBalance } from '../helpers/getBalanceHelper';
+import { callGetCase } from '../helpers/getCaseHelper'; // Import the new helper
 import { sendMessageToSQS } from '../helpers/sendSqsMessage';
 import { webSocketPayload } from '../models/webSocketPayload';
 
@@ -40,10 +41,18 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) =>
 
     const userId = authPayload.userId; // Assuming the payload contains userId
 
+    // Call the getCaseHandler Lambda function to retrieve case details
+    const caseData = await callGetCase(caseId);
+
+    if (caseData.statusCode !== 200) {
+      throw new Error('Failed to fetch case details');
+    }
+
+    const casePrice = JSON.parse(caseData.body).casePrice;
+
     // Call the getBalance Lambda function
     const balancePayload = await callGetBalance(userId);
-    // interface with the dynamodb table holding the cases to get the casePrice
-    const casePrice = 100;
+
     if (balancePayload.balance >= casePrice) {
       // If balance is sufficient, send a message to the SQS queue
       const messageBody = {

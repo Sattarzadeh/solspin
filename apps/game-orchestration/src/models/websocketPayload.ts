@@ -1,6 +1,6 @@
 export interface webSocketPayload {
     token: string;
-    caseId: number;
+    caseId: string;
     sessionId: string;
     spins: number;
     clientSeed: string;
