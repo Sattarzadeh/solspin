@@ -2,6 +2,8 @@
   "version": "6.0",
   "nxVersion": "19.2.2",
   "deps": {
+    "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.1637.0",
     "axios": "^1.6.0",
     "express": "~4.18.1",
     "next": "14.0.4",
@@ -9,6 +11,7 @@
     "react-dom": "18.3.1",
     "sst": "^2.43.0",
     "tslib": "^2.3.0",
+    "@nrwl/node": "^19.2.2",
     "@nx/devkit": "19.0.4",
     "@nx/esbuild": "19.0.4",
     "@nx/eslint": "19.0.4",
@@ -231,15 +234,15 @@
       },
       {
         "file": "nx.json",
-        "hash": "6206872597337915225"
+        "hash": "16385745317773921714"
       },
       {
         "file": "package-lock.json",
-        "hash": "11216687985374443630"
+        "hash": "10317923506487240352"
       },
       {
         "file": "package.json",
-        "hash": "10153489294908214115"
+        "hash": "18099816719069627488"
       },
       {
         "file": "tsconfig.base.json",
@@ -277,6 +280,136 @@
           "hash": "14384658316786387328"
         }
       ],
+      "game-orchestration-e2e": [
+        {
+          "file": "apps/game-orchestration-e2e/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/jest.config.ts",
+          "hash": "6611793258019852287"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/project.json",
+          "hash": "12873394406347158125"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/game-orchestration/game-orchestration.spec.ts",
+          "hash": "4579662685003779048",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/support/global-setup.ts",
+          "hash": "2568409276037275290"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/support/global-teardown.ts",
+          "hash": "5275447082211835490"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/support/test-setup.ts",
+          "hash": "10984585515912236441",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/game-orchestration-e2e/tsconfig.json",
+          "hash": "15443990093475294480"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/tsconfig.spec.json",
+          "hash": "14954872453723519891"
+        }
+      ],
+      "game-orchestration": [
+        {
+          "file": "apps/game-orchestration/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/game-orchestration/jest.config.ts",
+          "hash": "6923721879196937555"
+        },
+        {
+          "file": "apps/game-orchestration/project.json",
+          "hash": "2770889575552566844"
+        },
+        {
+          "file": "apps/game-orchestration/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/game-orchestration/src/handlers/gameOrchestrationHandler.ts",
+          "hash": "15381361196340923362"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/getBalanceHelper.ts",
+          "hash": "8977487500720870396"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/isAuthorizedHelper.ts",
+          "hash": "11192522201515143437"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/sendSqsMessage.ts",
+          "hash": "1643469711624200215"
+        },
+        {
+          "file": "apps/game-orchestration/src/main.ts",
+          "hash": "12003555863464044675",
+          "deps": [
+            "npm:express"
+          ]
+        },
+        {
+          "file": "apps/game-orchestration/src/models/websocketPayload.ts",
+          "hash": "7494154986888401088"
+        },
+        {
+          "file": "apps/game-orchestration/tsconfig.app.json",
+          "hash": "1558509971940032459"
+        },
+        {
+          "file": "apps/game-orchestration/tsconfig.json",
+          "hash": "3490524966360018312"
+        },
+        {
+          "file": "apps/game-orchestration/tsconfig.spec.json",
+          "hash": "11550347367511341917"
+        }
+      ],
+      "frontend-e2e": [
+        {
+          "file": "apps/frontend-e2e/.eslintrc.json",
+          "hash": "632147010597293032"
+        },
+        {
+          "file": "apps/frontend-e2e/playwright.config.ts",
+          "hash": "10068774316882642319",
+          "deps": [
+            "npm:@playwright/test",
+            "npm:@nx/devkit@19.2.2"
+          ]
+        },
+        {
+          "file": "apps/frontend-e2e/project.json",
+          "hash": "13967562273953110445"
+        },
+        {
+          "file": "apps/frontend-e2e/src/example.spec.ts",
+          "hash": "16019101014373124625",
+          "deps": [
+            "npm:@playwright/test"
+          ]
+        },
+        {
+          "file": "apps/frontend-e2e/tsconfig.json",
+          "hash": "13413400511057489941"
+        }
+      ],
       "payment": [
         {
           "file": "apps/payment/.eslintrc.json",
@@ -309,80 +442,6 @@
         {
           "file": "apps/payment/tsconfig.spec.json",
           "hash": "11550347367511341917"
-        }
-      ],
-      "game-engine-e2e": [
-        {
-          "file": "apps/game-engine-e2e/.eslintrc.json",
-          "hash": "13800677001662881425"
-        },
-        {
-          "file": "apps/game-engine-e2e/jest.config.ts",
-          "hash": "254180216987349978"
-        },
-        {
-          "file": "apps/game-engine-e2e/project.json",
-          "hash": "9201738229469290477"
-        },
-        {
-          "file": "apps/game-engine-e2e/src/game-engine/game-engine.spec.ts",
-          "hash": "4579662685003779048",
-          "deps": [
-            "npm:axios"
-          ]
-        },
-        {
-          "file": "apps/game-engine-e2e/src/support/global-setup.ts",
-          "hash": "2568409276037275290"
-        },
-        {
-          "file": "apps/game-engine-e2e/src/support/global-teardown.ts",
-          "hash": "5275447082211835490"
-        },
-        {
-          "file": "apps/game-engine-e2e/src/support/test-setup.ts",
-          "hash": "10984585515912236441",
-          "deps": [
-            "npm:axios"
-          ]
-        },
-        {
-          "file": "apps/game-engine-e2e/tsconfig.json",
-          "hash": "15443990093475294480"
-        },
-        {
-          "file": "apps/game-engine-e2e/tsconfig.spec.json",
-          "hash": "14954872453723519891"
-        }
-      ],
-      "frontend-e2e": [
-        {
-          "file": "apps/frontend-e2e/.eslintrc.json",
-          "hash": "632147010597293032"
-        },
-        {
-          "file": "apps/frontend-e2e/playwright.config.ts",
-          "hash": "10068774316882642319",
-          "deps": [
-            "npm:@playwright/test",
-            "npm:@nx/playwright",
-            "npm:@nx/devkit"
-          ]
-        },
-        {
-          "file": "apps/frontend-e2e/project.json",
-          "hash": "13967562273953110445"
-        },
-        {
-          "file": "apps/frontend-e2e/src/example.spec.ts",
-          "hash": "16019101014373124625",
-          "deps": [
-            "npm:@playwright/test"
-          ]
-        },
-        {
-          "file": "apps/frontend-e2e/tsconfig.json",
-          "hash": "13413400511057489941"
         }
       ],
       "frontend": [
@@ -467,43 +526,6 @@
         {
           "file": "apps/frontend/tsconfig.spec.json",
           "hash": "6922413205408300107"
-        }
-      ],
-      "game-engine": [
-        {
-          "file": "apps/game-engine/.eslintrc.json",
-          "hash": "13800677001662881425"
-        },
-        {
-          "file": "apps/game-engine/jest.config.ts",
-          "hash": "12011857398320192906"
-        },
-        {
-          "file": "apps/game-engine/project.json",
-          "hash": "289307612782803364"
-        },
-        {
-          "file": "apps/game-engine/src/assets/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "apps/game-engine/src/main.ts",
-          "hash": "12003555863464044675",
-          "deps": [
-            "npm:express"
-          ]
-        },
-        {
-          "file": "apps/game-engine/tsconfig.app.json",
-          "hash": "1558509971940032459"
-        },
-        {
-          "file": "apps/game-engine/tsconfig.json",
-          "hash": "3490524966360018312"
-        },
-        {
-          "file": "apps/game-engine/tsconfig.spec.json",
-          "hash": "11550347367511341917"
         }
       ]
     }
