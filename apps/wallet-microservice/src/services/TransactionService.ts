@@ -1,157 +1,122 @@
-import DatabaseHandlerService from '../services/DatabaseHandlerService';
-import { Currency } from '@shared-types/shared-types';
-import { parseCurrency } from '@shared-types/BlockchainUtils';
+import { Wallet } from '@shared-types/shared-types';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import RemoteService from './RemoteService';
+import RemoteService from '../remote/TreasuryRemote';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
+import {
+  lockWallet,
+  depositToDb,
+  unlockWallet,
+  withdrawFromDb,
+  addWallet,
+} from '@wallet-microservice/repository/Repository';
+import { getCurrentPrice } from '../remote/JupiterRemote';
 
 const MIN_WITHDRAWAL_AMOUNT_SOL = 0.1;
 
-export class TransactionService {
-  constructor(
-    private remoteService: RemoteService,
-    private databaseHandlerService: DatabaseHandlerService
-  ) {}
+export const handleDeposit = async (
+  remoteService: RemoteService,
+  userId: string,
+  walletAddress: string,
+  base64Transaction: string
+): Promise<void> => {
+  try {
+    const wallet = await lockWallet(userId);
 
-  public async handleDeposit(
-    userId: string,
-    walletAddress: string,
-    currency: Currency,
-    base64Transaction: string
-  ): Promise<void> {
-    switch (currency) {
-      case Currency.SOL: {
-        const depositTransactionResponse =
-          await this.remoteService.broadcastDepositTransaction(
-            userId,
-            walletAddress,
-            currency,
-            base64Transaction
-          );
+    const depositTransactionResponse =
+      await remoteService.broadcastDepositTransaction(
+        userId,
+        walletAddress,
+        base64Transaction
+      );
 
-        await this.databaseHandlerService.depositToDb(
-          userId,
-          currency,
-          depositTransactionResponse.depositAmount,
-          depositTransactionResponse.transactionId
-        );
-        break;
-      }
-      default: {
-        throw new InvalidInputError('Invalid currency');
-      }
-    }
+    const currentPriceSol = await getCurrentPrice();
+    const depositAmountInCrypto = depositTransactionResponse.depositAmount;
+    const depositAmountInUsd = depositAmountInCrypto * currentPriceSol;
+
+    await depositToDb(
+      wallet,
+      depositAmountInUsd,
+      depositTransactionResponse.transactionId
+    );
+  } catch (error: unknown) {
+    console.error('Error handling deposit:', error);
+    throw new Error('Error handling deposit');
+  } finally {
+    await unlockWallet(userId);
+  }
+};
+
+export const handleWithdrawal = async (
+  remoteService: RemoteService,
+  userId: string,
+  walletAddress: string,
+  amount: number
+): Promise<void> => {
+  if (amount < MIN_WITHDRAWAL_AMOUNT_SOL) {
+    throw new InvalidInputError(
+      `Invalid withdrawal amount. Minimum withdrawal is ${MIN_WITHDRAWAL_AMOUNT_SOL} SOL`
+    );
   }
 
-  public async handleWithdrawal(
-    userId: string,
-    walletAddress: string,
-    currency: Currency,
-    amount: number
-  ): Promise<void> {
-    if (currency !== Currency.SOL) {
-      throw new InvalidInputError('Invalid currency');
-    }
-
-    if (amount < MIN_WITHDRAWAL_AMOUNT_SOL) {
-      throw new InvalidInputError(
-        `Invalid withdrawal amount. Minimum withdrawal is ${MIN_WITHDRAWAL_AMOUNT_SOL} SOL`
-      );
-    }
-
-    const user = await this.databaseHandlerService.getUser(userId);
-    const wallet = user.wallets.find((wallet) => wallet.currency === currency);
+  try {
+    const wallet = await lockWallet(userId);
 
     if (!wallet) {
       throw new ResourceNotFoundError('Wallet not found');
     }
 
-    await this.databaseHandlerService.lockWallet(user, currency);
-
-    try {
-      if (wallet.balance < amount) {
-        throw new InsufficientBalanceError('Insufficient balance');
-      }
-
-      if (wallet.wagerRequirement > 0) {
-        throw new InvalidInputError(
-          `You still have an active wager requirement of ${wallet.wagerRequirement} ${currency}`
-        );
-      }
-
-      const signature = await this.remoteService.broadcastWithdrawalTransaction(
-        userId,
-        amount,
-        currency,
-        walletAddress
-      );
-
-      await this.databaseHandlerService.withdrawFromDb(
-        userId,
-        currency,
-        amount,
-        signature
-      );
-    } finally {
-      await this.databaseHandlerService.unlockWallet(user, currency);
-    }
-  }
-
-  public async getUserWallets(userId: string, currency?: string) {
-    const user = await this.databaseHandlerService.getUser(userId);
-    if (currency) {
-      const parsedCurrency = parseCurrency(currency);
-
-      if (!parsedCurrency) {
-        throw new InvalidInputError('Invalid currency');
-      }
-
-      const wallet = user.wallets.find(
-        (wallet) => wallet.currency === parsedCurrency
-      );
-      if (!wallet) {
-        throw new ResourceNotFoundError('Wallet not found');
-      }
-
-      return wallet;
-    }
-    return user.wallets;
-  }
-
-  public async getUserBalance(userId: string, currency: string) {
-    const parsedCurrency = parseCurrency(currency);
-
-    if (!parsedCurrency) {
-      throw new InvalidInputError('Invalid currency');
+    if (wallet.balance < amount) {
+      throw new InsufficientBalanceError('Insufficient balance');
     }
 
-    return await this.databaseHandlerService.getBalance(userId, parsedCurrency);
-  }
+    if (wallet.wagerRequirement > 0) {
+      throw new InvalidInputError(
+        `You still have an active wager requirement of $${wallet.wagerRequirement}`
+      );
+    }
 
-  public async createUserWallet(
-    userId: string,
-    currency: Currency,
-    walletAddress: string
-  ) {
-    await this.databaseHandlerService.createWallet(
+    const currentPriceSol = await getCurrentPrice();
+    const withdrawalAmountInSol = amount / currentPriceSol;
+
+    const signature = await remoteService.broadcastWithdrawalTransaction(
       userId,
-      currency,
+      withdrawalAmountInSol,
       walletAddress
     );
-  }
 
-  public async updateUserBalance(
-    userId: string,
-    currency: Currency,
-    amount: number
-  ) {
-    await this.databaseHandlerService.depositToDb(
-      userId,
-      currency,
-      amount,
-      null,
-      false
-    );
+    await withdrawFromDb(wallet, amount, signature);
+  } catch (error: unknown) {
+    console.error('Error handling withdrawal:', error);
+    throw new Error('Error handling withdrawal');
+  } finally {
+    await unlockWallet(userId);
   }
-}
+};
+
+export const getWallet = async (userId: string): Promise<Wallet> => {
+  return await getWallet(userId);
+};
+
+export const getBalance = async (userId: string): Promise<number> => {
+  return await getBalance(userId);
+};
+
+export const createWallet = async (
+  userId: string,
+  walletAddress: string
+): Promise<Wallet> => {
+  return await addWallet(userId, walletAddress);
+};
+
+export const updateUserBalance = async (
+  userId: string,
+  amount: number
+): Promise<void> => {
+  try {
+    const wallet = await lockWallet(userId);
+    await depositToDb(wallet, amount, null, false);
+  } finally {
+    await unlockWallet(userId);
+  }
+};

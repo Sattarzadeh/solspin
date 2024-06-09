@@ -39,6 +39,7 @@ testem.log
 Thumbs.db
 .env
 .nx/cache
+.nx/workspace-data
 test-ledger/*
 
 # Next.js

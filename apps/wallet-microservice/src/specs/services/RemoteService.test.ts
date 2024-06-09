@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import RemoteService from '../../services/RemoteService';
+import RemoteService from '../../remote/TreasuryRemote';
 import {
   Currency,
   DepositTransactionResponse,

@@ -1,25 +1,21 @@
-// test/DatabaseHandlerService.integration.test.js
+// test/DatabaseHandlerintegration.test.js
 import { PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import DatabaseHandlerService from '../../services/DatabaseHandlerService';
-import { Currency, User } from '@shared-types/shared-types';
 import dynamoDB from '../../db/DbConnection';
-
-const service = new DatabaseHandlerService();
+import { Wallet } from '@shared-types/shared-types';
+import {
+  lockWallet,
+  getWallet,
+} from '@wallet-microservice/repository/Repository';
 
 describe('DatabaseHandlerService Integration', () => {
-  let user: User;
+  let user: Wallet;
   beforeAll(async () => {
     user = {
-      user_id: 'test-user',
-      wallets: [
-        {
-          currency: Currency.SOL,
-          balance: 1000,
-          wagerRequirement: 0,
-          address: 'addr1',
-          lockedAt: '0',
-        },
-      ],
+      userId: 'test-user',
+      balance: 100,
+      wagerRequirement: 0,
+      address: 'test-address',
+      lockedAt: '0',
     };
     await dynamoDB.send(
       new PutCommand({
@@ -35,7 +31,7 @@ describe('DatabaseHandlerService Integration', () => {
     await dynamoDB.send(
       new DeleteCommand({
         TableName: process.env.AWS_WALLETS_TABLE_NAME,
-        Key: { user_id: 'test-user' },
+        Key: { userId: 'test-user' },
       })
     );
   });
@@ -43,9 +39,7 @@ describe('DatabaseHandlerService Integration', () => {
   it('should handle concurrent lock attempts', async () => {
     const attempts = [];
     for (let i = 0; i < 10; i++) {
-      attempts.push(
-        service.lockWallet(user, Currency.SOL).catch((e) => e.message)
-      );
+      attempts.push(lockWallet(user.userId).catch((e) => e.message));
     }
 
     const results = await Promise.all(attempts);
@@ -60,28 +54,24 @@ describe('DatabaseHandlerService Integration', () => {
     expect(successCount).toStrictEqual(1);
     expect(failureCount).toStrictEqual(9);
 
-    const wallet = await service.getWallet('test-user', Currency.SOL);
-    
+    const wallet = await getWallet('test-user');
+
     console.log('Wallet after concurrent lock attempts:', wallet);
     expect(Number(wallet.lockedAt)).toBeGreaterThan(0);
   });
 
   it('should handle lock expiry correctly', async () => {
     await new Promise((resolve) => setTimeout(resolve, 2000)); // Increased timeout
-    await service.lockWallet(user, Currency.SOL);
+    await lockWallet(user.userId);
     console.log('Wallet locked');
 
     // Simulate lock expiry by waiting longer than the lock duration
     await new Promise((resolve) => setTimeout(resolve, 2200)); // Increased timeout
 
-    await service.lockWallet(user, Currency.SOL);
+    await lockWallet(user.userId);
     console.log('Wallet relocked after expiry');
 
-
-    const updatedUserWallet = await service.getWallet(
-      user.user_id,
-      Currency.SOL
-    );
+    const updatedUserWallet = await getWallet(user.userId);
     console.log('Updated User Wallet:', updatedUserWallet);
 
     expect(updatedUserWallet.lockedAt).not.toBe(0);

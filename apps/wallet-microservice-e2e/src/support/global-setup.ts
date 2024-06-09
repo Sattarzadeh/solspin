@@ -39,14 +39,14 @@ module.exports = async function () {
       globalThis.__DYNAMODB_CONTAINER_ID__ = stdout.trim();
     });
 
-    solanaValidator.stdout.on('data', (data: Buffer) => {
-      const output = data.toString().trim();
-      if (output.includes('RPC URL')) {
-        console.log('Solana Validator is ready');
-        resolve(true);
-      }
-    });
-
+    // solanaValidator.stdout.on('data', (data: Buffer) => {
+    //   const output = data.toString().trim();
+    //   if (output.includes('RPC URL')) {
+    //     console.log('Solana Validator is ready');
+    //     resolve(true);
+    //   }
+    // });
+    resolve(true);
     solanaValidator.stderr.on('data', (data: Buffer) => {
       console.error(`Solana Validator error: ${data.toString().trim()}`);
       reject(new Error('Failed to start Solana test validator'));

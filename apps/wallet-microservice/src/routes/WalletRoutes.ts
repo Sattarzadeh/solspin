@@ -6,7 +6,6 @@ const walletController = new WalletController();
 router.post('/deposit/:userId', walletController.deposit);
 router.post('/withdraw/:userId', walletController.withdraw);
 
-router.get('/:userId', walletController.getWallets);
 router.get('/balance/:userId', walletController.balance);
 
 router.post('/create/:userId', walletController.createWallet);

@@ -1,11 +1,5 @@
-import { TransactionService } from '../../services/TransactionService';
-import DatabaseHandlerService from '../../services/DatabaseHandlerService';
-import RemoteService from '../../services/RemoteService';
-import {
-  Currency,
-  DepositTransactionResponse,
-  User,
-} from '@shared-types/shared-types';
+import RemoteService from '../../remote/TreasuryRemote';
+import { DepositTransactionResponse, Wallet } from '@shared-types/shared-types';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
@@ -27,7 +21,6 @@ jest.mock('../../services/DatabaseHandlerService', () => {
 jest.mock('../../services/RemoteService');
 
 describe('TransactionService', () => {
-  let transactionService: TransactionService;
   let mockRemoteService: jest.Mocked<RemoteService>;
   let mockDatabaseHandlerService: jest.Mocked<DatabaseHandlerService>;
 
@@ -51,7 +44,6 @@ describe('TransactionService', () => {
     it('should handle SOL deposit successfully', async () => {
       const userId = 'testUser';
       const walletAddress = 'testAddress';
-      const currency = Currency.SOL;
       const base64Transaction = 'testTransaction';
       const depositResponse: DepositTransactionResponse = {
         message: 'Deposit successful',
@@ -67,60 +59,36 @@ describe('TransactionService', () => {
       await transactionService.handleDeposit(
         userId,
         walletAddress,
-        currency,
         base64Transaction
       );
 
       expect(
         mockRemoteService.broadcastDepositTransaction
-      ).toHaveBeenCalledWith(
-        userId,
-        walletAddress,
-        currency,
-        base64Transaction
-      );
+      ).toHaveBeenCalledWith(userId, walletAddress, base64Transaction);
       expect(mockDatabaseHandlerService.depositToDb).toHaveBeenCalledWith(
         userId,
-        currency,
         depositResponse.depositAmount,
         depositResponse.transactionId
       );
-    });
-
-    it('should throw InvalidInputError for unsupported currency', async () => {
-      await expect(
-        transactionService.handleDeposit(
-          'userId',
-          'walletAddress',
-          'BTC' as Currency,
-          'transaction'
-        )
-      ).rejects.toThrow(InvalidInputError);
     });
   });
 
   describe('handleWithdrawal', () => {
     const userId = 'testUser';
     const walletAddress = 'testAddress';
-    const currency = Currency.SOL;
     const amount = 1;
 
     it('should handle SOL withdrawal successfully', async () => {
-      const user: User = {
-        user_id: userId,
-        wallets: [
-          {
-            currency,
-            balance: 100,
-            wagerRequirement: 0,
-            address: walletAddress,
-            lockedAt: '0',
-          },
-        ],
+      const wallet: Wallet = {
+        userId,
+        balance: 100,
+        wagerRequirement: 0,
+        address: walletAddress,
+        lockedAt: '0',
       };
       const signature = 'testSignature';
 
-      mockDatabaseHandlerService.getUser.mockResolvedValue(user);
+      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
       mockRemoteService.broadcastWithdrawalTransaction.mockResolvedValue(
         signature
       );
@@ -128,221 +96,118 @@ describe('TransactionService', () => {
       mockDatabaseHandlerService.lockWallet.mockResolvedValue(undefined);
       mockDatabaseHandlerService.unlockWallet.mockResolvedValue(undefined);
 
-      await transactionService.handleWithdrawal(
-        userId,
-        walletAddress,
-        currency,
-        amount
-      );
+      await transactionService.handleWithdrawal(userId, walletAddress, amount);
 
-      expect(mockDatabaseHandlerService.getUser).toHaveBeenCalledWith(userId);
+      expect(mockDatabaseHandlerService.getWallet).toHaveBeenCalledWith(userId);
       expect(
         mockRemoteService.broadcastWithdrawalTransaction
-      ).toHaveBeenCalledWith(userId, amount, currency, walletAddress);
+      ).toHaveBeenCalledWith(userId, amount, walletAddress);
       expect(mockDatabaseHandlerService.withdrawFromDb).toHaveBeenCalledWith(
         userId,
-        currency,
         amount,
         signature
       );
       expect(mockDatabaseHandlerService.lockWallet).toHaveBeenCalledWith(
-        user,
-        currency
+        wallet.userId
       );
       expect(mockDatabaseHandlerService.unlockWallet).toHaveBeenCalledWith(
-        user,
-        currency
+        wallet.userId
       );
-    });
-
-    it('should throw InvalidInputError for unsupported currency', async () => {
-      await expect(
-        transactionService.handleWithdrawal(
-          userId,
-          walletAddress,
-          'BTC' as Currency,
-          amount
-        )
-      ).rejects.toThrow(InvalidInputError);
     });
 
     it('should throw InvalidInputError for amount below minimum withdrawal', async () => {
       await expect(
-        transactionService.handleWithdrawal(
-          userId,
-          walletAddress,
-          currency,
-          0.05
-        )
+        transactionService.handleWithdrawal(userId, walletAddress, 0.05)
       ).rejects.toThrow(InvalidInputError);
     });
 
     it('should throw ResourceNotFoundError if wallet not found', async () => {
-      const user: User = { user_id: userId, wallets: [] };
-      mockDatabaseHandlerService.getUser.mockResolvedValue(user);
+      mockDatabaseHandlerService.getWallet.mockResolvedValue({} as Wallet);
 
       await expect(
-        transactionService.handleWithdrawal(
-          userId,
-          walletAddress,
-          currency,
-          amount
-        )
+        transactionService.handleWithdrawal(userId, walletAddress, amount)
       ).rejects.toThrow(ResourceNotFoundError);
     });
 
     it('should throw InsufficientBalanceError if balance is insufficient', async () => {
-      const user: User = {
-        user_id: userId,
-        wallets: [
-          {
-            currency,
-            balance: 0,
-            wagerRequirement: 0,
-            address: walletAddress,
-            lockedAt: '0',
-          },
-        ],
+      const wallet: Wallet = {
+        userId: userId,
+        balance: 100,
+        wagerRequirement: 0,
+        address: walletAddress,
+        lockedAt: '0',
       };
-      mockDatabaseHandlerService.getUser.mockResolvedValue(user);
+      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
 
       await expect(
-        transactionService.handleWithdrawal(
-          userId,
-          walletAddress,
-          currency,
-          amount
-        )
+        transactionService.handleWithdrawal(userId, walletAddress, amount)
       ).rejects.toThrow(InsufficientBalanceError);
     });
 
     it('should throw InvalidInputError if there is an active wager requirement', async () => {
-      const user: User = {
-        user_id: userId,
-        wallets: [
-          {
-            currency,
-            balance: 200,
-            wagerRequirement: 50,
-            address: walletAddress,
-            lockedAt: '0',
-          },
-        ],
+      const wallet: Wallet = {
+        userId: userId,
+        balance: 100,
+        wagerRequirement: 0,
+        address: walletAddress,
+        lockedAt: '0',
       };
-      mockDatabaseHandlerService.getUser.mockResolvedValue(user);
+      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
 
       await expect(
-        transactionService.handleWithdrawal(
-          userId,
-          walletAddress,
-          currency,
-          amount
-        )
+        transactionService.handleWithdrawal(userId, walletAddress, amount)
       ).rejects.toThrow(InvalidInputError);
     });
   });
 
-  describe('getUserWallets', () => {
-    it('should return user wallets', async () => {
+  describe('getWallet', () => {
+    it('should return user wallet', async () => {
       const userId = 'testUser';
-      const user: User = {
-        user_id: userId,
-        wallets: [
-          {
-            currency: Currency.SOL,
-            balance: 100,
-            wagerRequirement: 0,
-            address: 'testAddress',
-            lockedAt: '0',
-          },
-        ],
+      const wallet: Wallet = {
+        userId: userId,
+        balance: 100,
+        wagerRequirement: 0,
+        address: 'testAddress',
+        lockedAt: '0',
       };
-      mockDatabaseHandlerService.getUser.mockResolvedValue(user);
+      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
 
-      const result = await transactionService.getUserWallets(userId);
-      expect(result).toEqual(user.wallets);
-    });
-
-    it('should return specific wallet if currency is provided', async () => {
-      const userId = 'testUser';
-      const currency = Currency.SOL;
-      const user: User = {
-        user_id: userId,
-        wallets: [
-          {
-            currency,
-            balance: 100,
-            wagerRequirement: 0,
-            address: 'testAddress',
-            lockedAt: '0',
-          },
-        ],
-      };
-      mockDatabaseHandlerService.getUser.mockResolvedValue(user);
-
-      const result = await transactionService.getUserWallets(userId, 'SOL');
-      expect(result).toEqual(user.wallets[0]);
-    });
-
-    it('should throw InvalidInputError for invalid currency', async () => {
-      const userId = 'testUser';
-      mockDatabaseHandlerService.getUser.mockResolvedValue({
-        user_id: userId,
-        wallets: [],
-      });
-
-      await expect(
-        transactionService.getUserWallets(userId, 'INVALID')
-      ).rejects.toThrow(InvalidInputError);
+      const result = await transactionService.getWallet(userId);
+      expect(result).toEqual(wallet);
     });
 
     it('should throw ResourceNotFoundError if wallet not found', async () => {
       const userId = 'testUser';
-      mockDatabaseHandlerService.getUser.mockResolvedValue({
-        user_id: userId,
-        wallets: [],
-      });
+      mockDatabaseHandlerService.getWallet.mockResolvedValue({} as Wallet);
 
-      await expect(
-        transactionService.getUserWallets(userId, 'SOL')
-      ).rejects.toThrow(ResourceNotFoundError);
+      await expect(transactionService.getWallet(userId)).rejects.toThrow(
+        ResourceNotFoundError
+      );
     });
   });
 
-  describe('getUserBalance', () => {
-    it('should return user balance for specified currency', async () => {
+  describe('getBalance', () => {
+    it('should return user balance', async () => {
       const userId = 'testUser';
-      const currency = Currency.SOL;
+
       mockDatabaseHandlerService.getBalance.mockResolvedValue(100);
 
-      const result = await transactionService.getUserBalance(userId, currency);
+      const result = await transactionService.getBalance(userId);
       expect(result).toBe(100);
-    });
-
-    it('should throw InvalidInputError for invalid currency', async () => {
-      await expect(
-        transactionService.getUserBalance('testUser', 'INVALID')
-      ).rejects.toThrow(InvalidInputError);
     });
   });
 
-  describe('createUserWallet', () => {
+  describe('createWallet', () => {
     it('should create a new wallet for the user', async () => {
       const userId = 'testUser';
-      const currency = Currency.SOL;
       const walletAddress = 'testAddress';
 
-      mockDatabaseHandlerService.createWallet.mockResolvedValue(undefined);
+      mockDatabaseHandlerService.addWallet.mockResolvedValue(undefined);
 
-      await transactionService.createUserWallet(
-        userId,
-        currency,
-        walletAddress
-      );
+      await transactionService.createWallet(userId, walletAddress);
 
-      expect(mockDatabaseHandlerService.createWallet).toHaveBeenCalledWith(
+      expect(mockDatabaseHandlerService.addWallet).toHaveBeenCalledWith(
         userId,
-        currency,
         walletAddress
       );
     });
@@ -351,16 +216,14 @@ describe('TransactionService', () => {
   describe('updateUserBalance', () => {
     it('should update the user balance', async () => {
       const userId = 'testUser';
-      const currency = Currency.SOL;
       const amount = 100;
 
       mockDatabaseHandlerService.depositToDb.mockResolvedValue(undefined);
 
-      await transactionService.updateUserBalance(userId, currency, amount);
+      await transactionService.updateUserBalance(userId, amount);
 
       expect(mockDatabaseHandlerService.depositToDb).toHaveBeenCalledWith(
         userId,
-        currency,
         amount,
         null,
         false

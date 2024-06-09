@@ -16,19 +16,11 @@ export class TransactionService {
   public async processWithdrawal(
     userId: string,
     amount: number,
-    currency: Currency,
     walletAddress: string
   ): Promise<{ signature: string }> {
     // Validate request
-    if (!userId || !amount || !currency || !walletAddress) {
+    if (!userId || !amount || !walletAddress) {
       throw new InvalidInputError('Invalid request');
-    }
-
-    // Parse currency from request
-    const parsedCurrency = this.parseCurrency(currency);
-
-    if (!parsedCurrency || parsedCurrency !== Currency.SOL) {
-      throw new InvalidInputError('Invalid currency');
     }
 
     // Build transaction and get blockhash and lastValidBlockHeight
@@ -60,19 +52,11 @@ export class TransactionService {
   public async processDeposit(
     userId: string,
     walletAddress: string,
-    currency: Currency,
     base64Transaction: string
   ): Promise<DepositTransactionResponse> {
     // Validate request
-    if (!userId || !currency || !walletAddress || !base64Transaction) {
+    if (!userId || !walletAddress || !base64Transaction) {
       throw new InvalidInputError('Invalid request');
-    }
-
-    // Parse currency from request
-    const parsedCurrency = this.parseCurrency(currency);
-
-    if (!parsedCurrency || parsedCurrency !== Currency.SOL) {
-      throw new InvalidInputError('Invalid currency');
     }
 
     // Create transaction object from base64 encoded string
@@ -112,12 +96,5 @@ export class TransactionService {
       depositAmount: depositAmount,
       transactionId: transactionSignature,
     };
-  }
-
-  private parseCurrency(currency: string): Currency | null {
-    // Implement your logic to parse and validate the currency here
-    // Assuming Currency is an enum or a similar type.
-    // Return null if the currency is invalid.
-    return currency as Currency;
   }
 }

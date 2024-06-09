@@ -1,7 +1,7 @@
-import DatabaseHandlerService from '../services/DatabaseHandlerService';
+import DatabaseHandlerService from '../repository/Repository';
 import { Request, Response } from 'express';
 import { errorHandler } from '@shared-errors/ErrorHandler';
-import RemoteService from '../services/RemoteService';
+import RemoteService from '../remote/TreasuryRemote';
 import { TransactionService } from '../services/TransactionService';
 import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
 
@@ -20,11 +20,7 @@ class WalletController {
   public deposit = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.userId;
-      const {
-        walletAddress,
-        currency,
-        signedTransaction: base64Transaction,
-      } = req.body;
+      const { walletAddress, signedTransaction: base64Transaction } = req.body;
 
       console.log(
         `Deposit for user: ${userId} with walletAddress: ${walletAddress}`
@@ -33,7 +29,6 @@ class WalletController {
       await this.transactionService.handleDeposit(
         userId,
         walletAddress,
-        currency,
         base64Transaction
       );
 
@@ -46,12 +41,11 @@ class WalletController {
   public withdraw = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.userId;
-      const { walletAddress, currency, amount } = req.body;
+      const { walletAddress, amount } = req.body;
 
       await this.transactionService.handleWithdrawal(
         userId,
         walletAddress,
-        currency,
         amount
       );
 
@@ -61,36 +55,11 @@ class WalletController {
     }
   };
 
-  public getWallets = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const userId = req.params.userId;
-      const currency = req.query.currency as string | undefined;
-
-      const wallets = await this.transactionService.getUserWallets(
-        userId,
-        currency
-      );
-
-      res.status(200).json(wallets).send();
-    } catch (error) {
-      errorHandler(error, res);
-    }
-  };
-
   public balance = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.userId;
-      const currency = req.query.currency as string;
 
-      if (!currency) {
-        res.status(400).send('Invalid currency');
-        return;
-      }
-
-      const balance = await this.transactionService.getUserBalance(
-        userId,
-        currency
-      );
+      const balance = await this.transactionService.getBalance(userId);
       res.status(200).json({ balance }).send();
     } catch (error) {
       errorHandler(error, res);
@@ -100,18 +69,14 @@ class WalletController {
   public createWallet = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.userId;
-      const { currency, walletAddress } = req.body;
+      const { walletAddress } = req.body;
 
-      if (!userId || !currency || !walletAddress) {
+      if (!userId || !walletAddress) {
         res.status(400).send('Missing required fields');
         return;
       }
 
-      await this.transactionService.createUserWallet(
-        userId,
-        currency,
-        walletAddress
-      );
+      await this.transactionService.createWallet(userId, walletAddress);
       res.status(200).send('Wallet created successfully');
     } catch (error) {
       errorHandler(error, res);
@@ -121,15 +86,14 @@ class WalletController {
   public updateBalance = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.userId;
-      const currency = req.body.currency;
       const amount = req.body.amount;
 
-      console.log('Updating balance for user:', userId, currency, amount);
-      if (!userId || !currency || !amount) {
+      console.log('Updating balance for user:', userId, amount);
+      if (!userId || !amount) {
         throw new InvalidInputError('Missing required fields');
       }
 
-      await this.transactionService.updateUserBalance(userId, currency, amount);
+      await this.transactionService.updateUserBalance(userId, amount);
 
       res.status(200).send('Balance updated successfully');
     } catch (error) {

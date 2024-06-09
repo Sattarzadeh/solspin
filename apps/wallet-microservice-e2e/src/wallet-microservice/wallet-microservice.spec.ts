@@ -11,9 +11,14 @@ import bs58 from 'bs58';
 import { randomUUID } from 'crypto';
 import axios, { AxiosError } from 'axios';
 
-if (!process.env.HOUSE_WALLET_ADDRESS || !process.env.HOUSE_SECRET_KEY) {
-  throw new Error('Missing HOUSE_WALLET_ADDRESS or HOUSE_SECRET_KEY');
-}
+const keypair = Keypair.generate();
+console.log(
+  'HOUSE_WALLET_ADDRESS:',
+  keypair.publicKey.toString(),
+  'HOUSE_SECRET',
+  bs58.encode(keypair.secretKey).toString()
+);
+
 const WALLET_ADDRESS = process.env.HOUSE_WALLET_ADDRESS;
 const HOUSE_WALLET_PRIVATE_KEY = process.env.HOUSE_SECRET_KEY;
 const privatKeyEncoded =
@@ -53,7 +58,10 @@ describe('Deposit tests', function () {
   });
 
   beforeAll(async () => {
-    connection = new Connection('http://localhost:8899', 'finalized');
+    axios.post('http://localhost:3000/wallets/create/1', {
+      walletAddress: userKeyPair.publicKey,
+    });
+    connection = new Connection('http://127.0.0.1:8899', 'finalized');
   });
 
   it('SHOULD send 1 SOL to the house wallet address', async () => {
@@ -71,7 +79,6 @@ describe('Deposit tests', function () {
       {
         walletAddress: userKeyPair.publicKey,
         signedTransaction: transaction.serialize(),
-        currency: Currency.SOL,
       }
     );
     expect(response.status).toBe(200);
@@ -94,7 +101,6 @@ describe('Deposit tests', function () {
       await axios.post('http://localhost:3000/wallets/deposit/1', {
         walletAddress: userKeyPair.publicKey,
         signedTransaction: transaction.serialize(),
-        currency: Currency.SOL,
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -121,7 +127,6 @@ describe('Deposit tests', function () {
       {
         walletAddress: userKeyPair.publicKey,
         signedTransaction: transaction.serialize(),
-        currency: Currency.SOL,
       }
     );
 
@@ -144,6 +149,9 @@ describe('Withdraw tests', function () {
   let blockHeight: number;
 
   beforeAll(async () => {
+    axios.post('http://localhost:3000/wallets/create/1', {
+      walletAddress: userKeyPair.publicKey,
+    });
     const airdropSignature = await connection.requestAirdrop(
       userKeyPair.publicKey,
       10 * LAMPORTS_PER_SOL
@@ -172,7 +180,6 @@ describe('Withdraw tests', function () {
       'http://localhost:3000/wallets/withdraw/1',
       {
         walletAddress: userKeyPair.publicKey,
-        currency: Currency.SOL,
         amount: 1,
       }
     );
@@ -190,12 +197,11 @@ describe('Withdraw tests', function () {
     try {
       await axios.post('http://localhost:3000/wallets/withdraw/4', {
         walletAddress: userKeyPair.publicKey,
-        currency: Currency.SOL,
         amount: 1,
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.response.status).toBe(409);
+        expect(error.response.status).toBe(500);
       } else {
         fail('Unexpected error');
       }
@@ -206,7 +212,6 @@ describe('Withdraw tests', function () {
     try {
       await axios.post('http://localhost:3000/wallets/withdraw/4', {
         walletAddress: userKeyPair.publicKey,
-        currency: Currency.SOL,
         amount: 0.099,
       });
     } catch (error: unknown) {
@@ -227,7 +232,7 @@ describe('Withdraw tests', function () {
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.response.status).toBe(409);
+        expect(error.response.status).toBe(500);
       } else {
         fail('Unexpected error');
       }

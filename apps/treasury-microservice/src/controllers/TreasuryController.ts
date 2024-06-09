@@ -14,9 +14,9 @@ export class TreasuryController {
     try {
       console.log('Withdraw request received');
       const userId = req.params.userId;
-      const { amount, currency, walletAddress } = req.body;
+      const { amount, walletAddress } = req.body;
 
-      if (!userId || !amount || !currency || !walletAddress) {
+      if (!userId || !amount || !walletAddress) {
         res.status(400).send('Invalid request');
         return;
       }
@@ -25,7 +25,6 @@ export class TreasuryController {
       const { signature } = await this.transactionService.processWithdrawal(
         userId,
         amount,
-        currency,
         walletAddress
       );
 
@@ -40,20 +39,15 @@ export class TreasuryController {
   public deposit = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId: string = req.params.userId;
-      const {
-        walletAddress,
-        currency,
-        signedTransaction: base64Transaction,
-      } = req.body;
+      const { walletAddress, signedTransaction: base64Transaction } = req.body;
 
       console.log(
-        `Deposit request received for user: ${userId}, wallet_address: ${walletAddress}, currency: ${currency}, signed_transaction: ${base64Transaction}`
+        `Deposit request received for user: ${userId}, wallet_address: ${walletAddress}, signed_transaction: ${base64Transaction}`
       );
 
       const response = await this.transactionService.processDeposit(
         userId,
         walletAddress,
-        currency,
         base64Transaction
       );
 

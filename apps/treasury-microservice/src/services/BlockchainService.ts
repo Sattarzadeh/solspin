@@ -1,7 +1,5 @@
 import {
-  Connection,
   TransactionSignature,
-  SendTransactionError,
   LAMPORTS_PER_SOL,
   Transaction,
   SystemProgram,
@@ -15,6 +13,7 @@ import {
 } from '../utils/TreasuryUtils';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
+const { Connection } = require('@solana/web3.js');
 
 const FEE = 5000;
 
@@ -35,10 +34,7 @@ const FEE = 5000;
   */
 
 class BlockchainService {
-  private connection: Connection;
-  constructor() {
-    this.connection = new Connection('http://localhost:8899', 'finalized');
-  }
+  private connection = new Connection('http://127.0.0.1:8899', 'finalized');
 
   public async getTransactionValueAndVerify(
     transaction: TransactionSignature
@@ -50,7 +46,7 @@ class BlockchainService {
 
     // Check if the transaction details are valid
     if (txDetail === null || txDetail.meta === null) {
-      throw new SendTransactionError('Transaction meta data not found');
+      throw new Error('Transaction meta data not found');
     }
     const accountKeys = txDetail.transaction.message.accountKeys;
     let depositAmount = 0;
@@ -58,7 +54,6 @@ class BlockchainService {
     // Iterate through the account keys to find the deposit amount
     accountKeys.forEach((account, index) => {
       if (account.pubkey.equals(HOUSE_WALLET_ADDRESS)) {
-        // LOOK AT THIS CODE AGAIN. I DONT LIKE THE NULL ASSERTION
         depositAmount =
           txDetail.meta.postBalances[index] - txDetail.meta.preBalances[index];
       }

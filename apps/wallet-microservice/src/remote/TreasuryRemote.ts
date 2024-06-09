@@ -16,7 +16,6 @@ class RemoteService {
   public async broadcastWithdrawalTransaction(
     userId: string,
     amount: number,
-    currency: Currency,
     walletAddress: string
   ): Promise<string> {
     try {
@@ -24,7 +23,6 @@ class RemoteService {
       const params = {
         userId: userId,
         amount: amount,
-        currency: currency,
         walletAddress: walletAddress,
       };
 
@@ -43,7 +41,6 @@ class RemoteService {
   public async broadcastDepositTransaction(
     userId: string,
     walletAddress: string,
-    currency: Currency,
     signedTransaction: string
   ): Promise<DepositTransactionResponse> {
     try {
@@ -51,7 +48,6 @@ class RemoteService {
       const params = {
         userId: userId,
         walletAddress: walletAddress,
-        currency: currency,
         signedTransaction: signedTransaction,
       };
 
