@@ -1,6 +1,7 @@
 import { CaseItem } from "../models/case_item_model";
 import { Case } from "../models/case_model";
 import { CaseType } from "../enums/caseType";
+import { randomUUID } from "crypto";
 
 
 const mockCsgoCaseItem1: CaseItem = {
@@ -81,7 +82,7 @@ const mockNftCaseItem3: CaseItem = {
 const mockCase: Case = {
     caseType: CaseType.CSGO,
     caseName: 'test-case',
-    caseId: 1,
+    caseId: randomUUID(),
     casePrice: 2.5,
     image_url: 'https://example.com/bravo_case.png',
     caseHash: 'abc123def456',

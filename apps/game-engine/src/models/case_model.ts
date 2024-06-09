@@ -6,7 +6,7 @@ interface BaseCase {
     caseType: CaseType;
     caseName: string;
     casePrice: number;
-    caseId: number;
+    caseId: string;
     image_url: string;
 }
 
