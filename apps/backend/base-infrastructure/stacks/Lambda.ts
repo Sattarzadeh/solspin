@@ -1,5 +1,7 @@
 import { Function, StackContext } from 'sst/constructs';
 
+// TODO - move this
+
 export function Lambdas({ stack }: StackContext) {
   const processBet = new Function(stack, 'ProcessBet', {
     handler: '../packages/functions/src/lambda.handler',

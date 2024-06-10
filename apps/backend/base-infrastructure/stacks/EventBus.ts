@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { StackContext, EventBus, EventBusRuleProps } from 'sst/constructs';
+import { StackContext, EventBus } from 'sst/constructs';
 
 /**
  * Event Bus Stack
@@ -16,20 +16,21 @@ import { StackContext, EventBus, EventBusRuleProps } from 'sst/constructs';
  */
 export function Event({ stack }: StackContext) {
   const eventBus = new EventBus(stack, 'EventBus', {
-    rules: {
-      ProcessBetRule: {
-        pattern: { source: ['processBet'] },
-        targets: {
-          myTarget1: 'src/processBet.handler',
-        },
-      },
-      UpdateBalanceRule: {
-        pattern: { source: ['updateBalance'] },
-        targets: {
-          myTarget1: 'src/updateBalance.handler',
-        },
-      },
-    },
+    //TODO - move this
+    // rules: {
+    //   ProcessBetRule: {
+    //     pattern: { source: ['processBet'] },
+    //     targets: {
+    //       myTarget1: 'src/processBet.handler',
+    //     },
+    //   },
+    //   UpdateBalanceRule: {
+    //     pattern: { source: ['updateBalance'] },
+    //     targets: {
+    //       myTarget1: 'src/updateBalance.handler',
+    //     },
+    //   },
+    // },
   });
 
   new cdk.CfnOutput(stack, 'EventBusArn', {
