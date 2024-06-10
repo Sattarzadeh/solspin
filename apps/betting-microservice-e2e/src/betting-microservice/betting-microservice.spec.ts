@@ -47,9 +47,9 @@ describe('Betting Microservice E2E Test', () => {
     expect(res.data.outcomeAmount).toBe(outcomeAmount);
     expect(res.data.amountBet).toBe(amountBet);
     expect(res.data.outcome).toBe(outcome);
-    expect(res.data.game_id).toBe(gameId);
-    expect(res.data.user_id).toBe(userId);
-    expect(res.data.bet_id).toBe(testBetId);
+    expect(res.data.gameId).toBe(gameId);
+    expect(res.data.userId).toBe(userId);
+    expect(res.data.betId).toBe(testBetId);
   });
 
   it('should return 404 if bet is not found', async () => {

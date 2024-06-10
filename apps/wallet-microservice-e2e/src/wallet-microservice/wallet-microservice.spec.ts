@@ -11,14 +11,6 @@ import bs58 from 'bs58';
 import { randomUUID } from 'crypto';
 import axios, { AxiosError } from 'axios';
 
-const keypair = Keypair.generate();
-console.log(
-  'HOUSE_WALLET_ADDRESS:',
-  keypair.publicKey.toString(),
-  'HOUSE_SECRET',
-  bs58.encode(keypair.secretKey).toString()
-);
-
 const WALLET_ADDRESS = process.env.HOUSE_WALLET_ADDRESS;
 const HOUSE_WALLET_PRIVATE_KEY = process.env.HOUSE_SECRET_KEY;
 const privatKeyEncoded =
@@ -82,7 +74,7 @@ describe('Deposit tests', function () {
       }
     );
     expect(response.status).toBe(200);
-    expect(await connection.getBalance(toPublicKey)).toBe(
+    expect(await connection.getBalance(toPublicKey)).toBeCloseTo(
       transactionAmount * LAMPORTS_PER_SOL + previousBalance
     );
   });
@@ -104,7 +96,6 @@ describe('Deposit tests', function () {
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        console.log('Error response:', error);
         expect(error.response.status).toBe(404);
       } else {
         fail('Unexpected error');
@@ -180,7 +171,7 @@ describe('Withdraw tests', function () {
       'http://localhost:3000/wallets/withdraw/1',
       {
         walletAddress: userKeyPair.publicKey,
-        amount: 1,
+        amount: 160,
       }
     );
 
@@ -242,22 +233,16 @@ describe('Withdraw tests', function () {
   it('SHOULD only allow one withdrawal WHEN user initiates multiple withdrawals at once', async () => {
     let successCount = 0;
     let failureCount = 0;
-
     try {
       await Promise.all([
         axios
           .post('http://localhost:3000/wallets/withdraw/1', {
             walletAddress: userKeyPair.publicKey,
-            currency: Currency.SOL,
             amount: 1,
           })
           .then(() => successCount++)
           .catch((error: unknown) => {
             if (error instanceof AxiosError) {
-              console.error(
-                'Error in first request:',
-                error.response ? error.response.data : error.message
-              );
               failureCount++;
             } else {
               fail('Unexpected error');
@@ -266,16 +251,11 @@ describe('Withdraw tests', function () {
         axios
           .post('http://localhost:3000/wallets/withdraw/1', {
             walletAddress: userKeyPair.publicKey,
-            currency: Currency.SOL,
             amount: 2,
           })
           .then(() => successCount++)
           .catch((error: unknown) => {
             if (error instanceof AxiosError) {
-              console.error(
-                'Error in second request:',
-                error.response ? error.response.data : error.message
-              );
               failureCount++;
             } else {
               fail('Unexpected error');

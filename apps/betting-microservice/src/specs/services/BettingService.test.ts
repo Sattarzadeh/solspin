@@ -1,52 +1,48 @@
-import { BettingService } from '../../services/BettingService';
-import { RemoteService } from '../../services/RemoteService';
-import { DatabaseHandlerService } from '../../services/DatabaseHandlerService';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import { Currency } from '@shared-types/shared-types';
-import MockAdapter from 'axios-mock-adapter';
+import {
+  saveBet,
+  retrieveBet,
+  retrieveBetHistory,
+} from '../../services/BettingService';
 import { Bet } from '../../models/Bet';
+import axios from 'axios';
+import * as remoteServiceMock from '../../remote/WalletRemote';
+import * as databaseHandlerServiceMock from '../../repository/Repository';
+
+jest.mock('../../repository/Repository', () => ({
+  recordBet: jest.fn(),
+  getBet: jest.fn(),
+  getBetHistory: jest.fn(),
+}));
+
+jest.mock('../../remote/WalletRemote', () => ({
+  createTransactionForBet: jest.fn(),
+}));
+
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('BettingService', () => {
-  let bettingService: BettingService;
-  let remoteServiceMock: RemoteService;
-  let databaseHandlerServiceMock: DatabaseHandlerService;
-
-  const baseUrl = 'http://localhost:3000/wallets';
-
   beforeEach(() => {
-    remoteServiceMock = new RemoteService(baseUrl);
-    databaseHandlerServiceMock = new DatabaseHandlerService();
-    bettingService = new BettingService(
-      remoteServiceMock,
-      databaseHandlerServiceMock
-    );
-    const mockAxios = new MockAdapter((remoteServiceMock as any).client);
-    mockAxios.onPut(`${baseUrl}/balance/update/userId`).reply(200);
+    mockedAxios.put.mockResolvedValue({ data: 'Success' });
   });
 
-  describe('recordBet', () => {
+  describe('saveBet', () => {
     it('should throw an error if required fields are missing', async () => {
-      await expect(
-        bettingService.recordBet('', '', 0, 0, '', Currency.SOL)
-      ).rejects.toThrow(InvalidInputError);
+      await expect(saveBet('', '', 0, 0, '')).rejects.toThrow(
+        InvalidInputError
+      );
     });
 
     it('should throw an error if bet amount is invalid', async () => {
-      await expect(
-        bettingService.recordBet('userId', 'gameId', -1, 0, 'WIN', Currency.SOL)
-      ).rejects.toThrow(InvalidInputError);
+      await expect(saveBet('userId', 'gameId', -1, 0, 'WIN')).rejects.toThrow(
+        InvalidInputError
+      );
     });
 
     it('should throw an error if outcome is invalid', async () => {
       await expect(
-        bettingService.recordBet(
-          'userId',
-          'gameId',
-          10,
-          20,
-          'INVALID',
-          Currency.SOL
-        )
+        saveBet('userId', 'gameId', 10, 20, 'INVALID')
       ).rejects.toThrow(InvalidInputError);
     });
 
@@ -58,20 +54,9 @@ describe('BettingService', () => {
         .spyOn(databaseHandlerServiceMock, 'recordBet')
         .mockResolvedValueOnce();
 
-      await bettingService.recordBet(
-        'userId',
-        'gameId',
-        10,
-        20,
-        'WIN',
-        Currency.SOL
-      );
+      await saveBet('userId', 'gameId', 10, 20, 'WIN');
 
-      expect(createTransactionForBetSpy).toHaveBeenCalledWith(
-        'userId',
-        10,
-        Currency.SOL
-      );
+      expect(createTransactionForBetSpy).toHaveBeenCalledWith('userId', 10);
       expect(recordBetSpy).toHaveBeenCalledWith(
         'userId',
         10,
@@ -89,7 +74,7 @@ describe('BettingService', () => {
         .mockReturnValue(Promise.resolve([] as Bet[]));
       const userId = 'userId';
 
-      await bettingService.getBetHistory(userId);
+      await retrieveBetHistory(userId);
 
       expect(getBetHistorySpy).toHaveBeenCalledWith(userId);
     });
@@ -103,7 +88,7 @@ describe('BettingService', () => {
       const userId = 'userId';
       const betId = 'betId';
 
-      await bettingService.getBet(userId, betId);
+      await retrieveBet(userId, betId);
 
       expect(getBetSpy).toHaveBeenCalledWith(userId, betId);
     });

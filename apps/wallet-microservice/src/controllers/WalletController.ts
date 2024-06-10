@@ -1,22 +1,15 @@
-import DatabaseHandlerService from '../repository/Repository';
 import { Request, Response } from 'express';
 import { errorHandler } from '@shared-errors/ErrorHandler';
-import RemoteService from '../remote/TreasuryRemote';
-import { TransactionService } from '../services/TransactionService';
 import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
+import {
+  handleDeposit,
+  handleWithdrawal,
+  createWallet,
+  getBalance,
+  updateUserBalance,
+} from '../services/TransactionService';
 
 class WalletController {
-  private transactionService: TransactionService;
-
-  constructor() {
-    const databaseHandlerService = new DatabaseHandlerService();
-    const remoteService = new RemoteService('http://localhost:3001/treasury');
-    this.transactionService = new TransactionService(
-      remoteService,
-      databaseHandlerService
-    );
-  }
-
   public deposit = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.userId;
@@ -26,11 +19,7 @@ class WalletController {
         `Deposit for user: ${userId} with walletAddress: ${walletAddress}`
       );
 
-      await this.transactionService.handleDeposit(
-        userId,
-        walletAddress,
-        base64Transaction
-      );
+      await handleDeposit(userId, walletAddress, base64Transaction);
 
       res.status(200).send('Deposit successful');
     } catch (error) {
@@ -43,11 +32,7 @@ class WalletController {
       const userId = req.params.userId;
       const { walletAddress, amount } = req.body;
 
-      await this.transactionService.handleWithdrawal(
-        userId,
-        walletAddress,
-        amount
-      );
+      await handleWithdrawal(userId, walletAddress, amount);
 
       res.status(200).send('Withdrawal successful');
     } catch (error) {
@@ -59,7 +44,7 @@ class WalletController {
     try {
       const userId = req.params.userId;
 
-      const balance = await this.transactionService.getBalance(userId);
+      const balance = await getBalance(userId);
       res.status(200).json({ balance }).send();
     } catch (error) {
       errorHandler(error, res);
@@ -76,7 +61,7 @@ class WalletController {
         return;
       }
 
-      await this.transactionService.createWallet(userId, walletAddress);
+      await createWallet(userId, walletAddress);
       res.status(200).send('Wallet created successfully');
     } catch (error) {
       errorHandler(error, res);
@@ -93,7 +78,7 @@ class WalletController {
         throw new InvalidInputError('Missing required fields');
       }
 
-      await this.transactionService.updateUserBalance(userId, amount);
+      await updateUserBalance(userId, amount);
 
       res.status(200).send('Balance updated successfully');
     } catch (error) {

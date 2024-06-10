@@ -1,69 +1,50 @@
 import { GameOutcome } from '../models/Bet';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import { RemoteService } from '../services/RemoteService';
-import { DatabaseHandlerService } from '../services/DatabaseHandlerService';
-import { Currency } from '@shared-types/shared-types';
+import { createTransactionForBet } from '../remote/WalletRemote';
+import { getBet, getBetHistory, recordBet } from '../repository/Repository';
 
-export class BettingService {
-  private remoteService: RemoteService;
-  private databaseHandlerService: DatabaseHandlerService;
-
-  constructor(
-    remoteService: RemoteService,
-    databaseHandlerService: DatabaseHandlerService
-  ) {
-    this.remoteService = remoteService;
-    this.databaseHandlerService = databaseHandlerService;
+export const saveBet = async (
+  userId: string,
+  gameId: string,
+  amountBet: number,
+  outcomeAmount: number,
+  outcome: string
+): Promise<void> => {
+  if (!userId || !gameId || !amountBet || !outcomeAmount || !outcome) {
+    throw new InvalidInputError('Missing required fields');
   }
 
-  public recordBet = async (
-    userId: string,
-    gameId: string,
-    amountBet: number,
-    outcomeAmount: number,
-    outcome: string,
-    walletCurrency: Currency
-  ): Promise<void> => {
-    if (!userId || !gameId || !amountBet || !outcomeAmount || !outcome) {
-      throw new InvalidInputError('Missing required fields');
-    }
+  if (amountBet < 0 || outcomeAmount < 0) {
+    throw new InvalidInputError('Invalid bet amount');
+  }
 
-    if (amountBet < 0 || outcomeAmount < 0) {
-      throw new InvalidInputError('Invalid bet amount');
-    }
+  if (outcome !== GameOutcome.WIN && outcome !== GameOutcome.LOSE) {
+    throw new InvalidInputError('Invalid outcome');
+  }
 
-    if (outcome !== GameOutcome.WIN && outcome !== GameOutcome.LOSE) {
-      throw new InvalidInputError('Invalid outcome');
-    }
+  const netGain = outcomeAmount - amountBet;
 
-    const netGain = outcomeAmount - amountBet;
+  console.log('Creating transaction for bet...', userId, netGain, gameId);
+  await createTransactionForBet(userId, netGain);
 
-    console.log('Creating transaction for bet...', userId, netGain, gameId);
-    await this.remoteService.createTransactionForBet(
-      userId,
-      netGain,
-      walletCurrency
-    );
+  console.log('Recording bet...');
+  await recordBet(
+    userId,
+    amountBet,
+    outcome as GameOutcome,
+    outcomeAmount,
+    gameId
+  );
+};
 
-    console.log('Recording bet...');
-    await this.databaseHandlerService.recordBet(
-      userId,
-      amountBet,
-      outcome as GameOutcome,
-      outcomeAmount,
-      gameId
-    );
-  };
+export const retrieveBetHistory = async (userId: string) => {
+  const bets = await getBetHistory(userId);
 
-  public getBetHistory = async (userId: string) => {
-    const bets = await this.databaseHandlerService.getBetHistory(userId);
+  return bets;
+};
 
-    return bets;
-  };
+export const retrieveBet = async (userId: string, betId: string) => {
+  const bet = await getBet(userId, betId);
 
-  public getBet = async (userId: string, betId: string) => {
-    const bet = await this.databaseHandlerService.getBet(userId, betId);
-
-    return bet;
-  };
-}
+  return bet;
+};

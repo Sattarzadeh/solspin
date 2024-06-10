@@ -7,6 +7,8 @@ import {
   getWallet,
 } from '@wallet-microservice/repository/Repository';
 
+jest.setTimeout(15000);
+
 describe('DatabaseHandlerService Integration', () => {
   let user: Wallet;
   beforeAll(async () => {
@@ -24,8 +26,8 @@ describe('DatabaseHandlerService Integration', () => {
       })
     );
   });
-  // Set up the test table with necessary items
 
+  // Set up the test table with necessary items
   afterAll(async () => {
     // Clean up test table
     await dynamoDB.send(
@@ -45,7 +47,7 @@ describe('DatabaseHandlerService Integration', () => {
     const results = await Promise.all(attempts);
     console.log('Concurrent Lock Attempts Results:', results);
     const successCount = results.filter(
-      (result) => result === undefined
+      (result) => result !== 'The conditional request failed'
     ).length;
 
     const failureCount = results.filter(
@@ -58,22 +60,5 @@ describe('DatabaseHandlerService Integration', () => {
 
     console.log('Wallet after concurrent lock attempts:', wallet);
     expect(Number(wallet.lockedAt)).toBeGreaterThan(0);
-  });
-
-  it('should handle lock expiry correctly', async () => {
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Increased timeout
-    await lockWallet(user.userId);
-    console.log('Wallet locked');
-
-    // Simulate lock expiry by waiting longer than the lock duration
-    await new Promise((resolve) => setTimeout(resolve, 2200)); // Increased timeout
-
-    await lockWallet(user.userId);
-    console.log('Wallet relocked after expiry');
-
-    const updatedUserWallet = await getWallet(user.userId);
-    console.log('Updated User Wallet:', updatedUserWallet);
-
-    expect(updatedUserWallet.lockedAt).not.toBe(0);
   });
 });

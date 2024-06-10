@@ -1,45 +1,47 @@
-import RemoteService from '../../remote/TreasuryRemote';
 import { DepositTransactionResponse, Wallet } from '@shared-types/shared-types';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
+import * as Repository from '../../repository/Repository';
+import * as TreasuryRemote from '../../remote/TreasuryRemote';
+import {
+  handleDeposit,
+  handleWithdrawal,
+  createWallet,
+  updateUserBalance,
+} from '../../services/TransactionService';
 
-jest.mock('../../services/DatabaseHandlerService', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      depositToDb: jest.fn(),
-      withdrawFromDb: jest.fn(),
-      getUser: jest.fn(),
-      lockWallet: jest.fn(),
-      unlockWallet: jest.fn(),
-      getBalance: jest.fn(),
-      createWallet: jest.fn(),
-    };
-  });
-});
+// Mock the module
+jest.mock('../../repository/Repository', () => ({
+  depositToDb: jest.fn(),
+  withdrawFromDb: jest.fn(),
+  getUser: jest.fn(),
+  lockWallet: jest.fn(),
+  unlockWallet: jest.fn(),
+  getBalance: jest.fn(),
+  createWallet: jest.fn(),
+}));
+
+jest.mock('../../remote/TreasuryRemote', () => ({
+  broadcastDepositTransaction: jest.fn(),
+  broadcastWithdrawalTransaction: jest.fn(),
+}));
+
+const depositToDb = Repository.depositToDb as jest.Mock;
+const withdrawFromDb = Repository.withdrawFromDb as jest.Mock;
+const getWallet = Repository.getWallet as jest.Mock;
+const lockWallet = Repository.lockWallet as jest.Mock;
+const unlockWallet = Repository.unlockWallet as jest.Mock;
+const getBalance = Repository.getBalance as jest.Mock;
+const addWallet = Repository.addWallet as jest.Mock;
+const broadcastDepositTransaction =
+  TreasuryRemote.broadcastDepositTransaction as jest.Mock;
+const broadcastWithdrawalTransaction =
+  TreasuryRemote.broadcastWithdrawalTransaction as jest.Mock;
 
 jest.mock('../../services/RemoteService');
 
 describe('TransactionService', () => {
-  let mockRemoteService: jest.Mocked<RemoteService>;
-  let mockDatabaseHandlerService: jest.Mocked<DatabaseHandlerService>;
-
-  beforeEach(() => {
-    mockRemoteService = new RemoteService(
-      'http://localhost:3000'
-    ) as jest.Mocked<RemoteService>;
-    mockDatabaseHandlerService =
-      new DatabaseHandlerService() as jest.Mocked<DatabaseHandlerService>;
-    transactionService = new TransactionService(
-      mockRemoteService,
-      mockDatabaseHandlerService
-    );
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe('handleDeposit', () => {
     it('should handle SOL deposit successfully', async () => {
       const userId = 'testUser';
@@ -51,21 +53,17 @@ describe('TransactionService', () => {
         transactionId: 'transactionId',
       };
 
-      mockRemoteService.broadcastDepositTransaction.mockResolvedValue(
-        depositResponse
-      );
-      mockDatabaseHandlerService.depositToDb.mockResolvedValue(undefined);
+      broadcastDepositTransaction.mockResolvedValue(depositResponse);
+      depositToDb.mockResolvedValue(undefined);
 
-      await transactionService.handleDeposit(
+      await handleDeposit(userId, walletAddress, base64Transaction);
+
+      expect(broadcastDepositTransaction).toHaveBeenCalledWith(
         userId,
         walletAddress,
         base64Transaction
       );
-
-      expect(
-        mockRemoteService.broadcastDepositTransaction
-      ).toHaveBeenCalledWith(userId, walletAddress, base64Transaction);
-      expect(mockDatabaseHandlerService.depositToDb).toHaveBeenCalledWith(
+      expect(depositToDb).toHaveBeenCalledWith(
         userId,
         depositResponse.depositAmount,
         depositResponse.transactionId
@@ -88,44 +86,36 @@ describe('TransactionService', () => {
       };
       const signature = 'testSignature';
 
-      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
-      mockRemoteService.broadcastWithdrawalTransaction.mockResolvedValue(
-        signature
-      );
-      mockDatabaseHandlerService.withdrawFromDb.mockResolvedValue(undefined);
-      mockDatabaseHandlerService.lockWallet.mockResolvedValue(undefined);
-      mockDatabaseHandlerService.unlockWallet.mockResolvedValue(undefined);
+      getWallet.mockResolvedValue(wallet);
+      broadcastWithdrawalTransaction.mockResolvedValue(signature);
+      withdrawFromDb.mockResolvedValue(undefined);
+      lockWallet.mockResolvedValue(undefined);
+      unlockWallet.mockResolvedValue(undefined);
 
-      await transactionService.handleWithdrawal(userId, walletAddress, amount);
+      await handleWithdrawal(userId, walletAddress, amount);
 
-      expect(mockDatabaseHandlerService.getWallet).toHaveBeenCalledWith(userId);
-      expect(
-        mockRemoteService.broadcastWithdrawalTransaction
-      ).toHaveBeenCalledWith(userId, amount, walletAddress);
-      expect(mockDatabaseHandlerService.withdrawFromDb).toHaveBeenCalledWith(
+      expect(getWallet).toHaveBeenCalledWith(userId);
+      expect(broadcastWithdrawalTransaction).toHaveBeenCalledWith(
         userId,
         amount,
-        signature
+        walletAddress
       );
-      expect(mockDatabaseHandlerService.lockWallet).toHaveBeenCalledWith(
-        wallet.userId
-      );
-      expect(mockDatabaseHandlerService.unlockWallet).toHaveBeenCalledWith(
-        wallet.userId
-      );
+      expect(withdrawFromDb).toHaveBeenCalledWith(userId, amount, signature);
+      expect(lockWallet).toHaveBeenCalledWith(wallet.userId);
+      expect(unlockWallet).toHaveBeenCalledWith(wallet.userId);
     });
 
     it('should throw InvalidInputError for amount below minimum withdrawal', async () => {
       await expect(
-        transactionService.handleWithdrawal(userId, walletAddress, 0.05)
+        handleWithdrawal(userId, walletAddress, 0.05)
       ).rejects.toThrow(InvalidInputError);
     });
 
     it('should throw ResourceNotFoundError if wallet not found', async () => {
-      mockDatabaseHandlerService.getWallet.mockResolvedValue({} as Wallet);
+      getWallet.mockResolvedValue({} as Wallet);
 
       await expect(
-        transactionService.handleWithdrawal(userId, walletAddress, amount)
+        handleWithdrawal(userId, walletAddress, amount)
       ).rejects.toThrow(ResourceNotFoundError);
     });
 
@@ -137,10 +127,10 @@ describe('TransactionService', () => {
         address: walletAddress,
         lockedAt: '0',
       };
-      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
+      getWallet.mockResolvedValue(wallet);
 
       await expect(
-        transactionService.handleWithdrawal(userId, walletAddress, amount)
+        handleWithdrawal(userId, walletAddress, amount)
       ).rejects.toThrow(InsufficientBalanceError);
     });
 
@@ -152,10 +142,10 @@ describe('TransactionService', () => {
         address: walletAddress,
         lockedAt: '0',
       };
-      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
+      getWallet.mockResolvedValue(wallet);
 
       await expect(
-        transactionService.handleWithdrawal(userId, walletAddress, amount)
+        handleWithdrawal(userId, walletAddress, amount)
       ).rejects.toThrow(InvalidInputError);
     });
   });
@@ -170,19 +160,17 @@ describe('TransactionService', () => {
         address: 'testAddress',
         lockedAt: '0',
       };
-      mockDatabaseHandlerService.getWallet.mockResolvedValue(wallet);
+      getWallet.mockResolvedValue(wallet);
 
-      const result = await transactionService.getWallet(userId);
+      const result = await getWallet(userId);
       expect(result).toEqual(wallet);
     });
 
     it('should throw ResourceNotFoundError if wallet not found', async () => {
       const userId = 'testUser';
-      mockDatabaseHandlerService.getWallet.mockResolvedValue({} as Wallet);
+      getWallet.mockResolvedValue({} as Wallet);
 
-      await expect(transactionService.getWallet(userId)).rejects.toThrow(
-        ResourceNotFoundError
-      );
+      await expect(getWallet(userId)).rejects.toThrow(ResourceNotFoundError);
     });
   });
 
@@ -190,9 +178,9 @@ describe('TransactionService', () => {
     it('should return user balance', async () => {
       const userId = 'testUser';
 
-      mockDatabaseHandlerService.getBalance.mockResolvedValue(100);
+      getBalance.mockResolvedValue(100);
 
-      const result = await transactionService.getBalance(userId);
+      const result = await getBalance(userId);
       expect(result).toBe(100);
     });
   });
@@ -202,14 +190,11 @@ describe('TransactionService', () => {
       const userId = 'testUser';
       const walletAddress = 'testAddress';
 
-      mockDatabaseHandlerService.addWallet.mockResolvedValue(undefined);
+      addWallet.mockResolvedValue(undefined);
 
-      await transactionService.createWallet(userId, walletAddress);
+      await createWallet(userId, walletAddress);
 
-      expect(mockDatabaseHandlerService.addWallet).toHaveBeenCalledWith(
-        userId,
-        walletAddress
-      );
+      expect(addWallet).toHaveBeenCalledWith(userId, walletAddress);
     });
   });
 
@@ -218,16 +203,11 @@ describe('TransactionService', () => {
       const userId = 'testUser';
       const amount = 100;
 
-      mockDatabaseHandlerService.depositToDb.mockResolvedValue(undefined);
+      depositToDb.mockResolvedValue(undefined);
 
-      await transactionService.updateUserBalance(userId, amount);
+      await updateUserBalance(userId, amount);
 
-      expect(mockDatabaseHandlerService.depositToDb).toHaveBeenCalledWith(
-        userId,
-        amount,
-        null,
-        false
-      );
+      expect(depositToDb).toHaveBeenCalledWith(userId, amount, null, false);
     });
   });
 });

@@ -1,4 +1,5 @@
 import { InvalidResourceError } from '@shared-errors/InvalidResourceError';
+import { DuplicateResourceError } from '@shared-errors/DuplicateResourceError';
 import {
   Wallet,
   Transaction,
@@ -7,7 +8,10 @@ import {
 import { GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 import dynamoDB from '../db/DbConnection';
-import { ReturnValue } from '@aws-sdk/client-dynamodb';
+import {
+  ConditionalCheckFailedException,
+  ReturnValue,
+} from '@aws-sdk/client-dynamodb';
 
 const walletsTableName = process.env.AWS_WALLETS_TABLE_NAME;
 const transactionTableName = process.env.AWS_TRANSACTION_TABLE_NAME;
@@ -114,7 +118,7 @@ export const addWallet = async (
   // Check if the wallet already exists
   try {
     await getWallet(userId);
-    throw new Error('Wallet already exists');
+    throw new DuplicateResourceError('Wallet already exists');
   } catch (error: unknown) {
     if (!(error instanceof ResourceNotFoundError)) {
       // Error is not a ResourceNotFoundError
@@ -178,7 +182,7 @@ export const recordTransaction = async (
   isDeposit: boolean
 ) => {
   const transaction: Transaction = {
-    transaction_id: signature,
+    transactionId: signature,
     userId: userId,
     amount: amount,
     type: isDeposit ? TransactionPurpose.Deposit : TransactionPurpose.Withdraw,
@@ -225,7 +229,14 @@ export const lockWallet = async (userId: string): Promise<Wallet> => {
     return result.Attributes as Wallet;
   } catch (error: unknown) {
     // Log and throw an error
-    console.error('Error locking the wallet:', error);
+    if (error instanceof ConditionalCheckFailedException) {
+      console.log('Wallet is already locked');
+      throw new DuplicateResourceError('Wallet is already locked');
+    } else if (error instanceof ResourceNotFoundError) {
+      console.log('Wallet not found');
+      throw new ResourceNotFoundError('Wallet not found');
+    }
+    console.log('Error locking the wallet:', error);
     throw error;
   }
 };

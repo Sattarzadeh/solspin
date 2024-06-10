@@ -111,8 +111,11 @@ class BlockchainService {
     const fromPubKey = HOUSE_WALLET_ADDRESS;
     const toPubKey = new PublicKey(toWalletAddress);
 
+    // Calculate LAMPORTS to send
+    const lamportsAmount = Math.round(amount * LAMPORTS_PER_SOL) - FEE;
+
     // Create a new transaction object with the adjusted amount (ensure that the fee is payed for by the user and not the house)
-    const adjustedTransaction = new Transaction({
+    const transaction = new Transaction({
       blockhash: blockhash,
       feePayer: fromPubKey,
       lastValidBlockHeight: blockHeight,
@@ -120,15 +123,15 @@ class BlockchainService {
       SystemProgram.transfer({
         fromPubkey: fromPubKey,
         toPubkey: toPubKey,
-        lamports: amount * LAMPORTS_PER_SOL - FEE,
+        lamports: lamportsAmount,
       })
     );
 
     // Sign the transaction with the house wallet private key and return it
-    adjustedTransaction.sign(HOUSE_WALLET_PRIVATE_KEY);
+    transaction.sign(HOUSE_WALLET_PRIVATE_KEY);
 
     const resp: BuildTransactionResponse = {
-      transactionSignature: adjustedTransaction,
+      transactionSignature: transaction,
       blockhash: blockhash,
       lastValidBlockHeight: blockHeight,
     };

@@ -4,78 +4,69 @@ import {
   DepositTransactionResponse,
 } from '@shared-types/shared-types';
 
-class RemoteService {
-  private client: AxiosInstance;
+const baseURL = 'http://localhost:3001/treasury';
+const client = axios.create({ baseURL });
 
-  constructor(baseURL: string) {
-    this.client = axios.create({
-      baseURL,
-    });
+export const broadcastWithdrawalTransaction = async (
+  userId: string,
+  amount: number,
+  walletAddress: string
+): Promise<string> => {
+  try {
+    // Prepare the request parameters
+    const params = {
+      userId: userId,
+      amount: amount,
+      walletAddress: walletAddress,
+    };
+
+    // Send the request to the treasury service
+    const response = await client.post(`/withdraw/${userId}`, params);
+    console.log(response);
+    // Return the signature from the response
+    return response.data.signature;
+  } catch (error) {
+    // Handle the error
+    handleError(error);
+    throw error;
   }
+};
 
-  public async broadcastWithdrawalTransaction(
-    userId: string,
-    amount: number,
-    walletAddress: string
-  ): Promise<string> {
-    try {
-      // Prepare the request parameters
-      const params = {
-        userId: userId,
-        amount: amount,
-        walletAddress: walletAddress,
-      };
+export const broadcastDepositTransaction = async (
+  userId: string,
+  walletAddress: string,
+  signedTransaction: string
+): Promise<DepositTransactionResponse> => {
+  try {
+    // Prepare the request parameters
+    const params = {
+      userId: userId,
+      walletAddress: walletAddress,
+      signedTransaction: signedTransaction,
+    };
 
-      // Send the request to the treasury service
-      const response = await this.client.post(`/withdraw/${userId}`, params);
-      console.log(response);
-      // Return the signature from the response
-      return response.data.signature;
-    } catch (error) {
-      // Handle the error
-      this.handleError(error);
-      throw error;
+    // Send the request to the treasury service
+    const response = await client.post(`/deposit/${userId}`, params);
+
+    if (response && response.status !== 200) {
+      console.log(response.status, response.data);
+      throw new Error(response.data);
     }
+
+    // Return the response data
+    return response.data;
+  } catch (error) {
+    // Handle the error
+    handleError(error);
+    throw error;
   }
+};
 
-  public async broadcastDepositTransaction(
-    userId: string,
-    walletAddress: string,
-    signedTransaction: string
-  ): Promise<DepositTransactionResponse> {
-    try {
-      // Prepare the request parameters
-      const params = {
-        userId: userId,
-        walletAddress: walletAddress,
-        signedTransaction: signedTransaction,
-      };
-
-      // Send the request to the treasury service
-      const response = await this.client.post(`/deposit/${userId}`, params);
-
-      if (response && response.status !== 200) {
-        console.log(response.status, response.data);
-        throw new Error(response.data);
-      }
-
-      // Return the response data
-      return response.data;
-    } catch (error) {
-      // Handle the error
-      this.handleError(error);
-      throw error;
-    }
+const handleError = (error: unknown): void => {
+  // Log the error
+  if (axios.isAxiosError(error)) {
+    console.error('Error response:', error.response);
+  } else {
+    console.error('Unexpected error:', error);
   }
-
-  private handleError(error: unknown): void {
-    // Log the error
-    if (axios.isAxiosError(error)) {
-      console.error('Error response:', error.response);
-    } else {
-      console.error('Unexpected error:', error);
-    }
-  }
-}
-
-export default RemoteService;
+};

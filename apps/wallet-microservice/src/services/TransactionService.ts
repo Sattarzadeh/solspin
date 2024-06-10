@@ -1,7 +1,10 @@
 import { Wallet } from '@shared-types/shared-types';
 import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import RemoteService from '../remote/TreasuryRemote';
+import {
+  broadcastDepositTransaction,
+  broadcastWithdrawalTransaction,
+} from '../remote/TreasuryRemote';
 import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 import {
   lockWallet,
@@ -15,7 +18,6 @@ import { getCurrentPrice } from '../remote/JupiterRemote';
 const MIN_WITHDRAWAL_AMOUNT_SOL = 0.1;
 
 export const handleDeposit = async (
-  remoteService: RemoteService,
   userId: string,
   walletAddress: string,
   base64Transaction: string
@@ -23,12 +25,11 @@ export const handleDeposit = async (
   try {
     const wallet = await lockWallet(userId);
 
-    const depositTransactionResponse =
-      await remoteService.broadcastDepositTransaction(
-        userId,
-        walletAddress,
-        base64Transaction
-      );
+    const depositTransactionResponse = await broadcastDepositTransaction(
+      userId,
+      walletAddress,
+      base64Transaction
+    );
 
     const currentPriceSol = await getCurrentPrice();
     const depositAmountInCrypto = depositTransactionResponse.depositAmount;
@@ -48,7 +49,6 @@ export const handleDeposit = async (
 };
 
 export const handleWithdrawal = async (
-  remoteService: RemoteService,
   userId: string,
   walletAddress: string,
   amount: number
@@ -79,7 +79,7 @@ export const handleWithdrawal = async (
     const currentPriceSol = await getCurrentPrice();
     const withdrawalAmountInSol = amount / currentPriceSol;
 
-    const signature = await remoteService.broadcastWithdrawalTransaction(
+    const signature = await broadcastWithdrawalTransaction(
       userId,
       withdrawalAmountInSol,
       walletAddress

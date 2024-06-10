@@ -1,42 +1,24 @@
 import { errorHandler } from '@shared-errors/ErrorHandler';
 import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import { BettingService } from '../services/BettingService';
 import { Request, Response } from 'express';
+import {
+  retrieveBet,
+  retrieveBetHistory,
+  saveBet,
+} from '../services/BettingService';
 
 class BettingController {
-  private bettingService: BettingService;
-
-  constructor(bettingService: BettingService) {
-    this.bettingService = bettingService;
-    this.recordBet = this.recordBet.bind(this);
-    this.getBets = this.getBets.bind(this);
-  }
-
-  async recordBet(req: Request, res: Response) {
+  async recordBetController(req: Request, res: Response) {
     try {
       const userId = req.params.userId;
 
-      const { amountBet, outcomeAmount, outcome, gameId, walletCurrency } =
-        req.body;
+      const { amountBet, outcomeAmount, outcome, gameId } = req.body;
 
-      if (
-        !amountBet ||
-        !outcomeAmount ||
-        !outcome ||
-        !gameId ||
-        !walletCurrency
-      ) {
+      if (!amountBet || !outcomeAmount || !outcome || !gameId) {
         throw new InvalidInputError('Missing required fields');
       }
 
-      await this.bettingService.recordBet(
-        userId,
-        gameId,
-        amountBet,
-        outcomeAmount,
-        outcome,
-        walletCurrency
-      );
+      await saveBet(userId, gameId, amountBet, outcomeAmount, outcome);
 
       res.status(200).json('Bet recorded').send();
     } catch (error) {
@@ -45,7 +27,7 @@ class BettingController {
     }
   }
 
-  async getBets(req: Request, res: Response) {
+  async getBetsController(req: Request, res: Response) {
     try {
       const userId = req.params.userId;
       const betId = req.query.betId;
@@ -55,12 +37,12 @@ class BettingController {
       }
 
       if (betId) {
-        const bet = await this.bettingService.getBet(userId, betId as string);
+        const bet = await retrieveBet(userId, betId as string);
         res.status(200).json(bet).send();
         return;
       }
 
-      const bets = await this.bettingService.getBetHistory(userId);
+      const bets = await retrieveBetHistory(userId);
 
       res.status(200).json(bets).send();
     } catch (error) {

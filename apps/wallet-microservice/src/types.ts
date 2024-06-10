@@ -12,18 +12,8 @@ type Wallet = {
   lockedAt: string;
 };
 
-type User = {
-  user_id: string;
-  wallets: Wallet[];
-};
-
-type UserAndWallet = {
-  user: User;
-  wallet: Wallet;
-};
-
 type Transaction = {
-  transaction_id: string;
+  transactionId: string;
   userId: string;
   amount: number;
   type: TransactionPurpose; // Deposit/Withdraw
@@ -45,8 +35,6 @@ type DepositTransactionResponse = {
 export {
   Currency,
   Wallet,
-  User,
-  UserAndWallet,
   Transaction,
   TransactionPurpose,
   DepositTransactionResponse,

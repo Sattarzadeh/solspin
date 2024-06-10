@@ -5,30 +5,19 @@ enum Currency {
 }
 
 type Wallet = {
-  currency: Currency;
+  userId: string;
   balance: number;
   wagerRequirement: number;
-  address: string;
-  lockedAt: number;
-};
-
-type User = {
-  user_id: string;
-  wallets: Wallet[];
-};
-
-type UserAndWallet = {
-  user: User;
-  wallet: Wallet;
+  address?: string;
+  lockedAt: string;
 };
 
 type Transaction = {
-  transaction_id: string;
+  transactionId: string;
   userId: string;
   amount: number;
   type: TransactionPurpose; // Deposit/Withdraw
   timestamp: string;
-  currency: Currency;
 };
 
 enum TransactionPurpose {
@@ -45,8 +34,6 @@ type DepositTransactionResponse = {
 export {
   Currency,
   Wallet,
-  User,
-  UserAndWallet,
   Transaction,
   TransactionPurpose,
   DepositTransactionResponse,
