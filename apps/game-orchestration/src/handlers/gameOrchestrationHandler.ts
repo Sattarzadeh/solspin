@@ -4,6 +4,7 @@ import { callGetBalance } from '../helpers/getBalanceHelper';
 import { callGetCase } from '../helpers/getCaseHelper'; // Import the new helper
 import { sendMessageToSQS } from '../helpers/sendSqsMessage';
 import { webSocketPayload } from '../models/websocketPayload';
+import redis from '../redis/redisConnection'; // Import centralized Redis connection
 
 const QUEUE_URL = 'https://sqs.<region>.amazonaws.com/<account-id>/<queue-name>'; // Replace with your SQS Queue URL
 
@@ -19,12 +20,12 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) =>
     };
   }
 
-  const { token, caseId, clientSeed, serverSeedHash } = payload;
+  const { token, caseId, clientSeed, sessionId } = payload;
 
-  if (!token || !caseId || clientSeed === undefined) {
+  if (!token || !caseId || clientSeed === undefined || !sessionId) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: 'Token, caseId, or clientSeed is missing' }),
+      body: JSON.stringify({ message: 'Token, caseId, clientSeed, or sessionId is missing' }),
     };
   }
 
@@ -40,6 +41,28 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) =>
     }
 
     const userId = authPayload.userId; // Assuming the payload contains userId
+
+    // Retrieve session data from Redis
+    const sessionData = await redis.get(`session:${sessionId}`);
+
+    if (!sessionData) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: 'Invalid session' }),
+      };
+    }
+
+    const session = JSON.parse(sessionData);
+    
+    // Abort if there is no server seed in the session
+    if (!session.serverSeed) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Server seed is missing. Please request a server seed before opening a case.' }),
+      };
+    }
+
+    const serverSeed = session.serverSeed;
 
     // Call the getCaseHandler Lambda function to retrieve case details
     const caseData = await callGetCase(caseId);
@@ -60,7 +83,7 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) =>
         caseId,
         casePrice,
         clientSeed,
-        serverSeedHash,
+        serverSeed,
         timestamp: new Date().toISOString(),
       };
 
