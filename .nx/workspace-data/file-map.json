@@ -1,0 +1,554 @@
+{
+  "version": "6.0",
+  "nxVersion": "19.2.2",
+  "deps": {
+    "aws-sdk": "^2.1626.0",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "express": "~4.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "next": "14.0.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "supertest": "^7.0.0",
+    "tslib": "^2.3.0",
+    "@nx/devkit": "19.0.4",
+    "@nx/esbuild": "19.0.4",
+    "@nx/eslint": "19.0.4",
+    "@nx/eslint-plugin": "19.0.4",
+    "@nx/jest": "19.0.4",
+    "@nx/js": "19.0.4",
+    "@nx/next": "^19.0.4",
+    "@nx/node": "19.0.4",
+    "@nx/playwright": "19.0.4",
+    "@nx/workspace": "19.0.4",
+    "@playwright/test": "^1.36.0",
+    "@swc-node/register": "~1.8.0",
+    "@swc/core": "~1.3.85",
+    "@swc/helpers": "~0.5.2",
+    "@testing-library/react": "15.0.6",
+    "@types/express": "~4.17.13",
+    "@types/jest": "^29.4.0",
+    "@types/node": "~18.16.9",
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.3.0",
+    "@typescript-eslint/parser": "^7.3.0",
+    "autoprefixer": "10.4.13",
+    "babel-jest": "^29.4.1",
+    "esbuild": "^0.19.2",
+    "eslint": "~8.57.0",
+    "eslint-config-next": "14.0.4",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-playwright": "^0.15.3",
+    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "jest": "^29.4.1",
+    "jest-environment-jsdom": "^29.4.1",
+    "jest-environment-node": "^29.4.1",
+    "nx": "19.0.4",
+    "postcss": "8.4.21",
+    "prettier": "^2.6.2",
+    "tailwindcss": "3.2.7",
+    "ts-jest": "^29.1.0",
+    "ts-node": "10.9.1",
+    "typescript": "~5.4.2"
+  },
+  "pathMappings": {},
+  "nxJsonPlugins": [
+    {
+      "name": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "name": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    },
+    {
+      "name": "@nx/next/plugin",
+      "options": {
+        "startTargetName": "start",
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "serveStaticTargetName": "serve-static"
+      }
+    },
+    {
+      "name": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    }
+  ],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": ".gitignore",
+        "hash": "18091141047678593691"
+      },
+      {
+        "file": "nx.json",
+        "hash": "5472302574872428069"
+      },
+      {
+        "file": ".editorconfig",
+        "hash": "5443105041930014821"
+      },
+      {
+        "file": "resources/backend/vpc/package.json",
+        "hash": "773172380092701467"
+      },
+      {
+        "file": "resources/backend/vpc/package-lock.json",
+        "hash": "16756595023881998889"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "7205071297402396769"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "17425123947026961272"
+      },
+      {
+        "file": "resources/backend/vpc/packages/functions/package.json",
+        "hash": "11548416494862241990"
+      },
+      {
+        "file": "resources/backend/vpc/.vscode/launch.json",
+        "hash": "8392646404177669468"
+      },
+      {
+        "file": "resources/backend/vpc/.gitignore",
+        "hash": "5771297728797203390"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "hash": "18189016288919250352"
+      },
+      {
+        "file": "resources/backend/vpc/packages/core/package.json",
+        "hash": "12238621674002618917"
+      },
+      {
+        "file": "resources/backend/vpc/sst.config.ts",
+        "hash": "6805695637671984776"
+      },
+      {
+        "file": "resources/backend/vpc/packages/core/sst-env.d.ts",
+        "hash": "18249031382621985676"
+      },
+      {
+        "file": "resources/backend/vpc/tsconfig.json",
+        "hash": "13204732991482817562"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "16448050467312557263"
+      },
+      {
+        "file": ".eslintrc.json",
+        "hash": "18315524891129148814"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "16267754514737964994"
+      },
+      {
+        "file": "package.json",
+        "hash": "15068419975990402465"
+      },
+      {
+        "file": "resources/backend/vpc/.vscode/settings.json",
+        "hash": "7999676840611616843"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "resources/backend/vpc/pnpm-workspace.yaml",
+        "hash": "5239676385507380538"
+      },
+      {
+        "file": "resources/backend/vpc/packages/functions/tsconfig.json",
+        "hash": "4778233203422453749"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "16936441711144470533"
+      },
+      {
+        "file": "resources/backend/vpc/packages/functions/src/events/todo-created.ts",
+        "hash": "8025604082739414919"
+      },
+      {
+        "file": ".eslintignore",
+        "hash": "7663861978715868291"
+      },
+      {
+        "file": "resources/backend/vpc/packages/core/src/event.ts",
+        "hash": "14488786638772806351"
+      },
+      {
+        "file": "README.md",
+        "hash": "16943912768856734044"
+      },
+      {
+        "file": "resources/backend/vpc/packages/core/src/todo.ts",
+        "hash": "5493410811005008635"
+      },
+      {
+        "file": "resources/backend/vpc/packages/functions/src/todo.ts",
+        "hash": "9949426274615320465"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "3494843969422251966"
+      },
+      {
+        "file": "resources/backend/vpc/packages/functions/src/lambda.ts",
+        "hash": "14571703061051458912"
+      },
+      {
+        "file": "resources/backend/vpc/stacks/MyStack.ts",
+        "hash": "17794166355235605129"
+      },
+      {
+        "file": "resources/backend/vpc/packages/core/tsconfig.json",
+        "hash": "5886530238199482410"
+      },
+      {
+        "file": "resources/backend/vpc/packages/functions/sst-env.d.ts",
+        "hash": "18249031382621985676"
+      }
+    ],
+    "projectFileMap": {
+      "frontend-e2e": [
+        {
+          "file": "apps/frontend-e2e/.eslintrc.json",
+          "hash": "632147010597293032"
+        },
+        {
+          "file": "apps/frontend-e2e/playwright.config.ts",
+          "hash": "10068774316882642319",
+          "deps": [
+            "npm:@playwright/test",
+            "npm:@nx/devkit@19.2.2"
+          ]
+        },
+        {
+          "file": "apps/frontend-e2e/project.json",
+          "hash": "13967562273953110445"
+        },
+        {
+          "file": "apps/frontend-e2e/src/example.spec.ts",
+          "hash": "16019101014373124625",
+          "deps": [
+            "npm:@playwright/test"
+          ]
+        },
+        {
+          "file": "apps/frontend-e2e/tsconfig.json",
+          "hash": "13413400511057489941"
+        }
+      ],
+      "user-management": [
+        {
+          "file": "apps/user-management/.env",
+          "hash": "10359510358447206375"
+        },
+        {
+          "file": "apps/user-management/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/user-management/jest.config.ts",
+          "hash": "17484235748435104011"
+        },
+        {
+          "file": "apps/user-management/project.json",
+          "hash": "12773480867083672966"
+        },
+        {
+          "file": "apps/user-management/src/__tests__/userTokenController.test.ts",
+          "hash": "6266450247855674960",
+          "deps": [
+            "npm:express"
+          ]
+        },
+        {
+          "file": "apps/user-management/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/user-management/src/controllers/userManagementController.ts",
+          "hash": "14871410906566564160",
+          "deps": [
+            "npm:express"
+          ]
+        },
+        {
+          "file": "apps/user-management/src/controllers/userTokenController.ts",
+          "hash": "7675575499379833738",
+          "deps": [
+            "npm:express"
+          ]
+        },
+        {
+          "file": "apps/user-management/src/db/dynamoDBClient.ts",
+          "hash": "1806289801147606452"
+        },
+        {
+          "file": "apps/user-management/src/handlers/sessionHandlers.ts",
+          "hash": "3221152241567369682"
+        },
+        {
+          "file": "apps/user-management/src/main.ts",
+          "hash": "13713942941352849186",
+          "deps": [
+            "npm:express",
+            "npm:body-parser"
+          ]
+        },
+        {
+          "file": "apps/user-management/src/models/db.ts",
+          "hash": "13522316495484425951"
+        },
+        {
+          "file": "apps/user-management/src/models/users.ts",
+          "hash": "9583956244519158166"
+        },
+        {
+          "file": "apps/user-management/src/services/dynamoDbService.ts",
+          "hash": "8888904143401097020",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/user-management/src/services/jwtTokenService.ts",
+          "hash": "4585318699012672076"
+        },
+        {
+          "file": "apps/user-management/src/services/userDbService.ts",
+          "hash": "1727991538341017341"
+        },
+        {
+          "file": "apps/user-management/tsconfig.app.json",
+          "hash": "1558509971940032459"
+        },
+        {
+          "file": "apps/user-management/tsconfig.json",
+          "hash": "3987742125107372938"
+        },
+        {
+          "file": "apps/user-management/tsconfig.spec.json",
+          "hash": "11550347367511341917"
+        },
+        {
+          "file": "apps/user-management/src/redis/redisConnection.ts",
+          "hash": "8910904241496656644"
+        }
+      ],
+      "payment-e2e": [
+        {
+          "file": "apps/payment-e2e/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/payment-e2e/jest.config.ts",
+          "hash": "4001636241288577111"
+        },
+        {
+          "file": "apps/payment-e2e/project.json",
+          "hash": "15236729459586924538"
+        },
+        {
+          "file": "apps/payment-e2e/src/payment/payment.spec.ts",
+          "hash": "2521104822050035073"
+        },
+        {
+          "file": "apps/payment-e2e/src/test-setup.ts",
+          "hash": "12277343883897675151"
+        },
+        {
+          "file": "apps/payment-e2e/tsconfig.json",
+          "hash": "15443990093475294480"
+        },
+        {
+          "file": "apps/payment-e2e/tsconfig.spec.json",
+          "hash": "14384658316786387328"
+        }
+      ],
+      "frontend": [
+        {
+          "file": "apps/frontend/.eslintrc.json",
+          "hash": "2907726334477741866"
+        },
+        {
+          "file": "apps/frontend/index.d.ts",
+          "hash": "5498222895072842432"
+        },
+        {
+          "file": "apps/frontend/jest.config.ts",
+          "hash": "2166717749580758805"
+        },
+        {
+          "file": "apps/frontend/next-env.d.ts",
+          "hash": "5909181270615354023"
+        },
+        {
+          "file": "apps/frontend/next.config.js",
+          "hash": "17252635002163063865",
+          "deps": [
+            "npm:@nx/next"
+          ]
+        },
+        {
+          "file": "apps/frontend/postcss.config.js",
+          "hash": "2759402739052110475"
+        },
+        {
+          "file": "apps/frontend/project.json",
+          "hash": "16374003599071954628"
+        },
+        {
+          "file": "apps/frontend/public/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/frontend/public/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "apps/frontend/specs/index.spec.tsx",
+          "hash": "1288872939091782814",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "apps/frontend/src/app/api/hello/route.ts",
+          "hash": "495073956729887886"
+        },
+        {
+          "file": "apps/frontend/src/app/global.css",
+          "hash": "291024361394925992"
+        },
+        {
+          "file": "apps/frontend/src/app/layout.tsx",
+          "hash": "13415515203133792280"
+        },
+        {
+          "file": "apps/frontend/src/app/page.module.css",
+          "hash": "4786619528779355986"
+        },
+        {
+          "file": "apps/frontend/src/app/page.tsx",
+          "hash": "17129587675944599006"
+        },
+        {
+          "file": "apps/frontend/tailwind.config.js",
+          "hash": "13090734457927965885",
+          "deps": [
+            "npm:@nx/react"
+          ]
+        },
+        {
+          "file": "apps/frontend/tsconfig.json",
+          "hash": "5983257060953454576"
+        },
+        {
+          "file": "apps/frontend/tsconfig.spec.json",
+          "hash": "6922413205408300107"
+        }
+      ],
+      "payment": [
+        {
+          "file": "apps/payment/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/payment/jest.config.ts",
+          "hash": "10117941378446391300"
+        },
+        {
+          "file": "apps/payment/project.json",
+          "hash": "1656640378322619790"
+        },
+        {
+          "file": "apps/payment/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/payment/src/main.ts",
+          "hash": "1769695778783855813"
+        },
+        {
+          "file": "apps/payment/tsconfig.app.json",
+          "hash": "1558509971940032459"
+        },
+        {
+          "file": "apps/payment/tsconfig.json",
+          "hash": "3490524966360018312"
+        },
+        {
+          "file": "apps/payment/tsconfig.spec.json",
+          "hash": "11550347367511341917"
+        }
+      ],
+      "user-management-e2e": [
+        {
+          "file": "apps/user-management-e2e/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/user-management-e2e/jest.config.ts",
+          "hash": "4200567157133354884"
+        },
+        {
+          "file": "apps/user-management-e2e/project.json",
+          "hash": "16545738901010817067"
+        },
+        {
+          "file": "apps/user-management-e2e/src/support/global-setup.ts",
+          "hash": "2568409276037275290"
+        },
+        {
+          "file": "apps/user-management-e2e/src/support/global-teardown.ts",
+          "hash": "5275447082211835490"
+        },
+        {
+          "file": "apps/user-management-e2e/src/support/test-setup.ts",
+          "hash": "10984585515912236441",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/user-management-e2e/src/user-management/user-management.spec.ts",
+          "hash": "4579662685003779048",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/user-management-e2e/tsconfig.json",
+          "hash": "15443990093475294480"
+        },
+        {
+          "file": "apps/user-management-e2e/tsconfig.spec.json",
+          "hash": "14954872453723519891"
+        }
+      ]
+    }
+  }
+}
