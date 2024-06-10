@@ -89,365 +89,167 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "package.json",
-        "hash": "18099816719069627488"
-      },
-      {
-        "file": ".github/workflows/ci.yml",
-        "hash": "18189016288919250352"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/tsconfig.json",
-        "hash": "13204732991482817562"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "16936441711144470533"
-      },
-      {
-        "file": "README.md",
-        "hash": "16943912768856734044"
+        "file": "jest.config.ts",
+        "hash": "3494843969422251966"
       },
       {
         "file": ".prettierignore",
         "hash": "16448050467312557263"
       },
       {
-        "file": ".prettierrc",
-        "hash": "16267754514737964994"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/functions/tsconfig.json",
-        "hash": "9118630872104556098"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/core/tsconfig.json",
-        "hash": "5886530238199482410"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/functions/src/lambda.ts",
-        "hash": "14571703061051458912"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/functions/src/events/todo-created.ts",
-        "hash": "12437710324002438902"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/package.json",
-        "hash": "5153700179732946496"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/core/src/event.ts",
-        "hash": "14488786638772806351"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/sst.config.ts",
-        "hash": "6144302969626059016"
-      },
-      {
-        "file": "package-lock.json",
-        "hash": "10317923506487240352"
-      },
-      {
-        "file": ".eslintignore",
-        "hash": "7663861978715868291"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/.vscode/launch.json",
-        "hash": "8392646404177669468"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/pnpm-workspace.yaml",
-        "hash": "5239676385507380538"
-      },
-      {
-        "file": ".vscode/extensions.json",
-        "hash": "17425123947026961272"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/stacks/Vpc.ts",
-        "hash": "8019791014463442316"
-      },
-      {
-        "file": ".eslintrc.json",
-        "hash": "18315524891129148814"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/package-lock.json",
-        "hash": "3452064974567943326"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/.vscode/settings.json",
-        "hash": "7999676840611616843"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/stacks/EventBus.ts",
-        "hash": "14431552598190765850"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/.gitignore",
-        "hash": "5771297728797203390"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/cdk.context.json",
-        "hash": "14179592776377182949"
-      },
-      {
-        "file": "jest.config.ts",
-        "hash": "3494843969422251966"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/core/src/todo.ts",
-        "hash": "5493410811005008635"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/stacks/Table.ts",
-        "hash": "16779202793362714020"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "10770115814655439842"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/stacks/Lambda.ts",
-        "hash": "3492064703610026206"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/functions/sst-env.d.ts",
-        "hash": "18249031382621985676"
-      },
-      {
-        "file": "nx.json",
-        "hash": "16385745317773921714"
-      },
-      {
         "file": ".editorconfig",
         "hash": "5443105041930014821"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/stacks/Api.ts",
-        "hash": "13323467486642908580"
-      },
-      {
-        "file": "jest.preset.js",
-        "hash": "9430166341120122740"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/functions/package.json",
-        "hash": "704870758753547871"
-      },
-      {
-        "file": "apps/backend/base-infrastructure/packages/core/package.json",
-        "hash": "6461031668552442151"
       },
       {
         "file": "apps/backend/base-infrastructure/packages/functions/src/todo.ts",
         "hash": "17801295151030311150"
       },
       {
+        "file": "apps/backend/base-infrastructure/sst.config.ts",
+        "hash": "6144302969626059016"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/core/src/todo.ts",
+        "hash": "5493410811005008635"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "17425123947026961272"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/.vscode/settings.json",
+        "hash": "7999676840611616843"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/core/src/event.ts",
+        "hash": "14488786638772806351"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/package-lock.json",
+        "hash": "3452064974567943326"
+      },
+      {
+        "file": ".eslintrc.json",
+        "hash": "18315524891129148814"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/.vscode/launch.json",
+        "hash": "8392646404177669468"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/functions/sst-env.d.ts",
+        "hash": "18249031382621985676"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/core/package.json",
+        "hash": "6461031668552442151"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/functions/tsconfig.json",
+        "hash": "9118630872104556098"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "hash": "18189016288919250352"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "10770115814655439842"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/core/tsconfig.json",
+        "hash": "5886530238199482410"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/stacks/EventBus.ts",
+        "hash": "14431552598190765850"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/stacks/Table.ts",
+        "hash": "16779202793362714020"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/stacks/Vpc.ts",
+        "hash": "8019791014463442316"
+      },
+      {
+        "file": "nx.json",
+        "hash": "16385745317773921714"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/functions/package.json",
+        "hash": "704870758753547871"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/functions/src/events/todo-created.ts",
+        "hash": "12437710324002438902"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/stacks/Lambda.ts",
+        "hash": "3492064703610026206"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "10317923506487240352"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "16267754514737964994"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/cdk.context.json",
+        "hash": "14179592776377182949"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/.gitignore",
+        "hash": "5771297728797203390"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/package.json",
+        "hash": "5153700179732946496"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/packages/functions/src/lambda.ts",
+        "hash": "14571703061051458912"
+      },
+      {
+        "file": ".eslintignore",
+        "hash": "7663861978715868291"
+      },
+      {
+        "file": "README.md",
+        "hash": "16943912768856734044"
+      },
+      {
         "file": "apps/backend/base-infrastructure/packages/core/sst-env.d.ts",
         "hash": "18249031382621985676"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "16936441711144470533"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/tsconfig.json",
+        "hash": "13204732991482817562"
+      },
+      {
+        "file": "package.json",
+        "hash": "18099816719069627488"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/pnpm-workspace.yaml",
+        "hash": "5239676385507380538"
+      },
+      {
+        "file": "apps/backend/base-infrastructure/stacks/Api.ts",
+        "hash": "13323467486642908580"
       }
     ],
     "projectFileMap": {
-      "payment-e2e": [
-        {
-          "file": "apps/payment-e2e/.eslintrc.json",
-          "hash": "13800677001662881425"
-        },
-        {
-          "file": "apps/payment-e2e/jest.config.ts",
-          "hash": "4001636241288577111"
-        },
-        {
-          "file": "apps/payment-e2e/project.json",
-          "hash": "15236729459586924538"
-        },
-        {
-          "file": "apps/payment-e2e/src/payment/payment.spec.ts",
-          "hash": "2521104822050035073"
-        },
-        {
-          "file": "apps/payment-e2e/src/test-setup.ts",
-          "hash": "12277343883897675151"
-        },
-        {
-          "file": "apps/payment-e2e/tsconfig.json",
-          "hash": "15443990093475294480"
-        },
-        {
-          "file": "apps/payment-e2e/tsconfig.spec.json",
-          "hash": "14384658316786387328"
-        }
-      ],
-      "game-orchestration-e2e": [
-        {
-          "file": "apps/game-orchestration-e2e/.eslintrc.json",
-          "hash": "13800677001662881425"
-        },
-        {
-          "file": "apps/game-orchestration-e2e/jest.config.ts",
-          "hash": "6611793258019852287"
-        },
-        {
-          "file": "apps/game-orchestration-e2e/project.json",
-          "hash": "12873394406347158125"
-        },
-        {
-          "file": "apps/game-orchestration-e2e/src/game-orchestration/game-orchestration.spec.ts",
-          "hash": "4579662685003779048",
-          "deps": [
-            "npm:axios"
-          ]
-        },
-        {
-          "file": "apps/game-orchestration-e2e/src/support/global-setup.ts",
-          "hash": "2568409276037275290"
-        },
-        {
-          "file": "apps/game-orchestration-e2e/src/support/global-teardown.ts",
-          "hash": "5275447082211835490"
-        },
-        {
-          "file": "apps/game-orchestration-e2e/src/support/test-setup.ts",
-          "hash": "10984585515912236441",
-          "deps": [
-            "npm:axios"
-          ]
-        },
-        {
-          "file": "apps/game-orchestration-e2e/tsconfig.json",
-          "hash": "15443990093475294480"
-        },
-        {
-          "file": "apps/game-orchestration-e2e/tsconfig.spec.json",
-          "hash": "14954872453723519891"
-        }
-      ],
-      "game-orchestration": [
-        {
-          "file": "apps/game-orchestration/.eslintrc.json",
-          "hash": "13800677001662881425"
-        },
-        {
-          "file": "apps/game-orchestration/jest.config.ts",
-          "hash": "6923721879196937555"
-        },
-        {
-          "file": "apps/game-orchestration/project.json",
-          "hash": "2770889575552566844"
-        },
-        {
-          "file": "apps/game-orchestration/src/assets/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "apps/game-orchestration/src/handlers/gameOrchestrationHandler.ts",
-          "hash": "9694797295685290736"
-        },
-        {
-          "file": "apps/game-orchestration/src/helpers/getBalanceHelper.ts",
-          "hash": "8977487500720870396"
-        },
-        {
-          "file": "apps/game-orchestration/src/helpers/isAuthorizedHelper.ts",
-          "hash": "11192522201515143437"
-        },
-        {
-          "file": "apps/game-orchestration/src/helpers/sendSqsMessage.ts",
-          "hash": "1643469711624200215"
-        },
-        {
-          "file": "apps/game-orchestration/src/main.ts",
-          "hash": "12003555863464044675",
-          "deps": [
-            "npm:express"
-          ]
-        },
-        {
-          "file": "apps/game-orchestration/src/models/websocketPayload.ts",
-          "hash": "10721276276550807601"
-        },
-        {
-          "file": "apps/game-orchestration/tsconfig.app.json",
-          "hash": "1558509971940032459"
-        },
-        {
-          "file": "apps/game-orchestration/tsconfig.json",
-          "hash": "3490524966360018312"
-        },
-        {
-          "file": "apps/game-orchestration/tsconfig.spec.json",
-          "hash": "11550347367511341917"
-        },
-        {
-          "file": "apps/game-orchestration/src/helpers/getCaseHelper.ts",
-          "hash": "9968596484339337678"
-        }
-      ],
-      "frontend-e2e": [
-        {
-          "file": "apps/frontend-e2e/.eslintrc.json",
-          "hash": "632147010597293032"
-        },
-        {
-          "file": "apps/frontend-e2e/playwright.config.ts",
-          "hash": "10068774316882642319",
-          "deps": [
-            "npm:@playwright/test",
-            "npm:@nx/devkit@19.2.2"
-          ]
-        },
-        {
-          "file": "apps/frontend-e2e/project.json",
-          "hash": "13967562273953110445"
-        },
-        {
-          "file": "apps/frontend-e2e/src/example.spec.ts",
-          "hash": "16019101014373124625",
-          "deps": [
-            "npm:@playwright/test"
-          ]
-        },
-        {
-          "file": "apps/frontend-e2e/tsconfig.json",
-          "hash": "13413400511057489941"
-        }
-      ],
-      "payment": [
-        {
-          "file": "apps/payment/.eslintrc.json",
-          "hash": "13800677001662881425"
-        },
-        {
-          "file": "apps/payment/jest.config.ts",
-          "hash": "10117941378446391300"
-        },
-        {
-          "file": "apps/payment/project.json",
-          "hash": "1656640378322619790"
-        },
-        {
-          "file": "apps/payment/src/assets/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "apps/payment/src/main.ts",
-          "hash": "1769695778783855813"
-        },
-        {
-          "file": "apps/payment/tsconfig.app.json",
-          "hash": "1558509971940032459"
-        },
-        {
-          "file": "apps/payment/tsconfig.json",
-          "hash": "3490524966360018312"
-        },
-        {
-          "file": "apps/payment/tsconfig.spec.json",
-          "hash": "11550347367511341917"
-        }
-      ],
       "frontend": [
         {
           "file": "apps/frontend/.eslintrc.json",
@@ -530,6 +332,208 @@
         {
           "file": "apps/frontend/tsconfig.spec.json",
           "hash": "6922413205408300107"
+        }
+      ],
+      "game-orchestration": [
+        {
+          "file": "apps/game-orchestration/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/game-orchestration/jest.config.ts",
+          "hash": "6923721879196937555"
+        },
+        {
+          "file": "apps/game-orchestration/project.json",
+          "hash": "2770889575552566844"
+        },
+        {
+          "file": "apps/game-orchestration/src/__tests__/gameOrchestrationHandler.test.ts",
+          "hash": "15498360820408569025"
+        },
+        {
+          "file": "apps/game-orchestration/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/game-orchestration/src/handlers/gameOrchestrationHandler.ts",
+          "hash": "650153241629377025"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/getBalanceHelper.ts",
+          "hash": "8977487500720870396"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/getCaseHelper.ts",
+          "hash": "9968596484339337678"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/isAuthorizedHelper.ts",
+          "hash": "11192522201515143437"
+        },
+        {
+          "file": "apps/game-orchestration/src/helpers/sendSqsMessage.ts",
+          "hash": "1643469711624200215"
+        },
+        {
+          "file": "apps/game-orchestration/src/main.ts",
+          "hash": "12003555863464044675",
+          "deps": [
+            "npm:express"
+          ]
+        },
+        {
+          "file": "apps/game-orchestration/src/models/websocketPayload.ts",
+          "hash": "10721276276550807601"
+        },
+        {
+          "file": "apps/game-orchestration/tsconfig.app.json",
+          "hash": "1558509971940032459"
+        },
+        {
+          "file": "apps/game-orchestration/tsconfig.json",
+          "hash": "3490524966360018312"
+        },
+        {
+          "file": "apps/game-orchestration/tsconfig.spec.json",
+          "hash": "11550347367511341917"
+        }
+      ],
+      "game-orchestration-e2e": [
+        {
+          "file": "apps/game-orchestration-e2e/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/jest.config.ts",
+          "hash": "6611793258019852287"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/project.json",
+          "hash": "12873394406347158125"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/game-orchestration/game-orchestration.spec.ts",
+          "hash": "4579662685003779048",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/support/global-setup.ts",
+          "hash": "2568409276037275290"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/support/global-teardown.ts",
+          "hash": "5275447082211835490"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/src/support/test-setup.ts",
+          "hash": "10984585515912236441",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "apps/game-orchestration-e2e/tsconfig.json",
+          "hash": "15443990093475294480"
+        },
+        {
+          "file": "apps/game-orchestration-e2e/tsconfig.spec.json",
+          "hash": "14954872453723519891"
+        }
+      ],
+      "frontend-e2e": [
+        {
+          "file": "apps/frontend-e2e/.eslintrc.json",
+          "hash": "632147010597293032"
+        },
+        {
+          "file": "apps/frontend-e2e/playwright.config.ts",
+          "hash": "10068774316882642319",
+          "deps": [
+            "npm:@playwright/test",
+            "npm:@nx/devkit@19.2.2"
+          ]
+        },
+        {
+          "file": "apps/frontend-e2e/project.json",
+          "hash": "13967562273953110445"
+        },
+        {
+          "file": "apps/frontend-e2e/src/example.spec.ts",
+          "hash": "16019101014373124625",
+          "deps": [
+            "npm:@playwright/test"
+          ]
+        },
+        {
+          "file": "apps/frontend-e2e/tsconfig.json",
+          "hash": "13413400511057489941"
+        }
+      ],
+      "payment-e2e": [
+        {
+          "file": "apps/payment-e2e/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/payment-e2e/jest.config.ts",
+          "hash": "4001636241288577111"
+        },
+        {
+          "file": "apps/payment-e2e/project.json",
+          "hash": "15236729459586924538"
+        },
+        {
+          "file": "apps/payment-e2e/src/payment/payment.spec.ts",
+          "hash": "2521104822050035073"
+        },
+        {
+          "file": "apps/payment-e2e/src/test-setup.ts",
+          "hash": "12277343883897675151"
+        },
+        {
+          "file": "apps/payment-e2e/tsconfig.json",
+          "hash": "15443990093475294480"
+        },
+        {
+          "file": "apps/payment-e2e/tsconfig.spec.json",
+          "hash": "14384658316786387328"
+        }
+      ],
+      "payment": [
+        {
+          "file": "apps/payment/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "apps/payment/jest.config.ts",
+          "hash": "10117941378446391300"
+        },
+        {
+          "file": "apps/payment/project.json",
+          "hash": "1656640378322619790"
+        },
+        {
+          "file": "apps/payment/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/payment/src/main.ts",
+          "hash": "1769695778783855813"
+        },
+        {
+          "file": "apps/payment/tsconfig.app.json",
+          "hash": "1558509971940032459"
+        },
+        {
+          "file": "apps/payment/tsconfig.json",
+          "hash": "3490524966360018312"
+        },
+        {
+          "file": "apps/payment/tsconfig.spec.json",
+          "hash": "11550347367511341917"
         }
       ]
     }

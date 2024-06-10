@@ -3,7 +3,7 @@ import { callIsAuthorized } from '../helpers/isAuthorizedHelper';
 import { callGetBalance } from '../helpers/getBalanceHelper';
 import { callGetCase } from '../helpers/getCaseHelper'; // Import the new helper
 import { sendMessageToSQS } from '../helpers/sendSqsMessage';
-import { webSocketPayload } from '../models/webSocketPayload';
+import { webSocketPayload } from '../models/websocketPayload';
 
 const QUEUE_URL = 'https://sqs.<region>.amazonaws.com/<account-id>/<queue-name>'; // Replace with your SQS Queue URL
 
