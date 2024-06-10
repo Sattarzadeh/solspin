@@ -8,7 +8,7 @@ import {
   getBalance,
   getWagerRequirement,
   addWallet,
-} from '@wallet-microservice/repository/Repository';
+} from 'apps/wallet/src/repository/Repository';
 
 jest.mock('../../db/DbConnection', () => ({
   send: jest.fn(),

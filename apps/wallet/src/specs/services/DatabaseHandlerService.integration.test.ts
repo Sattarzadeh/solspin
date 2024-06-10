@@ -2,10 +2,7 @@
 import { PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import dynamoDB from '../../db/DbConnection';
 import { Wallet } from '@shared-types/shared-types';
-import {
-  lockWallet,
-  getWallet,
-} from '@wallet-microservice/repository/Repository';
+import { lockWallet, getWallet } from 'apps/wallet/src/repository/Repository';
 
 jest.setTimeout(15000);
 

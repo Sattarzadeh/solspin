@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Currency } from '@shared-types/shared-types'; // Adjust the import path as needed
-import { createTransactionForBet } from '@betting-microservice/remote/WalletRemote';
+import { createTransactionForBet } from 'apps/betting/src/remote/WalletRemote';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;

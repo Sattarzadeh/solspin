@@ -12,7 +12,7 @@ import {
   unlockWallet,
   withdrawFromDb,
   addWallet,
-} from '@wallet-microservice/repository/Repository';
+} from 'apps/wallet/src/repository/Repository';
 import { getCurrentPrice } from '../remote/JupiterRemote';
 
 const MIN_WITHDRAWAL_AMOUNT_SOL = 0.1;
