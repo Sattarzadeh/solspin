@@ -24,6 +24,9 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@nx/eslint:lint": {
+      "inputs": ["default", "{projectRoot}/.eslintrc.json", "{projectRoot}/.eslintignore"]
     }
   },
   "plugins": [
@@ -56,6 +59,14 @@
       }
     }
   ],
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": true
+    },
+    "@nx/js:tsc": {
+      "analyzeSourceFiles": true
+    }
+  },
   "nxCloudAccessToken": "YjkwNGJkNTgtYjU1Ny00NjA5LTkxYWYtYjEyMTc1MTM5MmEzfHJlYWQtd3JpdGU=",
   "generators": {
     "@nx/next": {
