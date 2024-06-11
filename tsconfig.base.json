@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@solpin/events": ["@solpin/events/src/index.ts"],
-      "@solpin/types": ["@solpin/types/src/index.ts"],
-      "@solspin/events": ["events/src/index.ts"]
+      "@solpin/types": ["@solpin/types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
