@@ -40,8 +40,6 @@ jobs:
             --target=build \
             --parallel \
             --maxParallel=3 \
-            --base=origin/main \
-            --head=HEAD \
             --verbose
 
       - name: Upload build artifacts
