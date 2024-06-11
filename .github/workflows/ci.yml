@@ -41,7 +41,8 @@ jobs:
             --parallel \
             --maxParallel=3 \
             --base=origin/main \
-            --head=HEAD
+            --head=HEAD \
+            --verbose
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
