@@ -25,7 +25,11 @@ export const normalSpinHandler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    const rewardItem = performSpin(caseModel, serverSeed, clientSeed);
+    // Send request to usermanagement microservice to get the nonce associated with the user
+    const nonce = 0;
+
+    const rewardItem = performSpin(caseModel, serverSeed, clientSeed, nonce);
+    // increment the nonce and then update the db with the usermanagement microservice
     return {
       statusCode: 200,
       body: JSON.stringify(rewardItem),
@@ -60,8 +64,9 @@ const getCaseModel = async (caseId: string): Promise<Case | null> => {
   }
 };
 
-const performSpin = (caseModel: Case, serverSeed: string, clientSeed: string): CaseItem => {
-  const rollValue = generateRollValue(serverSeed, clientSeed);
+const performSpin = (caseModel: Case, serverSeed: string, clientSeed: string, nonce: number): CaseItem => {
+
+  const rollValue = generateRollValue(serverSeed, clientSeed, nonce);
   const rewardItem = determineItem(rollValue, caseModel);
   return rewardItem;
 };
