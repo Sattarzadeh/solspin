@@ -1,13 +1,13 @@
-import { v4 as uuidv4 } from 'uuid';
-import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
+import { v4 as uuidv4 } from "uuid";
+import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 import { EventBody, EventConfig, EventProvider } from "./types";
-import { validateEvent } from './validate';
+import { validateEvent } from "./validate";
 
 const eventBridgeClient = new EventBridgeClient({});
 
 /**
  * Publishes an event to the specified event bus.
- * 
+ *
  * @param {EventProvider} event - The event provider containing the event name, validation schema, and factory function.
  * @param {T} payload - The payload of the event.
  * @param {EventConfig} config - The configuration object for the event.
@@ -18,10 +18,10 @@ export async function publishEvent<T>(
   payload: T,
   config: EventConfig
 ): Promise<void> {
-  const eventBusName = process.env['EVENT_BUS_NAME'];
-  
+  const eventBusName = process.env["EVENT_BUS_NAME"];
+
   if (!eventBusName) {
-    throw new Error('Event bus name could not be established');
+    throw new Error("Event bus name could not be established");
   }
 
   const requestId = uuidv4();
@@ -41,7 +41,7 @@ export async function publishEvent<T>(
       {
         EventBusName: eventBusName,
         Source: `${config.publisher}.${event.name}`,
-        DetailType: 'event',
+        DetailType: "event",
         Detail: JSON.stringify(eventBody),
       },
     ],
