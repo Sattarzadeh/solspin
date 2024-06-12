@@ -1,8 +1,9 @@
-import { Table, StackContext, App, StackProps } from 'sst/constructs';
+import { Table, StackContext } from 'sst/constructs';
 
+// move
 export function TableStack({ stack }: StackContext) {
   // Create a new DynamoDB table for storing bets
-  const betsTable = new Table(this, 'Bets', {
+  const betsTable = new Table(stack, 'Bets', {
     fields: {
       betId: 'string',
       userId: 'string',
@@ -21,7 +22,7 @@ export function TableStack({ stack }: StackContext) {
     },
   });
 
-  const walletTable = new Table(this, 'Wallets', {
+  const walletTable = new Table(stack, 'Wallets', {
     fields: {
       userId: 'string',
       balance: 'number',
@@ -31,7 +32,7 @@ export function TableStack({ stack }: StackContext) {
     primaryIndex: { partitionKey: 'userId' },
   });
 
-  const transactionTable = new Table(this, 'Transactions', {
+  const transactionTable = new Table(stack, 'Transactions', {
     fields: {
       transactionId: 'string',
       userId: 'string',
