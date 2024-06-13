@@ -1,9 +1,9 @@
-import { CustomError } from './CustomError';
+import { CustomError } from "./CustomError";
 
 class InsufficientBalanceError extends CustomError {
   statusCode = 409;
 
-  constructor(message = 'Insufficient balance') {
+  constructor(message = "Insufficient balance") {
     super(message);
     Object.setPrototypeOf(this, InsufficientBalanceError.prototype);
   }

@@ -1,5 +1,5 @@
-import { Response } from 'express';
-import { CustomError } from './CustomError';
+import { Response } from "express";
+import { CustomError } from "./CustomError";
 
 export function errorHandler(err: Error, res: Response) {
   console.log(err.message);
@@ -8,5 +8,5 @@ export function errorHandler(err: Error, res: Response) {
     return;
   }
 
-  res.status(500).json({ message: 'Something went wrong...' }).send();
+  res.status(500).json({ message: "Something went wrong..." }).send();
 }

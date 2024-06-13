@@ -1,11 +1,6 @@
-import { errorHandler } from '@shared-errors/ErrorHandler';
-import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import { Request, Response } from 'express';
-import {
-  retrieveBet,
-  retrieveBetHistory,
-  saveBet,
-} from '../services/BettingService';
+import { errorHandler, InvalidInputError } from "@solspin/errors";
+import { Request, Response } from "express";
+import { retrieveBet, retrieveBetHistory, saveBet } from "../services/BettingService";
 
 class BettingController {
   async recordBetController(req: Request, res: Response) {
@@ -15,14 +10,14 @@ class BettingController {
       const { amountBet, outcomeAmount, outcome, gameId } = req.body;
 
       if (!amountBet || !outcomeAmount || !outcome || !gameId) {
-        throw new InvalidInputError('Missing required fields');
+        throw new InvalidInputError("Missing required fields");
       }
 
       await saveBet(userId, gameId, amountBet, outcomeAmount, outcome);
 
-      res.status(200).json('Bet recorded').send();
+      res.status(200).json("Bet recorded").send();
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       errorHandler(error, res);
     }
   }
@@ -33,7 +28,7 @@ class BettingController {
       const betId = req.query.betId;
 
       if (!userId) {
-        throw new InvalidInputError('Missing required fields');
+        throw new InvalidInputError("Missing required fields");
       }
 
       if (betId) {

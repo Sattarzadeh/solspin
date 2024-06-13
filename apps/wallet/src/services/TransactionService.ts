@@ -1,19 +1,11 @@
-import { Wallet } from '@shared-types/shared-types';
-import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
-import { InvalidInputError } from '@shared-errors/InvalidInputError';
+import { Wallet } from '@solspin/wallet-types';
+import { InsufficientBalanceError, InvalidInputError, ResourceNotFoundError } from '@solspin/errors';
+import { addWallet, depositToDb, lockWallet, unlockWallet, withdrawFromDb } from '../repository/Repository';
+import { getCurrentPrice } from '../remote/JupiterRemote';
 import {
   broadcastDepositTransaction,
   broadcastWithdrawalTransaction,
-} from '../remote/TreasuryRemote';
-import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
-import {
-  lockWallet,
-  depositToDb,
-  unlockWallet,
-  withdrawFromDb,
-  addWallet,
-} from 'apps/wallet/src/repository/Repository';
-import { getCurrentPrice } from '../remote/JupiterRemote';
+} from'../remote/TreasuryRemote'";
 
 const MIN_WITHDRAWAL_AMOUNT_SOL = 0.1;
 
@@ -35,14 +27,10 @@ export const handleDeposit = async (
     const depositAmountInCrypto = depositTransactionResponse.depositAmount;
     const depositAmountInUsd = depositAmountInCrypto * currentPriceSol;
 
-    await depositToDb(
-      wallet,
-      depositAmountInUsd,
-      depositTransactionResponse.transactionId
-    );
+    await depositToDb(wallet, depositAmountInUsd, depositTransactionResponse.transactionId);
   } catch (error: unknown) {
     console.error('Error handling deposit:', error);
-    throw new Error('Error handling deposit');
+    throw error;
   } finally {
     await unlockWallet(userId);
   }
@@ -88,7 +76,7 @@ export const handleWithdrawal = async (
     await withdrawFromDb(wallet, amount, signature);
   } catch (error: unknown) {
     console.error('Error handling withdrawal:', error);
-    throw new Error('Error handling withdrawal');
+    throw error;
   } finally {
     await unlockWallet(userId);
   }
@@ -102,17 +90,11 @@ export const getBalance = async (userId: string): Promise<number> => {
   return await getBalance(userId);
 };
 
-export const createWallet = async (
-  userId: string,
-  walletAddress: string
-): Promise<Wallet> => {
+export const createWallet = async (userId: string, walletAddress: string): Promise<Wallet> => {
   return await addWallet(userId, walletAddress);
 };
 
-export const updateUserBalance = async (
-  userId: string,
-  amount: number
-): Promise<void> => {
+export const updateUserBalance = async (userId: string, amount: number): Promise<void> => {
   try {
     const wallet = await lockWallet(userId);
     await depositToDb(wallet, amount, null, false);

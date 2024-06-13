@@ -1,7 +1,5 @@
-import { DepositTransactionResponse, Wallet } from '@shared-types/shared-types';
-import { InvalidInputError } from '@shared-errors/InvalidInputError';
-import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
-import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
+import { DepositTransactionResponse, Wallet } from '@solspin/wallet-types';
+import { InsufficientBalanceError, InvalidInputError, ResourceNotFoundError } from '@solspin/errors';
 import * as Repository from '../../repository/Repository';
 import * as TreasuryRemote from '../../remote/TreasuryRemote';
 import {
@@ -9,7 +7,7 @@ import {
   handleWithdrawal,
   createWallet,
   updateUserBalance,
-} from '../../services/TransactionService';
+} from'../../services/TransactionService'";
 
 // Mock the module
 jest.mock('../../repository/Repository', () => ({
@@ -34,10 +32,8 @@ const lockWallet = Repository.lockWallet as jest.Mock;
 const unlockWallet = Repository.unlockWallet as jest.Mock;
 const getBalance = Repository.getBalance as jest.Mock;
 const addWallet = Repository.addWallet as jest.Mock;
-const broadcastDepositTransaction =
-  TreasuryRemote.broadcastDepositTransaction as jest.Mock;
-const broadcastWithdrawalTransaction =
-  TreasuryRemote.broadcastWithdrawalTransaction as jest.Mock;
+const broadcastDepositTransaction = TreasuryRemote.broadcastDepositTransaction as jest.Mock;
+const broadcastWithdrawalTransaction = TreasuryRemote.broadcastWithdrawalTransaction as jest.Mock;
 
 jest.mock('../../services/RemoteService');
 
@@ -50,7 +46,7 @@ describe('TransactionService', () => {
       const depositResponse: DepositTransactionResponse = {
         message: 'Deposit successful',
         depositAmount: 100,
-        transactionId: 'transactionId',
+        transactionId: 'transactionId'
       };
 
       broadcastDepositTransaction.mockResolvedValue(depositResponse);
@@ -82,7 +78,7 @@ describe('TransactionService', () => {
         balance: 100,
         wagerRequirement: 0,
         address: walletAddress,
-        lockedAt: '0',
+        lockedAt: '0'
       };
       const signature = 'testSignature';
 
@@ -95,28 +91,24 @@ describe('TransactionService', () => {
       await handleWithdrawal(userId, walletAddress, amount);
 
       expect(getWallet).toHaveBeenCalledWith(userId);
-      expect(broadcastWithdrawalTransaction).toHaveBeenCalledWith(
-        userId,
-        amount,
-        walletAddress
-      );
+      expect(broadcastWithdrawalTransaction).toHaveBeenCalledWith(userId, amount, walletAddress);
       expect(withdrawFromDb).toHaveBeenCalledWith(userId, amount, signature);
       expect(lockWallet).toHaveBeenCalledWith(wallet.userId);
       expect(unlockWallet).toHaveBeenCalledWith(wallet.userId);
     });
 
     it('should throw InvalidInputError for amount below minimum withdrawal', async () => {
-      await expect(
-        handleWithdrawal(userId, walletAddress, 0.05)
-      ).rejects.toThrow(InvalidInputError);
+      await expect(handleWithdrawal(userId, walletAddress, 0.05)).rejects.toThrow(
+        InvalidInputError
+      );
     });
 
     it('should throw ResourceNotFoundError if wallet not found', async () => {
       getWallet.mockResolvedValue({} as Wallet);
 
-      await expect(
-        handleWithdrawal(userId, walletAddress, amount)
-      ).rejects.toThrow(ResourceNotFoundError);
+      await expect(handleWithdrawal(userId, walletAddress, amount)).rejects.toThrow(
+        ResourceNotFoundError
+      );
     });
 
     it('should throw InsufficientBalanceError if balance is insufficient', async () => {
@@ -125,13 +117,13 @@ describe('TransactionService', () => {
         balance: 100,
         wagerRequirement: 0,
         address: walletAddress,
-        lockedAt: '0',
+        lockedAt: '0'
       };
       getWallet.mockResolvedValue(wallet);
 
-      await expect(
-        handleWithdrawal(userId, walletAddress, amount)
-      ).rejects.toThrow(InsufficientBalanceError);
+      await expect(handleWithdrawal(userId, walletAddress, amount)).rejects.toThrow(
+        InsufficientBalanceError
+      );
     });
 
     it('should throw InvalidInputError if there is an active wager requirement', async () => {
@@ -140,13 +132,13 @@ describe('TransactionService', () => {
         balance: 100,
         wagerRequirement: 0,
         address: walletAddress,
-        lockedAt: '0',
+        lockedAt: '0'
       };
       getWallet.mockResolvedValue(wallet);
 
-      await expect(
-        handleWithdrawal(userId, walletAddress, amount)
-      ).rejects.toThrow(InvalidInputError);
+      await expect(handleWithdrawal(userId, walletAddress, amount)).rejects.toThrow(
+        InvalidInputError
+      );
     });
   });
 
@@ -158,7 +150,7 @@ describe('TransactionService', () => {
         balance: 100,
         wagerRequirement: 0,
         address: 'testAddress',
-        lockedAt: '0',
+        lockedAt: '0'
       };
       getWallet.mockResolvedValue(wallet);
 

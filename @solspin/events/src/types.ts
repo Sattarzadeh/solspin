@@ -1,6 +1,6 @@
 
 import * as z from "zod";
-import { Service } from "@solpin/types";
+import { Service } from "../../types";
 
 export interface EventConfig {
   publisher: Service;

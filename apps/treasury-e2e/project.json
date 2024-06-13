@@ -8,7 +8,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "apps/wallet-microservice/apps/treasury-microservice-e2e/jest.config.ts",
+        "jestConfig": "apps/wallet/apps/treasury-microservice-e2e/jest.config.ts",
         "passWithNoTests": true
       },
       "dependsOn": ["treasury-microservice:build"]

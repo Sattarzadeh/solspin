@@ -43,7 +43,7 @@
       },
       "exclude": [
         "apps/payment-e2e/**/*",
-        "apps/wallet-microservice-e2e/**/*",
+        "apps/wallet-e2e/**/*",
         "apps/treasury-microservice-e2e/**/*",
         "apps/betting-microservice-e2e/**/*"
       ]

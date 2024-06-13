@@ -1,6 +1,6 @@
 export enum GameOutcome {
-  WIN = 'WIN',
-  LOSE = 'LOSE',
+  WIN = "WIN",
+  LOSE = "LOSE",
 }
 
 export type Bet = {
