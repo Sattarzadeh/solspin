@@ -6,4 +6,6 @@ export const enum Service {
   TREASURY = "treasury_service",
   USER = "user_service",
   WALLET = "wallet_service",
+
 }
+

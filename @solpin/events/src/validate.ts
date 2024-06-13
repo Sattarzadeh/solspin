@@ -1,4 +1,6 @@
+
 import { ZodSchema } from "zod";
+
 
 export function validateEvent<T>(payload: unknown, schema: ZodSchema<T>): T {
   const result = schema.safeParse(payload);
@@ -9,3 +11,4 @@ export function validateEvent<T>(payload: unknown, schema: ZodSchema<T>): T {
 
   return result.data;
 }
+

@@ -25,34 +25,35 @@ export function handleEvent<T>(
       }
 
       const promises = event.Records.map(async (record) => {
-        const eventBridgeEvent = JSON.parse(record.body) as EventBridgeEvent<"event", EventBody<T>>;
-        const { metadata, payload, publisher } = eventBridgeEvent.detail;
+      const eventBridgeEvent = JSON.parse(record.body) as EventBridgeEvent<"event", EventBody<T>>;
+      const { metadata, payload, publisher } = eventBridgeEvent.detail;
 
-        const eventConfig: EventConfig = {
-          publisher,
-        };
+      const eventConfig: EventConfig = {
+        publisher,
+      };
 
-        console.log("Event payload:", JSON.stringify(payload));
-        console.log("Event config:", JSON.stringify(eventConfig));
+      console.log("Event payload:", JSON.stringify(payload));
+      console.log("Event config:", JSON.stringify(eventConfig));
 
-        try {
-          console.log("Validating event payload...");
-          const validatedPayload = validateEvent(payload, config.eventProvider.schema);
+      try {
+        console.log("Validating event payload...");
+        const validatedPayload = validateEvent(payload, config.eventProvider.schema);
 
-          console.log("Handling event...");
-          await config.handler(validatedPayload, eventConfig, eventBridgeEvent, context);
+        console.log("Handling event...");
+        await config.handler(validatedPayload, eventConfig, eventBridgeEvent, context);
 
-          console.log("Event handling completed successfully");
-        } catch (error) {
-          console.error("Event handling failed:", error);
+        console.log("Event handling completed successfully");
+      } catch (error) {
+        console.error("Event handling failed:", error);
           throw error;
         }
       });
 
       await Promise.all(promises);
     } catch (error) {
-      console.error("Error processing event records:", error);
+      console.error('Error processing event records:', error);
       throw error;
     }
   };
 }
+

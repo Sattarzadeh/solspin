@@ -1,3 +1,4 @@
+
 import * as z from "zod";
 import { EventProvider } from "../types";
 
@@ -19,3 +20,4 @@ export const userCreatedEvent: EventProvider = {
   name: "UserCreated",
   schema: userCreatedEventSchema,
 };
+

@@ -1,0 +1,56 @@
+{
+  "name": "user-management",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/user-management/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/user-management",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/user-management/src/main.ts",
+        "tsConfig": "apps/user-management/tsconfig.app.json",
+        "assets": ["apps/user-management/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "user-management:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "user-management:build:development"
+        },
+        "production": {
+          "buildTarget": "user-management:build:production"
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,9 @@
+
 import { v4 as uuidv4 } from "uuid";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 import { EventBody, EventConfig, EventProvider } from "./types";
 import { validateEvent } from "./validate";
+
 
 const eventBridgeClient = new EventBridgeClient({});
 
