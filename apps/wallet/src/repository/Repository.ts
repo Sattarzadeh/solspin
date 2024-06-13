@@ -1,8 +1,12 @@
-import { DuplicateResourceError, InvalidResourceError, ResourceNotFoundError } from '@solspin/errors';
-import { Transaction, TransactionPurpose, Wallet } from '@solspin/wallet-types';
-import { GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import dynamoDB from '../db/DbConnection';
-import { ConditionalCheckFailedException, ReturnValue } from '@aws-sdk/client-dynamodb';
+import {
+  DuplicateResourceError,
+  InvalidResourceError,
+  ResourceNotFoundError,
+} from "@solspin/errors";
+import { Transaction, TransactionPurpose, Wallet } from "@solspin/wallet-types";
+import { GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import dynamoDB from "../db/DbConnection";
+import { ConditionalCheckFailedException, ReturnValue } from "@aws-sdk/client-dynamodb";
 
 const walletsTableName = process.env.AWS_WALLETS_TABLE_NAME;
 const transactionTableName = process.env.AWS_TRANSACTION_TABLE_NAME;
@@ -15,7 +19,7 @@ export const depositToDb = async (
 ): Promise<void> => {
   // Check if the signature is valid for a deposit
   if (isDeposit && !signature) {
-    throw new InvalidResourceError'Invalid signature'");
+    throw new InvalidResourceError("Invalid signature");
   }
 
   // Update the balance
@@ -25,9 +29,9 @@ export const depositToDb = async (
   const params = {
     TableName: walletsTableName,
     Key: { userId: wallet.userId },
-    UpdateExpression: 'set balance = :balance',
+    UpdateExpression: "set balance = :balance",
     ExpressionAttributeValues: {
-      ':balance': wallet.balance
+      ":balance": wallet.balance,
     },
     ReturnValues: ReturnValue.ALL_NEW,
   };
@@ -42,8 +46,8 @@ export const depositToDb = async (
     }
   } catch (error) {
     // Log and throw an error
-    console.error('Error updating account:', error);
-    throw new Error('Error updating account');
+    console.error("Error updating account:", error);
+    throw new Error("Error updating account");
   }
 };
 
@@ -55,7 +59,7 @@ export const withdrawFromDb = async (
   try {
     // Check if the user has sufficient balance
     if (wallet.balance < amount) {
-      throw new InvalidResourceError('Insufficient balance');
+      throw new InvalidResourceError("Insufficient balance");
     }
 
     // Deduct the amount from the wallet
@@ -68,7 +72,7 @@ export const withdrawFromDb = async (
     await recordTransaction(signature, wallet.userId, amount, false);
   } catch (error) {
     // Log and throw an error
-    console.log('Error withdrawing from wallet:', error);
+    console.log("Error withdrawing from wallet:", error);
     throw error;
   } finally {
     // Unlock the wallet
@@ -103,7 +107,7 @@ export const addWallet = async (userId: string, address: string | null = null): 
   // Check if the wallet already exists
   try {
     await getWallet(userId);
-    throw new DuplicateResourceError('Wallet already exists');
+    throw new DuplicateResourceError("Wallet already exists");
   } catch (error: unknown) {
     if (!(error instanceof ResourceNotFoundError)) {
       // Error is not a ResourceNotFoundError
@@ -116,8 +120,8 @@ export const addWallet = async (userId: string, address: string | null = null): 
     userId: userId,
     balance: 0,
     wagerRequirement: 0,
-    address: address ? address : '',
-    lockedAt: '0'
+    address: address ? address : "",
+    lockedAt: "0",
   };
 
   // add the user to the database
@@ -143,7 +147,7 @@ export const getWallet = async (userId: string): Promise<Wallet> => {
 
   // If the user is not found, throw an error
   if (!data.Item) {
-    throw new ResourceNotFoundError('User not found');
+    throw new ResourceNotFoundError("User not found");
   }
 
   // Return the user
@@ -201,27 +205,27 @@ export const lockWallet = async (userId: string): Promise<Wallet> => {
         UpdateExpression: `SET lockedAt = :now`,
         ConditionExpression: `lockedAt <= :lockExpiredAt`,
         ExpressionAttributeValues: {
-          ':now': now.toString(),
-          ':lockExpiredAt': (now - lockFor).toString()
+          ":now": now.toString(),
+          ":lockExpiredAt": (now - lockFor).toString(),
         },
-        ReturnValues: 'ALL_NEW'
+        ReturnValues: "ALL_NEW",
       })
     );
 
     // Lock acquired successfully
-    console.log('Lock acquired');
+    console.log("Lock acquired");
 
     return result.Attributes as Wallet;
   } catch (error: unknown) {
     // Log and throw an error
     if (error instanceof ConditionalCheckFailedException) {
-      console.log('Wallet is already locked');
-      throw new DuplicateResourceError('Wallet is already locked');
+      console.log("Wallet is already locked");
+      throw new DuplicateResourceError("Wallet is already locked");
     } else if (error instanceof ResourceNotFoundError) {
-      console.log('Wallet not found');
-      throw new ResourceNotFoundError('Wallet not found');
+      console.log("Wallet not found");
+      throw new ResourceNotFoundError("Wallet not found");
     }
-    console.log('Error locking the wallet:', error);
+    console.log("Error locking the wallet:", error);
     throw error;
   }
 };
@@ -240,16 +244,16 @@ export const unlockWallet = async (userId: string): Promise<void> => {
         Key: { userId: userId },
         UpdateExpression: `SET lockedAt =:now`,
         ExpressionAttributeValues: {
-          ':now': '0'
+          ":now": "0",
         },
         ReturnValues: ReturnValue.ALL_NEW,
       })
     );
   } catch (error) {
     // Log and throw an error
-    console.error('Error unlocking the wallet:', error);
+    console.error("Error unlocking the wallet:", error);
     throw error;
   }
   // Lock released successfully
-  console.log('Any locks were released successfully');
+  console.log("Any locks were released successfully");
 };

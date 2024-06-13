@@ -1,7 +1,13 @@
-import { InvalidResourceError, ResourceNotFoundError } from '@solspin/errors';
-import { PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import dynamoDb from '../../db/DbConnection';
-import { addWallet, depositToDb, getBalance, getWagerRequirement, withdrawFromDb } from '../../repository/Repository';
+import { InvalidResourceError, ResourceNotFoundError } from "@solspin/errors";
+import { PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import dynamoDb from "../../db/DbConnection";
+import {
+  addWallet,
+  depositToDb,
+  getBalance,
+  getWagerRequirement,
+  withdrawFromDb,
+} from "../../repository/Repository";
 
 jest.mock("../../db/DbConnection", () => ({
   send: jest.fn(),
@@ -26,7 +32,7 @@ describe("DatabaseHandlerService", () => {
       lockedAt: "0",
     };
 
-    it'should throw InvalidResourceError if no signature for deposit'", async () => {
+    it("should throw InvalidResourceError if no signature for deposit", async () => {
       const mockBets = [{ user_id: userId, amount: 100 }];
       (dynamoDb.send as jest.Mock).mockResolvedValue({ Items: mockBets });
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({
@@ -36,7 +42,7 @@ describe("DatabaseHandlerService", () => {
       await expect(depositToDb(wallet, depositAmount, null)).rejects.toThrow(InvalidResourceError);
     });
 
-    it('should update the user wallet and record transaction', async () => {
+    it("should update the user wallet and record transaction", async () => {
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({ Item: wallet });
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({});
 
@@ -47,16 +53,16 @@ describe("DatabaseHandlerService", () => {
     });
   });
 
-  describe('withdrawFromDb', () => {
+  describe("withdrawFromDb", () => {
     const wallet = {
       userId: userId,
       balance: 50,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0'
+      lockedAt: "0",
     };
 
-    it('should throw InvalidResourceError if insufficient balance', async () => {
+    it("should throw InvalidResourceError if insufficient balance", async () => {
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({
         Item: wallet,
       });
@@ -66,7 +72,7 @@ describe("DatabaseHandlerService", () => {
       );
     });
 
-    it('should update the user wallet and record transaction', async () => {
+    it("should update the user wallet and record transaction", async () => {
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({ Item: wallet });
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({});
 
@@ -77,16 +83,16 @@ describe("DatabaseHandlerService", () => {
     });
   });
 
-  describe('getBalance', () => {
+  describe("getBalance", () => {
     const wallet = {
       userId: userId,
       balance: 150,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0'
+      lockedAt: "0",
     };
 
-    it('should return the balance of the wallet', async () => {
+    it("should return the balance of the wallet", async () => {
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({
         Item: { wallet },
       });
@@ -96,15 +102,15 @@ describe("DatabaseHandlerService", () => {
     });
   });
 
-  describe('getWagerRequirement', () => {
+  describe("getWagerRequirement", () => {
     const wallet = {
       userId: userId,
       balance: 0,
       wagerRequirement: 300,
       address: walletAddress,
-      lockedAt: '0'
+      lockedAt: "0",
     };
-    it('should return the wager requirement of the wallet', async () => {
+    it("should return the wager requirement of the wallet", async () => {
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({
         Item: { wallet },
       });
@@ -114,15 +120,15 @@ describe("DatabaseHandlerService", () => {
     });
   });
 
-  describe('createWallet', () => {
+  describe("createWallet", () => {
     const wallet = {
       userId: userId,
       balance: 0,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0'
+      lockedAt: "0",
     };
-    it('should create a new wallet if user exists', async () => {
+    it("should create a new wallet if user exists", async () => {
       const user = { wallet };
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({ Item: user });
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({});
@@ -132,9 +138,9 @@ describe("DatabaseHandlerService", () => {
       expect(dynamoDb.send).toHaveBeenCalledWith(expect.any(PutCommand));
     });
 
-    it('should create a new user and wallet if user does not exist', async () => {
+    it("should create a new user and wallet if user does not exist", async () => {
       (dynamoDb.send as jest.Mock).mockRejectedValueOnce(
-        new ResourceNotFoundError('User not found')
+        new ResourceNotFoundError("User not found")
       );
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({});
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({});

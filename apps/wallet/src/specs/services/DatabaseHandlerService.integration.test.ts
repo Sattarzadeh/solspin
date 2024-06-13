@@ -1,8 +1,8 @@
 // test/DatabaseHandlerintegration.test.js
-import { DeleteCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
-import dynamoDB from '../../db/DbConnection';
-import { Wallet } from '@solspin/wallet-types';
-import { getWallet, lockWallet } from '../../repository/Repository';
+import { DeleteCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import dynamoDB from "../../db/DbConnection";
+import { Wallet } from "@solspin/wallet-types";
+import { getWallet, lockWallet } from "../../repository/Repository";
 
 jest.setTimeout(15000);
 
@@ -30,32 +30,32 @@ describe("DatabaseHandlerService Integration", () => {
     await dynamoDB.send(
       new DeleteCommand({
         TableName: process.env.AWS_WALLETS_TABLE_NAME,
-        Key: { userId:'test-user'" ,
+        Key: { userId: "test-user" },
       })
     );
   });
 
-  it('should handle concurrent lock attempts', async () => {
+  it("should handle concurrent lock attempts", async () => {
     const attempts = [];
     for (let i = 0; i < 10; i++) {
       attempts.push(lockWallet(user.userId).catch((e) => e.message));
     }
 
     const results = await Promise.all(attempts);
-    console.log('Concurrent Lock Attempts Results:', results);
+    console.log("Concurrent Lock Attempts Results:", results);
     const successCount = results.filter(
-      (result) => result !== 'The conditional request failed'
+      (result) => result !== "The conditional request failed"
     ).length;
 
     const failureCount = results.filter(
-      (result) => result === 'The conditional request failed'
+      (result) => result === "The conditional request failed"
     ).length;
     expect(successCount).toStrictEqual(1);
     expect(failureCount).toStrictEqual(9);
 
-    const wallet = await getWallet('test-user');
+    const wallet = await getWallet("test-user");
 
-    console.log('Wallet after concurrent lock attempts:', wallet);
+    console.log("Wallet after concurrent lock attempts:", wallet);
     expect(Number(wallet.lockedAt)).toBeGreaterThan(0);
   });
 });

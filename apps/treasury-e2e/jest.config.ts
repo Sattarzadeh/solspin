@@ -14,6 +14,6 @@ export default {
       },
     ],
   },
-  moduleFileExtensions: 'ts'",'js'",'html'"],
-  coverageDirectory:'../../../../coverage/treasury-microservice-e2e',
+  moduleFileExtensions: ["ts", "js", "html"],
+  coverageDirectory: "../../../../coverage/treasury-microservice-e2e",
 };
