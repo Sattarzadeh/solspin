@@ -1,0 +1,16 @@
+{
+  "name": "@test/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.138",
+    "@types/node": "^20.14.2",
+    "@types/uuid": "^9.0.8",
+    "sst": "^2.43.1",
+    "vitest": "^1.6.0"
+  }
+}
