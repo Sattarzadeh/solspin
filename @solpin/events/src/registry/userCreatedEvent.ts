@@ -1,5 +1,6 @@
-import * as z from 'zod';
-import { EventProvider } from '../types';
+
+import * as z from "zod";
+import { EventProvider } from "../types";
 
 export interface UserCreatedPayload {
   userId: string;
@@ -16,6 +17,7 @@ export const userCreatedEventSchema = z.object({
 });
 
 export const userCreatedEvent: EventProvider = {
-  name: 'UserCreated',
+  name: "UserCreated",
   schema: userCreatedEventSchema,
 };
+
