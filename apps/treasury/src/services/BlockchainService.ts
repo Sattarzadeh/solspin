@@ -1,19 +1,19 @@
 import {
-  TransactionSignature,
-  LAMPORTS_PER_SOL,
-  Transaction,
-  SystemProgram,
-  PublicKey,
   Commitment,
+  Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  TransactionSignature
 } from '@solana/web3.js';
-import { BuildTransactionResponse } from '../types';
+import { BuildTransactionResponse } from '@solspin/treasury-types';
+import { HOUSE_WALLET_ADDRESS, HOUSE_WALLET_PRIVATE_KEY } from '../utils/TreasuryUtils';
 import {
-  HOUSE_WALLET_ADDRESS,
-  HOUSE_WALLET_PRIVATE_KEY,
-} from '../utils/TreasuryUtils';
-import { InsufficientBalanceError } from '@shared-errors/InsufficientBalanceError';
-import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
-const { Connection } = require('@solana/web3.js');
+  BlockchainTransactionError,
+  InsufficientBalanceError,
+  InvalidInputErro,
+} from'@solspin/errors'";
 
 const FEE = 5000;
 
@@ -25,7 +25,7 @@ const FEE = 5000;
   - confirmed: The transaction has been included in a block that has been voted on by the supermajority of the cluster.
   - finalized: The transaction has been included in a block that has been finalized by the cluster.
 
-  We should use 'finalized' for deposits because we want to ensure deposits cannot be 
+  We should use 'finalized' for deposits because we want to ensure deposits cannot be
   reverted. This prevents us from crediting the user account and then having the deposit transaction fail.
 
   We use 'confirmed' for withdrawals because we want to have fast withdrawals to boost user satisfaction. Also, it's not as important to have withdrawals
@@ -36,17 +36,15 @@ const FEE = 5000;
 class BlockchainService {
   private connection = new Connection('http://127.0.0.1:8899', 'finalized');
 
-  public async getTransactionValueAndVerify(
-    transaction: TransactionSignature
-  ): Promise<number> {
+  public async getTransactionValueAndVerify(transaction: TransactionSignature): Promise<number> {
     // Get the transaction details
     const txDetail = await this.connection.getParsedTransaction(transaction, {
-      commitment: 'finalized',
+      commitment: 'finalized'
     });
 
     // Check if the transaction details are valid
     if (txDetail === null || txDetail.meta === null) {
-      throw new Error('Transaction meta data not found');
+      throw new BlockchainTransactionError('Transaction meta data not found');
     }
     const accountKeys = txDetail.transaction.message.accountKeys;
     let depositAmount = 0;
@@ -54,8 +52,7 @@ class BlockchainService {
     // Iterate through the account keys to find the deposit amount
     accountKeys.forEach((account, index) => {
       if (account.pubkey.equals(HOUSE_WALLET_ADDRESS)) {
-        depositAmount =
-          txDetail.meta.postBalances[index] - txDetail.meta.preBalances[index];
+        depositAmount = txDetail.meta.postBalances[index] - txDetail.meta.preBalances[index];
       }
     });
 
@@ -130,13 +127,11 @@ class BlockchainService {
     // Sign the transaction with the house wallet private key and return it
     transaction.sign(HOUSE_WALLET_PRIVATE_KEY);
 
-    const resp: BuildTransactionResponse = {
+    return {
       transactionSignature: transaction,
       blockhash: blockhash,
       lastValidBlockHeight: blockHeight,
     };
-
-    return resp;
   }
 }
 

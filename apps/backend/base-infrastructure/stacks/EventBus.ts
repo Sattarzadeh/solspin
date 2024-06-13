@@ -1,5 +1,7 @@
-import * as cdk from 'aws-cdk-lib';
-import { StackContext, EventBus, EventBusRuleProps } from 'sst/constructs';
+import * as cdk from "aws-cdk-lib";
+import { EventBus, StackContext } from "sst/constructs";
+
+require("dotenv").config();
 
 /**
  * Event Bus Stack
@@ -15,26 +17,11 @@ import { StackContext, EventBus, EventBusRuleProps } from 'sst/constructs';
  * @param {StackContext} props.stack - The SST stack context
  */
 export function Event({ stack }: StackContext) {
-  const eventBus = new EventBus(stack, 'EventBus', {
-    rules: {
-      ProcessBetRule: {
-        pattern: { source: ['processBet'] },
-        targets: {
-          myTarget1: 'src/processBet.handler',
-        },
-      },
-      UpdateBalanceRule: {
-        pattern: { source: ['updateBalance'] },
-        targets: {
-          myTarget1: 'src/updateBalance.handler',
-        },
-      },
-    },
-  });
+  const eventBus = new EventBus(stack, "EventBus", {});
 
-  new cdk.CfnOutput(stack, 'EventBusArn', {
+  new cdk.CfnOutput(stack, "EventBusArn", {
     value: eventBus.eventBusArn,
-    exportName: `EventBusArn--${process.env.STAGE}`,
+    exportName: `EventBusArn--dev`,
   });
 
   return {

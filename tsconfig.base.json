@@ -15,10 +15,25 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shared-errors/*": ["shared-types/src/lib/errors/*"],
-      "@shared-types/*": ["shared-types/src/lib/*"],
-      "@wallet-microservice/*": ["apps/wallet-microservice/src/*"],
       "@betting-microservice/*": ["apps/betting-microservice/src/*"],
+      "@solspin/errors": [
+        "@solspin/errors/src/index.ts"
+      ],
+      "@solspin/betting-types": [
+        "@solspin/types/src/service/betting/types.ts"
+      ],
+      "@solspin/events": [
+        "@solspin/events/src/index.ts"
+      ],
+      "@solspin/treasury-types": [
+        "@solspin/types/src/service/treasury/types.ts"
+      ],
+      "@solspin/types": [
+        "@solspin/types/src/index.ts"
+      ],
+      "@solspin/wallet-types": [
+        "@solspin/types/src/service/wallet/types.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

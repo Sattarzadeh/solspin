@@ -6,5 +6,13 @@
     "types": ["node", "express"]
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
-  "include": ["src/**/*.ts", "../../shared-types/src/lib/errors/ResourceNotFoundError.ts", "../../shared-types/src/lib/errors/InvalidResourceError.ts", "../../shared-types/src/lib/errors/InsufficientBalanceError.ts", "../../shared-types/src/lib/errors/CustomError.ts", "../../shared-types/src/lib/errors/ErrorHandler.ts", "src/repository/Repository.ts"]
+  "include": [
+    "src/**/*.ts",
+    "../../@solspin/errors/src/ResourceNotFoundError.ts",
+    "../../@solspin/errors/src/InvalidResourceError.ts",
+    "../../@solspin/errors/src/InsufficientBalanceError.ts",
+    "../../@solspin/errors/src/CustomError.ts",
+    "../../@solspin/errors/src/ErrorHandler.ts",
+    "src/repository/Repository.ts"
+  ]
 }

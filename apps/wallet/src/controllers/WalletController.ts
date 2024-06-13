@@ -1,13 +1,12 @@
-import { Request, Response } from 'express';
-import { errorHandler } from '@shared-errors/ErrorHandler';
-import { InvalidInputError } from '@shared-types/errors/InvalidInputError';
+import { Request, Response } from "express";
+import { errorHandler, InvalidInputError } from "@solspin/errors";
 import {
-  handleDeposit,
-  handleWithdrawal,
   createWallet,
   getBalance,
+  handleDeposit,
+  handleWithdrawal,
   updateUserBalance,
-} from '../services/TransactionService';
+} from "../services/TransactionService";
 
 class WalletController {
   public deposit = async (req: Request, res: Response): Promise<void> => {
@@ -15,13 +14,11 @@ class WalletController {
       const userId = req.params.userId;
       const { walletAddress, signedTransaction: base64Transaction } = req.body;
 
-      console.log(
-        `Deposit for user: ${userId} with walletAddress: ${walletAddress}`
-      );
+      console.log(`Deposit for user: ${userId} with walletAddress: ${walletAddress}`);
 
       await handleDeposit(userId, walletAddress, base64Transaction);
 
-      res.status(200).send('Deposit successful');
+      res.status(200).send("Deposit successful");
     } catch (error) {
       errorHandler(error, res);
     }
@@ -34,7 +31,7 @@ class WalletController {
 
       await handleWithdrawal(userId, walletAddress, amount);
 
-      res.status(200).send('Withdrawal successful');
+      res.status(200).send("Withdrawal successful");
     } catch (error) {
       errorHandler(error, res);
     }
@@ -57,12 +54,12 @@ class WalletController {
       const { walletAddress } = req.body;
 
       if (!userId || !walletAddress) {
-        res.status(400).send('Missing required fields');
+        res.status(400).send("Missing required fields");
         return;
       }
 
       await createWallet(userId, walletAddress);
-      res.status(200).send('Wallet created successfully');
+      res.status(200).send("Wallet created successfully");
     } catch (error) {
       errorHandler(error, res);
     }
@@ -73,14 +70,14 @@ class WalletController {
       const userId = req.params.userId;
       const amount = req.body.amount;
 
-      console.log('Updating balance for user:', userId, amount);
+      console.log("Updating balance for user:", userId, amount);
       if (!userId || !amount) {
-        throw new InvalidInputError('Missing required fields');
+        throw new InvalidInputError("Missing required fields");
       }
 
       await updateUserBalance(userId, amount);
 
-      res.status(200).send('Balance updated successfully');
+      res.status(200).send("Balance updated successfully");
     } catch (error) {
       errorHandler(error, res);
     }

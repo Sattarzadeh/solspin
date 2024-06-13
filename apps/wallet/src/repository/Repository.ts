@@ -1,17 +1,8 @@
-import { InvalidResourceError } from '@shared-errors/InvalidResourceError';
-import { DuplicateResourceError } from '@shared-errors/DuplicateResourceError';
-import {
-  Wallet,
-  Transaction,
-  TransactionPurpose,
-} from '@shared-types/shared-types';
+import { DuplicateResourceError, InvalidResourceError, ResourceNotFoundError } from '@solspin/errors';
+import { Transaction, TransactionPurpose, Wallet } from '@solspin/wallet-types';
 import { GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
 import dynamoDB from '../db/DbConnection';
-import {
-  ConditionalCheckFailedException,
-  ReturnValue,
-} from '@aws-sdk/client-dynamodb';
+import { ConditionalCheckFailedException, ReturnValue } from '@aws-sdk/client-dynamodb';
 
 const walletsTableName = process.env.AWS_WALLETS_TABLE_NAME;
 const transactionTableName = process.env.AWS_TRANSACTION_TABLE_NAME;
@@ -24,7 +15,7 @@ export const depositToDb = async (
 ): Promise<void> => {
   // Check if the signature is valid for a deposit
   if (isDeposit && !signature) {
-    throw new InvalidResourceError('Invalid signature');
+    throw new InvalidResourceError'Invalid signature'");
   }
 
   // Update the balance
@@ -36,7 +27,7 @@ export const depositToDb = async (
     Key: { userId: wallet.userId },
     UpdateExpression: 'set balance = :balance',
     ExpressionAttributeValues: {
-      ':balance': wallet.balance,
+      ':balance': wallet.balance
     },
     ReturnValues: ReturnValue.ALL_NEW,
   };
@@ -74,7 +65,7 @@ export const withdrawFromDb = async (
     await updateUser(wallet);
 
     // Record the transaction
-    recordTransaction(signature, wallet.userId, amount, false);
+    await recordTransaction(signature, wallet.userId, amount, false);
   } catch (error) {
     // Log and throw an error
     console.log('Error withdrawing from wallet:', error);
@@ -101,20 +92,14 @@ export const getWagerRequirement = async (userId: string): Promise<number> => {
   return wallet.wagerRequirement;
 };
 
-export const updateWagerRequirement = async (
-  userId: string,
-  amount: number
-): Promise<void> => {
+export const updateWagerRequirement = async (userId: string, amount: number): Promise<void> => {
   // Fetch the wallet
   const wallet = await getWallet(userId);
   // Update the wager requirement
   wallet.wagerRequirement += amount;
 };
 
-export const addWallet = async (
-  userId: string,
-  address: string | null = null
-): Promise<Wallet> => {
+export const addWallet = async (userId: string, address: string | null = null): Promise<Wallet> => {
   // Check if the wallet already exists
   try {
     await getWallet(userId);
@@ -132,7 +117,7 @@ export const addWallet = async (
     balance: 0,
     wagerRequirement: 0,
     address: address ? address : '',
-    lockedAt: '0',
+    lockedAt: '0'
   };
 
   // add the user to the database
@@ -206,8 +191,8 @@ export const lockWallet = async (userId: string): Promise<Wallet> => {
 
       Attempt to lock the wallet by setting lockedAt to the current time.
       The wallet will be locked for the specified duration.
-      If the wallet is already locked, the lock will only be acquired if the lock has expired. 
-      
+      If the wallet is already locked, the lock will only be acquired if the lock has expired.
+
       */
     const result = await dynamoDB.send(
       new UpdateCommand({
@@ -217,9 +202,9 @@ export const lockWallet = async (userId: string): Promise<Wallet> => {
         ConditionExpression: `lockedAt <= :lockExpiredAt`,
         ExpressionAttributeValues: {
           ':now': now.toString(),
-          ':lockExpiredAt': (now - lockFor).toString(),
+          ':lockExpiredAt': (now - lockFor).toString()
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: 'ALL_NEW'
       })
     );
 
@@ -255,7 +240,7 @@ export const unlockWallet = async (userId: string): Promise<void> => {
         Key: { userId: userId },
         UpdateExpression: `SET lockedAt =:now`,
         ExpressionAttributeValues: {
-          ':now': '0',
+          ':now': '0'
         },
         ReturnValues: ReturnValue.ALL_NEW,
       })

@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
-import { TransactionService } from '../services/TransactionService';
-import BlockchainService from '../services/BlockchainService';
+import { Request, Response } from "express";
+import { TransactionService } from "../services/TransactionService";
+import BlockchainService from "../services/BlockchainService";
+import { errorHandler } from "@solspin/errors";
 
 export class TreasuryController {
   private transactionService: TransactionService;
@@ -12,12 +13,12 @@ export class TreasuryController {
 
   public withdraw = async (req: Request, res: Response): Promise<void> => {
     try {
-      console.log('Withdraw request received');
+      console.log("Withdraw request received");
       const userId = req.params.userId;
       const { amount, walletAddress } = req.body;
 
       if (!userId || !amount || !walletAddress) {
-        res.status(400).send('Invalid request');
+        res.status(400).send("Invalid request");
         return;
       }
 
@@ -32,7 +33,7 @@ export class TreasuryController {
       res.status(200).send({ signature });
     } catch (error) {
       console.log(error);
-      res.status(500).send('Internal server error');
+      errorHandler(error, res);
     }
   };
 
@@ -55,7 +56,10 @@ export class TreasuryController {
       res.status(200).send(JSON.stringify(response));
     } catch (error) {
       console.log(error);
-      res.status(500).send('Internal server error');
+      if (error instanceof Error) {
+        errorHandler(error, res);
+      }
+      throw Error("Internal server error");
     }
   };
 }

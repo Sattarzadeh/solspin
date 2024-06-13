@@ -1,48 +1,39 @@
-import { InvalidResourceError } from '@shared-errors/InvalidResourceError';
-import { ResourceNotFoundError } from '@shared-errors/ResourceNotFoundError';
+import { InvalidResourceError, ResourceNotFoundError } from '@solspin/errors';
 import { PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import dynamoDb from '../../db/DbConnection';
-import {
-  depositToDb,
-  withdrawFromDb,
-  getBalance,
-  getWagerRequirement,
-  addWallet,
-} from 'apps/wallet/src/repository/Repository';
+import { addWallet, depositToDb, getBalance, getWagerRequirement, withdrawFromDb } from '../../repository/Repository';
 
-jest.mock('../../db/DbConnection', () => ({
+jest.mock("../../db/DbConnection", () => ({
   send: jest.fn(),
 }));
 
-describe('DatabaseHandlerService', () => {
-  const userId = 'testUser';
-  const walletAddress = 'testAddress';
+describe("DatabaseHandlerService", () => {
+  const userId = "testUser";
+  const walletAddress = "testAddress";
   const depositAmount = 100;
-  const signature = 'testSignature';
+  const signature = "testSignature";
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('depositToDb', () => {
+  describe("depositToDb", () => {
     const wallet = {
       userId: userId,
       balance: 0,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0',
+      lockedAt: "0",
     };
 
-    it('should throw InvalidResourceError if no signature for deposit', async () => {
+    it'should throw InvalidResourceError if no signature for deposit'", async () => {
       const mockBets = [{ user_id: userId, amount: 100 }];
       (dynamoDb.send as jest.Mock).mockResolvedValue({ Items: mockBets });
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({
         Item: wallet,
       });
 
-      await expect(depositToDb(wallet, depositAmount, null)).rejects.toThrow(
-        InvalidResourceError
-      );
+      await expect(depositToDb(wallet, depositAmount, null)).rejects.toThrow(InvalidResourceError);
     });
 
     it('should update the user wallet and record transaction', async () => {
@@ -62,7 +53,7 @@ describe('DatabaseHandlerService', () => {
       balance: 50,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0',
+      lockedAt: '0'
     };
 
     it('should throw InvalidResourceError if insufficient balance', async () => {
@@ -70,9 +61,9 @@ describe('DatabaseHandlerService', () => {
         Item: wallet,
       });
 
-      await expect(
-        withdrawFromDb(wallet, depositAmount, signature)
-      ).rejects.toThrow(InvalidResourceError);
+      await expect(withdrawFromDb(wallet, depositAmount, signature)).rejects.toThrow(
+        InvalidResourceError
+      );
     });
 
     it('should update the user wallet and record transaction', async () => {
@@ -92,7 +83,7 @@ describe('DatabaseHandlerService', () => {
       balance: 150,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0',
+      lockedAt: '0'
     };
 
     it('should return the balance of the wallet', async () => {
@@ -111,7 +102,7 @@ describe('DatabaseHandlerService', () => {
       balance: 0,
       wagerRequirement: 300,
       address: walletAddress,
-      lockedAt: '0',
+      lockedAt: '0'
     };
     it('should return the wager requirement of the wallet', async () => {
       (dynamoDb.send as jest.Mock).mockResolvedValueOnce({
@@ -129,7 +120,7 @@ describe('DatabaseHandlerService', () => {
       balance: 0,
       wagerRequirement: 0,
       address: walletAddress,
-      lockedAt: '0',
+      lockedAt: '0'
     };
     it('should create a new wallet if user exists', async () => {
       const user = { wallet };

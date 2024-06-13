@@ -1,33 +1,28 @@
 /* eslint-disable */
-import { exec } from 'child_process';
-import { spawnShellCommand } from './helper';
-require('dotenv').config();
+import { exec } from "child_process";
+import { spawnShellCommand } from "./helper";
+
+require("dotenv").config();
 
 module.exports = async function () {
   // Set the environment variable for tests
-  process.env.NODE_ENV = 'development';
+  process.env.NODE_ENV = "development";
 
   // Start services that the app needs to run (e.g., database, docker-compose, etc.).
-  console.log('\nSetting up...\n');
+  console.log("\nSetting up...\n");
 
   return new Promise<boolean>((resolve, reject) => {
-    const treasuryService = spawnShellCommand(
-      'npx nx run treasury-microservice:serve',
-      {}
-    );
-    const walletService = spawnShellCommand(
-      'npx nx run wallet-microservice:serve',
-      {}
-    );
-    const solanaValidator = spawnShellCommand('solana-test-validator', {});
+    const treasuryService = spawnShellCommand("npx nx run treasury-microservice:serve", {});
+    const walletService = spawnShellCommand("npx nx run wallet:serve", {});
+    const solanaValidator = spawnShellCommand("solana-test-validator", {});
 
     // Hint: Use `globalThis` to pass variables to global teardown.
-    globalThis.__TEARDOWN_MESSAGE__ = '\nTearing down...\n';
+    globalThis.__TEARDOWN_MESSAGE__ = "\nTearing down...\n";
     globalThis.__TREASURY_SERVICE = treasuryService;
     globalThis.__WALLET_SERVICE = walletService;
 
     // Start the Docker container for DynamoDB
-    exec('docker compose up -d', (error, stdout, stderr) => {
+    exec("docker compose up -d", (error, stdout, stderr) => {
       if (error) {
         console.error(`Error starting Docker container: ${error.message}`);
         return reject(false);

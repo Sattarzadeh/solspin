@@ -1,20 +1,20 @@
 // test/DatabaseHandlerintegration.test.js
-import { PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import dynamoDB from '../../db/DbConnection';
-import { Wallet } from '@shared-types/shared-types';
-import { lockWallet, getWallet } from 'apps/wallet/src/repository/Repository';
+import { Wallet } from '@solspin/wallet-types';
+import { getWallet, lockWallet } from '../../repository/Repository';
 
 jest.setTimeout(15000);
 
-describe('DatabaseHandlerService Integration', () => {
+describe("DatabaseHandlerService Integration", () => {
   let user: Wallet;
   beforeAll(async () => {
     user = {
-      userId: 'test-user',
+      userId: "test-user",
       balance: 100,
       wagerRequirement: 0,
-      address: 'test-address',
-      lockedAt: '0',
+      address: "test-address",
+      lockedAt: "0",
     };
     await dynamoDB.send(
       new PutCommand({
@@ -30,7 +30,7 @@ describe('DatabaseHandlerService Integration', () => {
     await dynamoDB.send(
       new DeleteCommand({
         TableName: process.env.AWS_WALLETS_TABLE_NAME,
-        Key: { userId: 'test-user' },
+        Key: { userId:'test-user'" ,
       })
     );
   });
