@@ -16,11 +16,15 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   const sessionId = uuidv4();
+  const ttlInSeconds = 3 * 60 * 60; // 3 hours in seconds
+  const expiresAt = Math.floor(Date.now() / 1000) + ttlInSeconds;
+
   const sessionData = {
     sessionId,
     userId,
     createdAt: Date.now().toString(),
     serverSeed: '',
+    expiresAt: expiresAt,
   };
 
   const putParams = {

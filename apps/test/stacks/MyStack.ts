@@ -28,21 +28,33 @@ export function API({ stack }: StackContext) {
   // });
 
   // Create DynamoDB Table
-  const table = new Table(stack, 'Sessions', {
+  const sessionsTable = new Table(stack, 'Sessions', {
     fields: {
       sessionId: 'string',
       userId: 'string',
       createdAt: 'string',
       serverSeed: 'string',
+      expiresAt: 'number',
     },
     primaryIndex: { partitionKey: 'sessionId' },
+    timeToLiveAttribute: 'expireAt',
   });
 
+  const userTable = new Table(stack, 'Users', {
+    fields: {
+      userId: 'string',
+      createdAt: 'string',
+      updatedAt: 'string',
+      discordName: 'string',
+      username: 'string',
+    },
+    primaryIndex: { partitionKey: 'userId' },
+  });
   // Create API and configure Lambda functions
   const api = new Api(stack, 'api', {
     defaults: {
       function: {
-        bind: [table],
+        bind: [sessionsTable, userTable],
       },
     },
     routes: {
@@ -52,6 +64,9 @@ export function API({ stack }: StackContext) {
         'packages/functions/src/handlers/createSession.handler',
       'GET /api/session': 'packages/functions/src/handlers/getSession.handler',
       'DELETE /api/session': 'packages/functions/src/deleteSession.handler',
+      'POST /api/user': 'packages/functions/src/createUser.handler',
+      'PATCH /api/user': 'packages/functions/src/updateUser.handler',
+      'DELETE /api/user': 'packages/functions/src/deleteUser.handler',
     },
   });
 

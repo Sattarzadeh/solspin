@@ -5,19 +5,19 @@ import { Table } from 'sst/node/table';
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
-  const sessionId = event.queryStringParameters?.sessionId;
+  const sessionId = event.queryStringParameters?.sessionId?.trim();
 
   if (!sessionId) {
     return {
       statusCode: 401,
-      body: JSON.stringify({ message: 'Missing sessionId' }),
+      body: JSON.stringify({ message: 'Missing or invalid session id' }),
     };
   }
 
   try {
     // Retrieve session data from DynamoDB
     const getParams = {
-      TableName: Table.Sessions.tableName, // Reference the table name dynamically
+      TableName: Table.Sessions.tableName,
       Key: {
         sessionId,
       },
@@ -32,6 +32,15 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     }
 
     const session = sessionData.Item;
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (session.expireAt < currentTime) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: 'Session expired' }),
+      };
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify({ session }),
