@@ -1,0 +1,19 @@
+{
+  "name": "@solspin-errors",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "@solspin/errors/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/@solspin/errors",
+        "main": "@solspin/errors/src/index.ts",
+        "tsConfig": "@solspin/errors/tsconfig.lib.json",
+        "assets": ["@solspin/errors/*.md"]
+      }
+    }
+  }
+}
