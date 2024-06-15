@@ -21,7 +21,7 @@
       "options": {
         "command": "build"
       },
-      "outputs": ["apps/betting/.sst"]
+      "outputs": ["apps/backend/services/betting/.sst"]
     },
     "deploy": {
       "executor": "@berenddeboer/nx-sst:sst",
@@ -36,7 +36,7 @@
       }
     },
     "lint": {
-      "command": "eslint apps/betting/**/*.ts"
+      "command": "eslint apps/backend/services/betting/**/*.ts"
     }
   }
 }

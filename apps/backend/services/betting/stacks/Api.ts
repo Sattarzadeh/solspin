@@ -1,7 +1,8 @@
 import { Api, StackContext, Table } from "sst/constructs";
 import { RemovalPolicy } from "aws-cdk-lib";
 
-export function MyStack({ stack }: StackContext) {
+export function ApiStack({ stack }: StackContext) {
+  const removeOnDelete = stack.stage !== "prod";
   // Create a DynamoDB table
   const votes_table = new Table(stack, "Votes", {
     fields: {
@@ -11,21 +12,20 @@ export function MyStack({ stack }: StackContext) {
     primaryIndex: { partitionKey: "what" },
     cdk: {
       table: {
-        removalPolicy: RemovalPolicy.DESTROY,
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
       },
     },
   });
 
-  // Create a HTTP API
-  const api = new Api(stack, "Api", {
+  const api = new Api(stack, "api", {
     defaults: {
       function: {
         bind: [votes_table],
       },
     },
     routes: {
-      //"GET /votes": "functions/src/get-votes.handler",
-      //"POST /votes": "functions/src/set-votes.handler",
+      "POST /bets/{userId}": "src/services/api/functions/bet.handler",
+      "GET /bets/{userId}": "src/services/api/functions/betHistory.handler",
     },
   });
 

@@ -1,1 +1,1 @@
-import "./.sst/types/index.ts";
+import "./.sst/types/index.js";
