@@ -33,11 +33,9 @@ export function API({ stack }: StackContext) {
         "packages/functions/src/websocket-handler/handlers/authenticateUser.handler",
       "GET /generate-seed":
         "packages/functions/src/websocket-handler/handlers/generateServerSeed.handler",
-      "POST /logout": "packages/functions/src/handlers/websocket-handler/handleLogout.handler",
-      "GET /close-connection":
+      "POST /logout": "packages/functions/src/websocket-handler/handlers/handleLogout.handler",
+      "POST /close-connection":
         "packages/functions/src/websocket-handler/handlers/handleConnectionClose.handler",
-      "GET /connection-info":
-        "packages/functions/src/websocket-handler/handlers/getConnectionInfo.handler",
     },
   });
 
