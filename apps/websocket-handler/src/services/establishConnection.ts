@@ -1,17 +1,9 @@
 import { ConnectionInfo } from "../models/connectionInfo";
-
-async function saveConnectionInfo(connectionId: string, info: ConnectionInfo): Promise<void> {
-  // Implement the function to save connection info to DynamoDB
-}
-
-async function deleteConnectionInfo(connectionId: string): Promise<void> {
-  // Implement the function to delete connection info from DynamoDB
-}
-
-async function getConnectionInfoFromDB(connectionId: string): Promise<ConnectionInfo | null> {
-  // Implement the function to get connection info from DynamoDB
-  return null; // Placeholder return
-}
+import {
+  saveConnectionInfo,
+  deleteConnectionInfo,
+  getConnectionInfoFromDB,
+} from "../repository/connectionRepository";
 
 export const handleNewConnection = async (connectionId: string): Promise<string> => {
   const connectionInfo: ConnectionInfo = {
