@@ -27,12 +27,15 @@ export const authenticateUser = async (connectionId: string, userId: string): Pr
 
 export const generateServerSeed = async (connectionId: string): Promise<string> => {
   const connectionInfo = await getConnectionInfoFromDB(connectionId);
-  const serverSeed = randomBytes(32).toString("hex");
-  if (connectionInfo) {
+
+  if (connectionInfo && connectionInfo.isAuthenticated) {
+    const serverSeed = randomBytes(32).toString("hex");
     connectionInfo.serverSeed = serverSeed;
     await saveConnectionInfo(connectionId, connectionInfo);
+    return serverSeed;
+  } else {
+    throw new Error("Unauthorized: User is not authenticated");
   }
-  return serverSeed;
 };
 
 export const handleLogout = async (connectionId: string): Promise<void> => {
@@ -40,6 +43,7 @@ export const handleLogout = async (connectionId: string): Promise<void> => {
   if (connectionInfo) {
     connectionInfo.isAuthenticated = false;
     delete connectionInfo.userId;
+    delete connectionInfo.serverSeed;
     await saveConnectionInfo(connectionId, connectionInfo);
   }
 };
