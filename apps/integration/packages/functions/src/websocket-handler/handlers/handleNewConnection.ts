@@ -1,5 +1,5 @@
 import { ApiHandler } from "sst/node/api";
-import { handleNewConnection } from "../../../../../websocket-handler/src/services/handleConnections";
+import { handleNewConnection } from "../../../../../../websocket-handler/src/services/handleConnections";
 
 export const handler = ApiHandler(async (event) => {
   const connectionId = event.queryStringParameters?.connectionId;
