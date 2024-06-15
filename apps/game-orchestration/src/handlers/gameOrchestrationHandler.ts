@@ -2,11 +2,11 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import { callIsAuthorized } from '../helpers/isAuthorizedHelper';
 import { callGetBalance } from '../helpers/getBalanceHelper';
 import { callGetCase } from '../helpers/getCaseHelper'; // Import the new helper
-import { sendMessageToSQS } from '../helpers/sendSqsMessage';
 import { webSocketPayload } from '../models/websocketPayload';
-
-const QUEUE_URL =
-  'https://sqs.<region>.amazonaws.com/<account-id>/<queue-name>'; // Replace with your SQS Queue URL
+import { getUserFromWebSocket } from '../helpers/getUserFromWebsocketHelper';
+import { performSpinHelper } from '../helpers/performSpinHelper';
+import { WebsocketConnection } from '../models/websocketConnection';
+import { CaseItem } from '../models/caseItemModel';
 
 export const gameOrchestrationHandler: APIGatewayProxyHandler = async (
   event
@@ -35,7 +35,7 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (
 
   try {
     // Call the isAuthorized Lambda function
-    const user = await getUserFromWebSocket(token);
+    const user: WebsocketConnection = await getUserFromWebSocket(sid);
 
     if (!user || !user.isAuthorized) {
       return {
@@ -71,14 +71,24 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (
     const balancePayload = await callGetBalance(userId);
 
     if (balancePayload.balance >= casePrice) {
-      // If balance is sufficient, send a message to the SQS queue
-      const messageBody = {
-        userId,
-        caseId,
-        casePrice,
+      // If balance is sufficient, perform spin
+
+      const caseItem: CaseItem = await performSpinHelper(
         clientSeed,
         serverSeed,
-        timestamp: new Date().toISOString(),
+        caseData
+      );
+
+      let newBalance = balancePayload.balance - casePrice;
+      newBalance = balancePayload.balance + caseItem.price;
+
+      // Record bet and send to front end for live drop feed
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          caseItem,
+        }),
       };
 
       // Spin here
