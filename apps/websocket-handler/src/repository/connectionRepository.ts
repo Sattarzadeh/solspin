@@ -9,7 +9,11 @@ import { ConnectionInfo } from "../models/connectionInfo";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
-const tableName = "websocket-connections";
+const tableName = process.env.TABLE_NAME;
+
+if (!tableName) {
+  throw new Error("TABLE_NAME environment variable is not set");
+}
 
 export const saveConnectionInfo = async (
   connectionId: string,
