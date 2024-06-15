@@ -4,11 +4,13 @@ import { callGetBalance } from '../helpers/getBalanceHelper';
 import { callGetCase } from '../helpers/getCaseHelper'; // Import the new helper
 import { sendMessageToSQS } from '../helpers/sendSqsMessage';
 import { webSocketPayload } from '../models/websocketPayload';
-import redis from '../redis/redisConnection'; // Import centralized Redis connection
 
-const QUEUE_URL = 'https://sqs.<region>.amazonaws.com/<account-id>/<queue-name>'; // Replace with your SQS Queue URL
+const QUEUE_URL =
+  'https://sqs.<region>.amazonaws.com/<account-id>/<queue-name>'; // Replace with your SQS Queue URL
 
-export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) => {
+export const gameOrchestrationHandler: APIGatewayProxyHandler = async (
+  event
+) => {
   let payload: webSocketPayload;
 
   try {
@@ -20,49 +22,41 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) =>
     };
   }
 
-  const { token, caseId, clientSeed, sessionId } = payload;
+  const { caseId, clientSeed, sid } = payload;
 
-  if (!token || !caseId || clientSeed === undefined || !sessionId) {
+  if (!caseId || clientSeed === undefined || !sid) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: 'Token, caseId, clientSeed, or sessionId is missing' }),
+      body: JSON.stringify({
+        message: 'caseId, clientSeed, or sid is missing',
+      }),
     };
   }
 
   try {
     // Call the isAuthorized Lambda function
-    const authPayload = await callIsAuthorized(token);
+    const user = await getUserFromWebSocket(token);
 
-    if (!authPayload.isAuthorized) {
+    if (!user || !user.isAuthorized) {
       return {
         statusCode: 403,
         body: JSON.stringify({ isAuthorized: false, message: 'Unauthorized' }),
       };
     }
 
-    const userId = authPayload.userId; // Assuming the payload contains userId
-
-    // Retrieve session data from Redis
-    const sessionData = await redis.get(`session:${sessionId}`);
-
-    if (!sessionData) {
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ message: 'Invalid session' }),
-      };
-    }
-
-    const session = JSON.parse(sessionData);
-    
-    // Abort if there is no server seed in the session
-    if (!session.serverSeed) {
+    if (!user.serverSeed) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: 'Server seed is missing. Please request a server seed before opening a case.' }),
+        body: JSON.stringify({
+          message:
+            'Server seed is missing. Please request a server seed before opening a case.',
+        }),
       };
     }
 
-    const serverSeed = session.serverSeed;
+    const userId = user.userId;
+
+    const serverSeed = user.serverSeed;
 
     // Call the getCaseHandler Lambda function to retrieve case details
     const caseData = await callGetCase(caseId);
@@ -87,24 +81,14 @@ export const gameOrchestrationHandler: APIGatewayProxyHandler = async (event) =>
         timestamp: new Date().toISOString(),
       };
 
-      try {
-        const sqsResponse = await sendMessageToSQS(QUEUE_URL, messageBody);
-        console.log('SQS send message response:', sqsResponse);
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ isAuthorized: true, messageId: sqsResponse.MessageId }),
-        };
-      } catch (sqsError) {
-        console.error('Error sending message to SQS:', sqsError);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: 'Failed to send message to SQS' }),
-        };
-      }
+      // Spin here
     } else {
       return {
         statusCode: 403,
-        body: JSON.stringify({ isAuthorized: true, message: 'Insufficient balance' }),
+        body: JSON.stringify({
+          isAuthorized: true,
+          message: 'Insufficient balance',
+        }),
       };
     }
   } catch (error) {
