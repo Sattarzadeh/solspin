@@ -1,7 +1,7 @@
 {
-  "name": "@solpin/types",
+  "name": "@solspin/types",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "@solpin/types/src",
+  "sourceRoot": "@solspin/types/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -9,10 +9,10 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/@solpin/types",
-        "main": "@solpin/types/src/index.ts",
-        "tsConfig": "@solpin/types/tsconfig.lib.json",
-        "assets": ["@solpin/types/*.md"]
+        "outputPath": "dist/@solspin/types",
+        "main": "@solspin/types/src/index.ts",
+        "tsConfig": "@solspin/types/tsconfig.lib.json",
+        "assets": ["@solspin/types/*.md"]
       }
     }
   }

@@ -1,7 +1,7 @@
 {
-  "name": "@solpin/events",
+  "name": "@solspin/events",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "@solpin/events/src",
+  "sourceRoot": "@solspin/events/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -9,18 +9,18 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/@solpin/events",
-        "main": "@solpin/events/src/index.ts",
-        "tsConfig": "@solpin/events/tsconfig.lib.json",
-        "assets": ["@solpin/events/*.md"]
+        "outputPath": "dist/@solspin/events",
+        "main": "@solspin/events/src/index.ts",
+        "tsConfig": "@solspin/events/tsconfig.lib.json",
+        "assets": ["@solspin/events/*.md"]
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["@solpin/events/**/*.ts"],
-        "eslintConfig": "@solpin/events/.eslintrc.json",
-        "ignorePath": "@solpin/events/.eslintignore"
+        "lintFilePatterns": ["@solspin/events/**/*.ts"],
+        "eslintConfig": "@solspin/events/.eslintrc.json",
+        "ignorePath": "@solspin/events/.eslintignore"
       }
     }
   }

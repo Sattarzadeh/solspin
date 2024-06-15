@@ -1,10 +1,7 @@
-import axios, { AxiosInstance } from 'axios';
-import {
-  Currency,
-  DepositTransactionResponse,
-} from '@shared-types/shared-types';
+import axios from "axios";
+import { DepositTransactionResponse } from "@solspin/wallet-types";
 
-const baseURL = 'http://localhost:3001/treasury';
+const baseURL = "http://localhost:3001/treasury";
 const client = axios.create({ baseURL });
 
 export const broadcastWithdrawalTransaction = async (
@@ -65,8 +62,8 @@ export const broadcastDepositTransaction = async (
 const handleError = (error: unknown): void => {
   // Log the error
   if (axios.isAxiosError(error)) {
-    console.error('Error response:', error.response);
+    console.error("Error response:", error.response);
   } else {
-    console.error('Unexpected error:', error);
+    console.error("Unexpected error:", error);
   }
 };

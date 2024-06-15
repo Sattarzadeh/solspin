@@ -1,11 +1,21 @@
-import { Wallet } from '@solspin/wallet-types';
-import { InsufficientBalanceError, InvalidInputError, ResourceNotFoundError } from '@solspin/errors';
-import { addWallet, depositToDb, lockWallet, unlockWallet, withdrawFromDb } from '../repository/Repository';
-import { getCurrentPrice } from '../remote/JupiterRemote';
+import { Wallet } from "@solspin/wallet-types";
+import {
+  InsufficientBalanceError,
+  InvalidInputError,
+  ResourceNotFoundError,
+} from "@solspin/errors";
+import {
+  addWallet,
+  depositToDb,
+  lockWallet,
+  unlockWallet,
+  withdrawFromDb,
+} from "../repository/Repository";
+import { getCurrentPrice } from "../remote/JupiterRemote";
 import {
   broadcastDepositTransaction,
   broadcastWithdrawalTransaction,
-} from'../remote/TreasuryRemote'";
+} from "../remote/TreasuryRemote";
 
 const MIN_WITHDRAWAL_AMOUNT_SOL = 0.1;
 
@@ -29,7 +39,7 @@ export const handleDeposit = async (
 
     await depositToDb(wallet, depositAmountInUsd, depositTransactionResponse.transactionId);
   } catch (error: unknown) {
-    console.error('Error handling deposit:', error);
+    console.error("Error handling deposit:", error);
     throw error;
   } finally {
     await unlockWallet(userId);
@@ -51,11 +61,11 @@ export const handleWithdrawal = async (
     const wallet = await lockWallet(userId);
 
     if (!wallet) {
-      throw new ResourceNotFoundError('Wallet not found');
+      throw new ResourceNotFoundError("Wallet not found");
     }
 
     if (wallet.balance < amount) {
-      throw new InsufficientBalanceError('Insufficient balance');
+      throw new InsufficientBalanceError("Insufficient balance");
     }
 
     if (wallet.wagerRequirement > 0) {
@@ -75,7 +85,7 @@ export const handleWithdrawal = async (
 
     await withdrawFromDb(wallet, amount, signature);
   } catch (error: unknown) {
-    console.error('Error handling withdrawal:', error);
+    console.error("Error handling withdrawal:", error);
     throw error;
   } finally {
     await unlockWallet(userId);

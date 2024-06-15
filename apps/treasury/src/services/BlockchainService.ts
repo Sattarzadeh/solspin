@@ -5,15 +5,15 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  TransactionSignature
-} from '@solana/web3.js';
-import { BuildTransactionResponse } from '@solspin/treasury-types';
-import { HOUSE_WALLET_ADDRESS, HOUSE_WALLET_PRIVATE_KEY } from '../utils/TreasuryUtils';
+  TransactionSignature,
+} from "@solana/web3.js";
+import { BuildTransactionResponse } from "@solspin/treasury-types";
+import { HOUSE_WALLET_ADDRESS, HOUSE_WALLET_PRIVATE_KEY } from "../utils/TreasuryUtils";
 import {
   BlockchainTransactionError,
   InsufficientBalanceError,
-  InvalidInputErro,
-} from'@solspin/errors'";
+  InvalidInputError,
+} from "@solspin/errors";
 
 const FEE = 5000;
 
@@ -34,17 +34,17 @@ const FEE = 5000;
   */
 
 class BlockchainService {
-  private connection = new Connection('http://127.0.0.1:8899', 'finalized');
+  private connection = new Connection("http://127.0.0.1:8899", "finalized");
 
   public async getTransactionValueAndVerify(transaction: TransactionSignature): Promise<number> {
     // Get the transaction details
     const txDetail = await this.connection.getParsedTransaction(transaction, {
-      commitment: 'finalized'
+      commitment: "finalized",
     });
 
     // Check if the transaction details are valid
     if (txDetail === null || txDetail.meta === null) {
-      throw new BlockchainTransactionError('Transaction meta data not found');
+      throw new BlockchainTransactionError("Transaction meta data not found");
     }
     const accountKeys = txDetail.transaction.message.accountKeys;
     let depositAmount = 0;
@@ -58,7 +58,7 @@ class BlockchainService {
 
     // Check if the deposit amount is valid
     if (depositAmount <= 0) {
-      throw new InvalidInputError('Invalid deposit amount');
+      throw new InvalidInputError("Invalid deposit amount");
     }
     return depositAmount / LAMPORTS_PER_SOL;
   }
@@ -88,7 +88,7 @@ class BlockchainService {
 
     if (result.value.err) {
       throw new InsufficientBalanceError(
-        'Wallet has insufficient balance to process the transaction'
+        "Wallet has insufficient balance to process the transaction"
       );
     }
 

@@ -14,7 +14,7 @@ export const saveBet = async (
     throw new InvalidInputError("Missing required fields");
   }
 
-  if (amountBet < 0 || outcomeAmount < 0) {
+  if (amountBet <= 0 || outcomeAmount < 0) {
     throw new InvalidInputError("Invalid bet amount");
   }
 

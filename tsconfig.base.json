@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@betting-microservice/*": ["apps/betting-microservice/src/*"],
+      "@betting/*": ["apps/betting/src/*"],
       "@solspin/errors": [
         "@solspin/errors/src/index.ts"
       ],
@@ -33,7 +33,10 @@
       ],
       "@solspin/wallet-types": [
         "@solspin/types/src/service/wallet/types.ts"
-      ]
+      ],
+      "@bets/service": [
+        "apps/betting/src/services/BettingService.ts"
+      ],
     }
   },
   "exclude": ["node_modules", "tmp"]

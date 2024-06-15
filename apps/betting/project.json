@@ -1,7 +1,7 @@
 {
-  "name": "betting-microservice",
+  "name": "betting",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/betting-microservice/src",
+  "sourceRoot": "apps/betting/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -9,14 +9,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "betting-microservice:build"
+        "buildTarget": "betting:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "betting-microservice:build:development"
+          "buildTarget": "betting:build:development"
         },
         "production": {
-          "buildTarget": "betting-microservice:build:production"
+          "buildTarget": "betting:build:production"
         }
       }
     }

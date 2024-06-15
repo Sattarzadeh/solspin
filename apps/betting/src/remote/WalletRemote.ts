@@ -1,12 +1,9 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from "axios";
 
-const baseURL = 'http://localhost:3000/wallets';
+const baseURL = "http://localhost:3000/wallets";
 const client = axios.create({ baseURL });
 
-export const createTransactionForBet = async (
-  userId: string,
-  amount: number
-) => {
+export const createTransactionForBet = async (userId: string, amount: number) => {
   const params = {
     amount: amount,
   };

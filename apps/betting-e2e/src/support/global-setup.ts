@@ -74,7 +74,7 @@ module.exports = async function () {
       // await waitForDynamoDB();
 
       // Start the wallet microservice
-      const bettingService = spawnShellCommand("npx nx run betting-microservice:serve", {});
+      const bettingService = spawnShellCommand("npx nx run betting:serve", {});
 
       const walletService = spawnShellCommand("npx nx run wallet:serve", {});
 

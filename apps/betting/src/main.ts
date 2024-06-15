@@ -1,13 +1,12 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import bettingRoutes from './routes/BettingRoutes';
-import dotenv from 'dotenv';
+import express from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
 
 dotenv.config();
 const app = express();
 
 app.use(bodyParser.json());
-app.use('/bets', bettingRoutes);
+// app.use('/bets', bettingRoutes);
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {

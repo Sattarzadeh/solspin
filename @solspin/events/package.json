@@ -1,5 +1,5 @@
 {
-  "name": "@solpin/events",
+  "name": "@solspin/events",
   "version": "0.0.1",
   "dependencies": {
     "@aws-sdk/client-eventbridge": "^3.592.0",
