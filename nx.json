@@ -42,7 +42,8 @@
         "apps/payment-e2e/**/*",
         "apps/wallet-e2e/**/*",
         "apps/treasury-microservice-e2e/**/*",
-        "apps/betting-e2e/**/*"
+        "apps/betting-e2e/**/*",
+        "apps/game-engine-e2e/**/*"
       ]
     },
     {
