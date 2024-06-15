@@ -65,17 +65,16 @@ function getProvablyFairResult(
 
 export const generateRollValue = (
   serverSeed: string,
-  clientSeed: string,
-  nonce: number
+  clientSeed: string
 ): number => {
-  if (!serverSeed || !clientSeed || nonce < 0) {
+  if (!serverSeed || !clientSeed) {
     throw new Error('Invalid inputs');
   }
 
   const sanitizedServerSeed = serverSeed.replace(/\r|\n/g, '');
   const sanitizedClientSeed = clientSeed.replace(/\r|\n/g, '');
   const nrand = sanitizedClientSeed.length;
-  const stringToHash = `${sanitizedClientSeed}-${nrand}-${nonce}`;
+  const stringToHash = `${sanitizedClientSeed}-${nrand}}`;
 
   const { result } = getProvablyFairResult(
     stringToHash,

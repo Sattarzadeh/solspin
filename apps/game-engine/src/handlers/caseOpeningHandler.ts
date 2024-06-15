@@ -1,6 +1,9 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
-import { generateRollValue, determineItem } from '../services/caseItemDeterminationService';
+import {
+  generateRollValue,
+  determineItem,
+} from '../services/caseItemDeterminationService';
 import { CaseItem } from '../models/case_item_model';
 import { Case } from '../models/case_model';
 
@@ -12,7 +15,9 @@ export const normalSpinHandler: APIGatewayProxyHandler = async (event) => {
   if (!caseId || !serverSeed || !clientSeed) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: 'caseId, serverSeed, or clientSeed is missing' }),
+      body: JSON.stringify({
+        message: 'caseId, serverSeed, or clientSeed is missing',
+      }),
     };
   }
 
@@ -25,10 +30,7 @@ export const normalSpinHandler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    // Send request to usermanagement microservice to get the nonce associated with the user
-    const nonce = 0;
-
-    const rewardItem = performSpin(caseModel, serverSeed, clientSeed, nonce);
+    const rewardItem = performSpin(caseModel, serverSeed, clientSeed);
     // increment the nonce and then update the db with the usermanagement microservice
     return {
       statusCode: 200,
@@ -64,9 +66,12 @@ const getCaseModel = async (caseId: string): Promise<Case | null> => {
   }
 };
 
-const performSpin = (caseModel: Case, serverSeed: string, clientSeed: string, nonce: number): CaseItem => {
-
-  const rollValue = generateRollValue(serverSeed, clientSeed, nonce);
+const performSpin = (
+  caseModel: Case,
+  serverSeed: string,
+  clientSeed: string
+): CaseItem => {
+  const rollValue = generateRollValue(serverSeed, clientSeed);
   const rewardItem = determineItem(rollValue, caseModel);
   return rewardItem;
 };
