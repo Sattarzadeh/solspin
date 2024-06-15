@@ -1,3 +1,5 @@
+import { randomBytes } from "crypto";
+import { server } from "typescript";
 import { ConnectionInfo } from "../models/connectionInfo";
 import {
   saveConnectionInfo,
@@ -21,6 +23,16 @@ export const authenticateUser = async (connectionId: string, userId: string): Pr
     connectionInfo.userId = userId;
     await saveConnectionInfo(connectionId, connectionInfo);
   }
+};
+
+export const generateServerSeed = async (connectionId: string): Promise<string> => {
+  const connectionInfo = await getConnectionInfoFromDB(connectionId);
+  const serverSeed = randomBytes(32).toString("hex");
+  if (connectionInfo) {
+    connectionInfo.serverSeed = serverSeed;
+    await saveConnectionInfo(connectionId, connectionInfo);
+  }
+  return serverSeed;
 };
 
 export const handleLogout = async (connectionId: string): Promise<void> => {
