@@ -1,7 +1,7 @@
 /* eslint-disable */
 export default {
   displayName: "betting",
-  preset: "../../jest.preset.js",
+  preset: "../../../../jest.preset.js",
   transform: {
     "^.+\\.[tj]sx?$": "babel-jest",
   },
