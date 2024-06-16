@@ -21,7 +21,7 @@
       "options": {
         "command": "build"
       },
-      "outputs": ["apps/backend/services/betting/.sst"]
+      "outputs": ["{projectRoot}/.sst"]
     },
     "deploy": {
       "executor": "@berenddeboer/nx-sst:sst",
