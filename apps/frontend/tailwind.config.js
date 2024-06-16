@@ -1,5 +1,6 @@
 const { createGlobPatternsForDependencies } = require("@nx/react/tailwind");
 const { join } = require("path");
+const plugin = require("tailwindcss/plugin");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -21,5 +22,13 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        ".grid-cols-dynamic": {
+          "grid-template-columns": "repeat(auto-fit, minmax(272px, 272px))",
+        },
+      });
+    }),
+  ],
 };

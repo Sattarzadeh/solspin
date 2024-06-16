@@ -7,9 +7,12 @@
   --color-secondary: #4EB4BF;
   --gradient-border-nav: linear-gradient(90deg, rgba(78, 180, 191, 0.12) 0%, rgba(43, 217, 168, 0.12) 100%);
   --green-gradient: linear-gradient(90deg, #4EB4BF 0%, #2BD9A8 100%);
-
   --filter-dropdown: rgba(83, 108, 122, 0.15);
   --filter-dropdown-hover: rgba(83, 108, 122, 0.4);
+  --case-background: rgba(90, 127, 148, 0.16);
+  --case-min-height: 280px;
+  --case-min-width: 270px;
+  --case-restricted-color: rgba(174, 54, 255, 0.2);
 }
 
 .transition-custom {
@@ -28,6 +31,11 @@
   border-image: var(--gradient-border-nav);
   border-image-slice: 1;
 }
+
+.gradient-background {
+  background: var(--green-gradient);
+}
+
 .sign-in-button {
   background: var(--green-gradient);
 }
@@ -38,4 +46,10 @@
 
 .filter-dropdown:hover {
   background: var(--filter-dropdown-hover);
+}
+
+.case {
+  background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%);
+  min-height: var(--case-min-height, 272px);
+  min-width: var(--case-min-width, 280px);
 }

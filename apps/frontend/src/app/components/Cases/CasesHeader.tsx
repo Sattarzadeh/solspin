@@ -29,13 +29,12 @@ const dropdownItems = [
 
 export const CasesHeader = () => {
   return (
-    <div className="w-full flex justify-between px-8 py-6 items-center">
-      <span className="text-m font-bold text-white gradient-text">Cases</span>
-      <div className={"space-x-8 flex justify-between items-end"}>
-        <div className={"flex space-x-4"}>
+    <div className="w-full flex justify-between py-8 items-center">
+      <div className="flex w-full justify-between items-end space-x-2">
+        <div className="hidden lg:flex space-x-4">
           {dropdownItems.map((item) => (
-            <div className={"flex flex-col space-y-0.5"}>
-              <span className={"text-2xs text-white ml-1.5"}>{item.title}</span>
+            <div key={item.title} className="flex flex-col space-y-0.5">
+              <span className="text-2xs text-white ml-1.5">{item.title}</span>
               <FilterDropdownMenu
                 key={item.title}
                 title={item.title}
@@ -45,7 +44,12 @@ export const CasesHeader = () => {
             </div>
           ))}
         </div>
-        <Search />
+        <button className="lg:hidden flex-1 h-10 bg-custom_gray text-white rounded text-xs font-semibold">
+          Filters
+        </button>
+        <div className="lg:flex-grow-0 lg:flex-shrink lg:basis-auto flex-1 h-10 overflow-clip">
+          <Search />
+        </div>
       </div>
     </div>
   );

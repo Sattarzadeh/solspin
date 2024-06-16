@@ -62,7 +62,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ title, options, onSelect })
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 w-full round-b-md shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="origin-top-right absolute right-0 w-full round-b-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
           <div className="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {options.map((option, index) => (
               <button
