@@ -5,9 +5,13 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.598.0",
+    "@aws-sdk/lib-dynamodb": "^3.598.0",
     "@berenddeboer/nx-sst": "^0.13.5",
     "@swc-node/register": "^1.9.2",
     "@swc/core": "^1.5.27",
+    "aws-cdk-lib": "2.142.1",
+    "aws-lambda": "^1.0.7",
     "axios": "^1.6.0",
     "compare-versions": "^6.1.0",
     "constructs": "10.3.0",
@@ -15,7 +19,6 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "sst": "2.43.0",
-    "aws-cdk-lib": "2.142.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
