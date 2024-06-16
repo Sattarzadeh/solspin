@@ -3,7 +3,6 @@ import { getConnectionInfo } from "../../../../../../websocket-handler/src/servi
 import { ConnectionInfo } from "../../../../../../websocket-handler/src/models/connectionInfo";
 export const handler = ApiHandler(async (event) => {
   const connectionId = event.queryStringParameters?.connectionId;
-
   if (!connectionId) {
     return {
       statusCode: 400,
@@ -12,7 +11,7 @@ export const handler = ApiHandler(async (event) => {
   }
 
   try {
-    const connectionInfo: ConnectionInfo = await getConnectionInfo(connectionId);
+    const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
     return {
       statusCode: 200,
       body: JSON.stringify({ connectionInfo }),

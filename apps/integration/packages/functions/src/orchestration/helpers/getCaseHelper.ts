@@ -3,6 +3,7 @@ import * as AWS from "aws-sdk";
 const lambda = new AWS.Lambda();
 
 export const callGetCase = async (caseId: string) => {
+  console.log(process.env.GET_CASE_FUNCTION_NAME);
   const params = {
     FunctionName: process.env.GET_CASE_FUNCTION_NAME,
     Payload: JSON.stringify({

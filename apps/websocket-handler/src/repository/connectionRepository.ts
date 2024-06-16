@@ -9,6 +9,7 @@ import { ConnectionInfo } from "../models/connectionInfo";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
+console.log(process.env);
 const tableName = process.env.TABLE_NAME;
 
 if (!tableName) {

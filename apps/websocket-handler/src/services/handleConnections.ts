@@ -10,6 +10,7 @@ import {
 export const handleNewConnection = async (connectionId: string): Promise<string> => {
   const connectionInfo: ConnectionInfo = {
     isAuthenticated: false,
+    connectionId,
   };
 
   await saveConnectionInfo(connectionId, connectionInfo);

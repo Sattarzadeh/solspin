@@ -6,11 +6,11 @@ export const performSpin = async (caseId: string, clientSeed: string, serverSeed
   const params = {
     FunctionName: process.env.PERFORM_SPIN_FUNCTION_NAME,
     Payload: JSON.stringify({
-      body: {
+      body: JSON.stringify({
         caseId,
         clientSeed,
         serverSeed,
-      },
+      }),
     }),
   };
 
