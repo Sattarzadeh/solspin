@@ -32,7 +32,7 @@ export const Case: React.FC<CaseProps> = ({ name, price, rarity, tag, image }) =
         <span className="text-white font-bold text-sm">{name}</span>
         <div className="flex items-center justify-between gap-1">
           <img src="/icons/dollar.svg" alt="Dollar" className="h-6 w-6" />
-          <span className="gradient-text">{"$" + price}</span>
+          <span className="gradient-text">{price}</span>
         </div>
       </div>
     </div>
