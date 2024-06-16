@@ -2,7 +2,24 @@ import { ApiHandler } from "sst/node/api";
 import { getCase } from "../../../../../game-engine/src/repository/caseRepository";
 import { handleSpin } from "../../../../../game-engine/src/handlers/caseOpeningHandler";
 export const handler = ApiHandler(async (event) => {
-  const { caseId, serverSeed, clientSeed } = JSON.parse(event.body);
+  console.log(event.body);
+  let parsedBody;
+
+  try {
+    parsedBody = JSON.parse(event.body);
+    console.log("Parsed body:", parsedBody);
+  } catch (parseError) {
+    console.error("Failed to parse body:", parseError);
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "Invalid JSON format",
+        error: parseError.message,
+      }),
+    };
+  }
+
+  const { caseId, serverSeed, clientSeed } = parsedBody;
 
   if (!caseId || !serverSeed || !clientSeed) {
     return {

@@ -1,4 +1,4 @@
-import { StackContext, Api, Table } from "sst/constructs";
+import { StackContext, Api, Table, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 export function GameEngineHandlerAPI({ stack }: StackContext) {
   const casesTable = new Table(stack, "cases", {
@@ -14,7 +14,21 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
     },
     primaryIndex: { partitionKey: "caseId" },
   });
+  const getCaseFunction = new Function(stack, "getCaseFunction", {
+    handler: "packages/functions/src/gameEngineHandlers/getCase.handler",
+    environment: {
+      TABLE_NAME: casesTable.tableName,
+    },
+  });
+  getCaseFunction.attachPermissions("*");
 
+  const performSpinFunction = new Function(stack, "performSpinFunction", {
+    handler: "packages/functions/src/gameEngineHandlers/spin.handler",
+    environment: {
+      TABLE_NAME: casesTable.tableName,
+    },
+  });
+  performSpinFunction.attachPermissions("*");
   const api = new Api(stack, "GameEngineApi", {
     defaults: {
       function: {
@@ -42,5 +56,11 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     TableName: casesTable.tableName,
+    test: getCaseFunction.functionName,
   });
+  return {
+    getCaseFunction,
+    casesTable,
+    performSpinFunction,
+  };
 }

@@ -1,4 +1,4 @@
-import { StackContext, Api, Table } from "sst/constructs";
+import { StackContext, Api, Table, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 export function WebSocketHandlerAPI({ stack }: StackContext) {
   const websocketConnectionsTable = new Table(stack, "websocket-connections", {
@@ -10,6 +10,14 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
     },
     primaryIndex: { partitionKey: "connectionId" },
   });
+
+  const getConnectionFunction = new Function(stack, "getConnectionFunction", {
+    handler: "packages/functions/src/websocket-handler/handlers/getConnectionInfo.handler",
+    environment: {
+      TABLE_NAME: websocketConnectionsTable.tableName,
+    },
+  });
+  getConnectionFunction.attachPermissions("*");
 
   const api = new Api(stack, "WebSocketApi", {
     defaults: {
@@ -36,6 +44,8 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
       "POST /logout": "packages/functions/src/websocket-handler/handlers/handleLogout.handler",
       "POST /close-connection":
         "packages/functions/src/websocket-handler/handlers/handleConnectionClose.handler",
+      "GET /connection":
+        "packages/functions/src/websocket-handler/handlers/getConnectionInfo.handler",
     },
   });
 
@@ -43,4 +53,9 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
     ApiEndpoint: api.url,
     TableName: websocketConnectionsTable.tableName,
   });
+
+  return {
+    getConnectionFunction,
+    websocketTable: websocketConnectionsTable,
+  };
 }
