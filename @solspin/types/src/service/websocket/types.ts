@@ -3,3 +3,9 @@ export interface ConnectionInfo {
   userId?: string;
   serverSeed?: string;
 }
+
+export interface WebSocketPayload {
+  connectionId: string;
+  userId: string;
+  serverSeed: string;
+}
