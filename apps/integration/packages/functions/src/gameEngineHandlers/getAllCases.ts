@@ -1,7 +1,8 @@
 import { ApiHandler } from "sst/node/api";
+import { listCases } from "../../../../../game-engine/src/repository/caseRepository";
 export const handler = ApiHandler(async (event) => {
   try {
-    const cases = await getAllCases();
+    const cases = await listCases();
     return {
       statusCode: 200,
       body: JSON.stringify(cases),

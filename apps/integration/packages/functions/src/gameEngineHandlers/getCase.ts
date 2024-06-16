@@ -1,4 +1,5 @@
 import { ApiHandler } from "sst/node/api";
+import { getCase } from "../../../../../game-engine/src/repository/caseRepository";
 export const handler = ApiHandler(async (event) => {
   const caseId = event.queryStringParameters?.caseId;
 

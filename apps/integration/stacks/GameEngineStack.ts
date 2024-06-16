@@ -1,6 +1,6 @@
 import { StackContext, Api, Table } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
-export function API({ stack }: StackContext) {
+export function GameEngineHandlerAPI({ stack }: StackContext) {
   const casesTable = new Table(stack, "cases", {
     fields: {
       caseId: "string",
@@ -15,7 +15,7 @@ export function API({ stack }: StackContext) {
     primaryIndex: { partitionKey: "caseId" },
   });
 
-  const api = new Api(stack, "api", {
+  const api = new Api(stack, "GameEngineApi", {
     defaults: {
       function: {
         environment: {
@@ -25,21 +25,17 @@ export function API({ stack }: StackContext) {
         permissions: [
           new PolicyStatement({
             actions: ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"],
-            resources: [websocketConnectionsTable.tableArn],
+            resources: [casesTable.tableArn],
           }),
         ],
       },
     },
+
     routes: {
-      "GET /new-connection":
-        "packages/functions/src/websocket-handler/handlers/handleNewConnection.handler",
-      "POST /authenticate-user":
-        "packages/functions/src/websocket-handler/handlers/authenticateUser.handler",
-      "GET /generate-seed":
-        "packages/functions/src/websocket-handler/handlers/generateServerSeed.handler",
-      "POST /logout": "packages/functions/src/websocket-handler/handlers/handleLogout.handler",
-      "POST /close-connection":
-        "packages/functions/src/websocket-handler/handlers/handleConnectionClose.handler",
+      "GET /case": "packages/functions/src/gameEngineHandlers/getCase.handler",
+      "GET /cases": "packages/functions/src/gameEngineHandlers/getAllCases.handler",
+      "GET /initialize": "packages/functions/src/gameEngineHandlers/initializeDatabase.handler",
+      "POST /spin": "packages/functions/src/gameEngineHandlers/spin.handler",
     },
   });
 
