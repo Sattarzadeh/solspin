@@ -1,9 +1,9 @@
 {
   "extends": "../../../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES6",
     "module": "commonjs",
-    "lib": ["es2020"],
+    "lib": ["ES6"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -16,6 +16,7 @@
     "noFallthroughCasesInSwitch": false,
     "sourceMap": false,
     "inlineSourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "esModuleInterop": true
   }
 }

@@ -1,5 +1,5 @@
 import type { SSTConfig } from "sst";
-import { ApiStack } from "./stacks/Api";
+import { ApiStack } from "./stacks/api";
 
 export default {
   config() {

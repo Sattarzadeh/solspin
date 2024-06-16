@@ -14,7 +14,7 @@ export const recordBet = async (
   amountBet: number,
   outcome: GameOutcome,
   outcomeAmount: number
-): Promise<void> => {
+): Promise<BetDBObject> => {
   const id = randomUUID();
   const createdAt = new Date().toISOString();
 
@@ -34,4 +34,14 @@ export const recordBet = async (
       Item: bet,
     })
   );
+
+  return {
+    id,
+    userId,
+    gameId,
+    amountBet,
+    outcome,
+    outcomeAmount,
+    createdAt,
+  };
 };

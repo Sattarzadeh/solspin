@@ -1,5 +1,5 @@
-import { RemovalPolicy } from "aws-cdk-lib";
 import { StackContext, Table } from "sst/constructs";
+import { RemovalPolicy } from "aws-cdk-lib";
 
 export function DatabaseStack({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";
