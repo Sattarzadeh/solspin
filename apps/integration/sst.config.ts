@@ -1,6 +1,6 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/WebSocketHandlerStack";
-
+import { WebSocketHandlerAPI } from "./stacks/WebSocketHandlerStack";
+import { GameEngineHandlerAPI } from "./stacks/GameEngineStack";
 export default {
   config(_input) {
     return {
@@ -9,6 +9,6 @@ export default {
     };
   },
   stacks(app) {
-    app.stack(API);
+    app.stack(WebSocketHandlerAPI).stack(GameEngineHandlerAPI);
   },
 } satisfies SSTConfig;

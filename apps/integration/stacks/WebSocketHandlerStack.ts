@@ -1,6 +1,6 @@
 import { StackContext, Api, Table } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
-export function API({ stack }: StackContext) {
+export function WebSocketHandlerAPI({ stack }: StackContext) {
   const websocketConnectionsTable = new Table(stack, "websocket-connections", {
     fields: {
       connectionId: "string",
@@ -11,7 +11,7 @@ export function API({ stack }: StackContext) {
     primaryIndex: { partitionKey: "connectionId" },
   });
 
-  const api = new Api(stack, "api", {
+  const api = new Api(stack, "WebSocketApi", {
     defaults: {
       function: {
         environment: {
