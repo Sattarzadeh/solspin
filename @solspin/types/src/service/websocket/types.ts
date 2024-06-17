@@ -6,7 +6,6 @@ export interface ConnectionInfo {
 }
 
 export interface WebSocketOrchestrationPayload {
-  connectionId: string;
   caseId: string;
   clientSeed: string;
 }

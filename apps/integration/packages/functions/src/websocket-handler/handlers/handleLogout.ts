@@ -1,9 +1,9 @@
 import { ApiHandler } from "sst/node/api";
+import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleLogout } from "../../../../../../websocket-handler/src/services/handleConnections";
 
-export const handler = ApiHandler(async (event) => {
-  const body = JSON.parse(event.body || "{}");
-  const { connectionId } = body;
+export const handler = WebSocketApiHandler(async (event) => {
+  const connectionId = event.requestContext?.connectionId;
 
   if (!connectionId) {
     return {
@@ -21,7 +21,7 @@ export const handler = ApiHandler(async (event) => {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Failed to logout user", error: error.message }),
+      body: JSON.stringify({ message: "Failed to logout user", error: (error as Error).message }),
     };
   }
 });

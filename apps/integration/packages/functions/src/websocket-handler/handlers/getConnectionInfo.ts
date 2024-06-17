@@ -19,7 +19,10 @@ export const handler = ApiHandler(async (event) => {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Failed to get connection info", error: error.message }),
+      body: JSON.stringify({
+        message: "Failed to get connection info",
+        error: (error as Error).message,
+      }),
     };
   }
 });

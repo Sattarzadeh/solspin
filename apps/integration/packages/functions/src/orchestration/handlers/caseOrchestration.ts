@@ -1,18 +1,19 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
 import { CaseItem, Case } from "@solspin/game-engine-types"; // Assuming CaseModel type is defined here
 import { WebSocketOrchestrationPayload } from "@solspin/websocket-types";
-import { ApiHandler } from "sst/node/api";
 import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
+import { WebSocketApiHandler } from "sst/node/websocket-api";
 
-export const handler = ApiHandler(async (event) => {
+export const handler = WebSocketApiHandler(async (event) => {
   if (!event.body) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Request body is missing" }),
     };
   }
+  console.log(event.body);
 
   let payload: WebSocketOrchestrationPayload;
   try {
@@ -24,7 +25,8 @@ export const handler = ApiHandler(async (event) => {
     };
   }
 
-  const { caseId, clientSeed, connectionId } = payload;
+  const { caseId, clientSeed } = payload;
+  const connectionId = event.requestContext?.connectionId;
   if (!caseId || clientSeed === undefined || !connectionId) {
     return {
       statusCode: 400,

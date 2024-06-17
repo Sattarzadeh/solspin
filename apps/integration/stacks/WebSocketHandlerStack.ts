@@ -19,6 +19,13 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
   });
   getConnectionFunction.attachPermissions("*");
 
+  // const newConnectionFunction = new Function(stack, "newConnectionFunction", {
+  //   handler: "packages/functions/src/websocket-handler/handlers/handleNewConnection.handler",
+  //   environment: {
+  //     TABLE_NAME: websocketConnectionsTable.tableName,
+  //   },
+  // });
+  // getConnectionFunction.attachPermissions("*");
   const api = new Api(stack, "WebSocketApi", {
     defaults: {
       function: {
