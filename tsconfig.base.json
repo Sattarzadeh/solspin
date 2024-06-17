@@ -22,7 +22,10 @@
       "@solspin/events": ["@solspin/events/src/index.ts"],
       "@solspin/treasury-types": ["@solspin/types/src/service/treasury/types.ts"],
       "@solspin/types": ["@solspin/types/src/index.ts"],
-      "@solspin/wallet-types": ["@solspin/types/src/service/wallet/types.ts"]
+      "@solspin/wallet-types": ["@solspin/types/src/service/wallet/types.ts"],
+      "@solspin/orchestration-types": ["@solspin/types/src/service/orchestration/types.ts"],
+      "@solspin/websocket-types": ["@solspin/types/src/service/websocket/types.ts"],
+      "@solspin/game-engine-types": ["@solspin/types/src/service/game-engine/types.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

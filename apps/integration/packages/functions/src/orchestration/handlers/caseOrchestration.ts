@@ -1,22 +1,20 @@
-import { APIGatewayProxyHandler } from "aws-lambda";
-// import { callIsAuthorized } from "../helpers/isAuthorizedHelper";
-// import { callGetBalance } from "../helpers/getBalanceHelper";
-import { callGetCase } from "../helpers/getCaseHelper"; // Import the new helper
-// import { webSocketPayload } from "../../../../../../websocket-handler/src/";
-import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
-import { performSpin } from "../helpers/performSpinHelper";
-import { ConnectionInfo } from "../../../../../../websocket-handler/src/models/connectionInfo";
-import { CaseItem } from "../../../../../../game-engine/src/models/case_item_model";
-// import { WebSocketPayload } from "../../../../../../../@solspin/types/src/service/websocket/types";
+import { ConnectionInfo } from "@solspin/websocket-types";
+import { CaseItem, Case } from "@solspin/game-engine-types"; // Assuming CaseModel type is defined here
+import { WebSocketOrchestrationPayload } from "@solspin/websocket-types";
 import { ApiHandler } from "sst/node/api";
+import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
+import { callGetCase } from "../helpers/getCaseHelper";
+import { performSpin } from "../helpers/performSpinHelper";
 
-interface WebSocketPayload {
-  connectionId: string;
-  caseId: string;
-  clientSeed: string;
-}
 export const handler = ApiHandler(async (event) => {
-  let payload: WebSocketPayload;
+  if (!event.body) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Request body is missing" }),
+    };
+  }
+
+  let payload: WebSocketOrchestrationPayload;
   try {
     payload = JSON.parse(event.body);
   } catch (error) {
@@ -37,7 +35,7 @@ export const handler = ApiHandler(async (event) => {
   }
 
   try {
-    // Call the isAuthorized Lambda function
+    // Call the getUserFromWebSocket function
     const connectionInfoPayload = await getUserFromWebSocket(connectionId);
     let user: ConnectionInfo;
     try {
@@ -64,8 +62,6 @@ export const handler = ApiHandler(async (event) => {
         }),
       };
     }
-    const userId = user.userId;
-
     const serverSeed = user.serverSeed;
 
     // Call the getCaseHandler Lambda function to retrieve case details
@@ -75,20 +71,22 @@ export const handler = ApiHandler(async (event) => {
       throw new Error("Failed to fetch case details");
     }
 
-    const casePrice = JSON.parse(caseData.body).casePrice;
+    const caseModel: Case = JSON.parse(caseData.body);
 
     // Call the getBalance Lambda function
-    // const balancePayload = await callGetBalance(userId);
+    // const balancePayload = await callGetBalance(user.userId);
     const balancePayload = {
       balance: 300,
     };
-    if (balancePayload.balance >= casePrice) {
-      // If balance is sufficient, perform spin
 
-      const caseRollResult = await performSpin(caseId, clientSeed, serverSeed);
+    if (balancePayload.balance >= caseModel.casePrice) {
+      // If balance is sufficient, perform spin
+      const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
       const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
-      let newBalance = balancePayload.balance - casePrice;
-      newBalance = balancePayload.balance + caseRolledItem.price;
+
+      let newBalance = balancePayload.balance - caseModel.casePrice;
+      newBalance += caseRolledItem.price;
+
       // save new balance
       // Record bet and send to front end for live drop feed
 

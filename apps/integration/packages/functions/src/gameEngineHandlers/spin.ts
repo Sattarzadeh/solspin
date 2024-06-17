@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import { handleSpin } from "../../../../../game-engine/src/handlers/caseOpeningHandler";
-
+import { SpinPayload } from "@solspin/orchestration-types";
 export const handler = ApiHandler(async (event) => {
   console.log("Received event body:", event.body);
   if (!event.body) {
