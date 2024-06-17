@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import { getConnectionInfo } from "../../../../../../websocket-handler/src/services/handleConnections";
-import { ConnectionInfo } from "../../../../../../websocket-handler/src/models/connectionInfo";
+import { ConnectionInfo } from "@solspin/websocket-types";
 export const handler = ApiHandler(async (event) => {
   const connectionId = event.queryStringParameters?.connectionId;
   if (!connectionId) {

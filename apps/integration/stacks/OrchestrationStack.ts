@@ -2,7 +2,6 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { StackContext, Api, use, Function } from "sst/constructs";
 import { GameEngineHandlerAPI } from "./GameEngineStack";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
-import * as iam from "aws-cdk-lib/aws-iam";
 export function OrchestrationStack({ stack }: StackContext) {
   const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
   const { getCaseFunction, casesTable, performSpinFunction } = use(GameEngineHandlerAPI);
@@ -15,7 +14,6 @@ export function OrchestrationStack({ stack }: StackContext) {
     },
   });
 
-  invokeGetConnectionFunction.bind([websocketTable]);
   invokeGetConnectionFunction.attachPermissions("*");
 
   const invokeGetCaseFunction = new Function(stack, "invokeGetCaseFunction", {
@@ -25,7 +23,6 @@ export function OrchestrationStack({ stack }: StackContext) {
       TABLE_NAME: casesTable.tableName,
     },
   });
-  invokeGetCaseFunction.bind([casesTable]);
   invokeGetCaseFunction.attachPermissions("*");
 
   const invokePerformSpinFunction = new Function(stack, "invokePerformSpinFunction", {
