@@ -4,8 +4,8 @@ export interface ConnectionInfo {
   serverSeed?: string;
 }
 
-export interface WebSocketPayload {
+export interface WebSocketOrchestrationPayload {
   connectionId: string;
-  userId: string;
-  serverSeed: string;
+  caseId: string;
+  clientSeed: string;
 }
