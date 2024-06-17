@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
-import { CaseSection } from "./components/Cases/CaseSection";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Index() {
-  return (
-    <div className="w-full h-full">
-      <CaseSection />
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/cases");
+  });
+
+  return <div className="w-full h-full"></div>;
 }

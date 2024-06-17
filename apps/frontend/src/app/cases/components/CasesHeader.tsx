@@ -1,3 +1,4 @@
+"use client";
 import FilterDropdownMenu from "./FilterDropdownMenu";
 import { Search } from "./Search";
 import React from "react";

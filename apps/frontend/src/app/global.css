@@ -13,6 +13,7 @@
   --case-min-height: 280px;
   --case-min-width: 270px;
   --case-restricted-color: rgba(174, 54, 255, 0.2);
+  --purple-gradient: linear-gradient(90deg, #AE49F2 0%, #8A66D9 100%);
 }
 
 .transition-custom {
@@ -52,4 +53,17 @@
   background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%);
   min-height: var(--case-min-height, 272px);
   min-width: var(--case-min-width, 280px);
+}
+
+.purple-gradient-border {
+  border: 1px solid transparent;
+  border-image: var(--purple-gradient);
+  border-image-slice: 1;
+}
+
+.purple-gradient-text {
+  background: var(--purple-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
