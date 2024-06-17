@@ -11,10 +11,6 @@ export default {
     };
   },
   stacks(app) {
-    app
-      .stack(WebSocketHandlerAPI)
-      .stack(GameEngineHandlerAPI)
-      .stack(OrchestrationStack)
-      .stack(WebSocketGateway);
+    app.stack(WebSocketHandlerAPI).stack(GameEngineHandlerAPI).stack(WebSocketGateway);
   },
 } satisfies SSTConfig;
