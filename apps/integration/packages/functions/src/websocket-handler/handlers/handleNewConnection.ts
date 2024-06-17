@@ -1,10 +1,11 @@
+import logger from "@solspin/logger";
 import { ApiHandler } from "sst/node/api";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleNewConnection } from "../../../../../../websocket-handler/src/services/handleConnections";
 
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
-
+  logger.info(`Handle new connection lambda invoked with connectionId: ${connectionId}`);
   if (!connectionId) {
     return {
       statusCode: 400,
@@ -19,6 +20,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       body: JSON.stringify({ message: "New connection handled" }),
     };
   } catch (error) {
+    logger.error(`Error occured in handle new connection lambda: ${(error as Error).message}`);
     return {
       statusCode: 500,
       body: JSON.stringify({
