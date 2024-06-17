@@ -1,9 +1,18 @@
 import { ApiHandler } from "sst/node/api";
-import { getCase } from "../../../../../game-engine/src/repository/caseRepository";
 import { handleSpin } from "../../../../../game-engine/src/handlers/caseOpeningHandler";
+
 export const handler = ApiHandler(async (event) => {
-  console.log(event.body);
-  let parsedBody;
+  console.log("Received event body:", event.body);
+  if (!event.body) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "Request body is missing",
+      }),
+    };
+  }
+
+  let parsedBody: SpinPayload;
 
   try {
     parsedBody = JSON.parse(event.body);
@@ -14,31 +23,23 @@ export const handler = ApiHandler(async (event) => {
       statusCode: 400,
       body: JSON.stringify({
         message: "Invalid JSON format",
-        error: parseError.message,
+        error: (parseError as Error).message,
       }),
     };
   }
 
-  const { caseId, serverSeed, clientSeed } = parsedBody;
+  const { caseModel, serverSeed, clientSeed } = parsedBody;
 
-  if (!caseId || !serverSeed || !clientSeed) {
+  if (!caseModel || !serverSeed || !clientSeed) {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        message: "caseId, serverSeed, or clientSeed is missing",
+        message: "caseModel, serverSeed, or clientSeed is missing",
       }),
     };
   }
 
   try {
-    const caseModel = await getCase(caseId);
-    if (!caseModel) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ message: "Case not found" }),
-      };
-    }
-
     const rewardItem = await handleSpin(caseModel, serverSeed, clientSeed);
 
     return {
@@ -46,10 +47,13 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify(rewardItem),
     };
   } catch (error) {
-    console.error("Error in normalSpin:", error);
+    console.error("Error in handleSpin:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal Server Error" }),
+      body: JSON.stringify({
+        message: "Internal Server Error",
+        error: (error as Error).message || JSON.stringify(error),
+      }),
     };
   }
 });
