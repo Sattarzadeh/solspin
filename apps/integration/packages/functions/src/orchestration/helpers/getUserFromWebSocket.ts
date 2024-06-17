@@ -1,5 +1,5 @@
 import * as AWS from "aws-sdk";
-
+import logger from "@solspin/logger";
 const lambda = new AWS.Lambda();
 
 export const getUserFromWebSocket = async (connectionId: string) => {
@@ -17,7 +17,7 @@ export const getUserFromWebSocket = async (connectionId: string) => {
     const payload = JSON.parse(response.Payload as string);
     return payload;
   } catch (error) {
-    console.error("Error invoking getCase Lambda function:", error);
+    logger.error("Error invoking getCase Lambda function:", error);
     throw new Error("Error invoking getCase Lambda function");
   }
 };
