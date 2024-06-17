@@ -1,11 +1,22 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "../../../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "@integration/core/*": ["../core/src/*"]
-    }
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": ["ES6"],
+    "declaration": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "esModuleInterop": true
   }
 }
