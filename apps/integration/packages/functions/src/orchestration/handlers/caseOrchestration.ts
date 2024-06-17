@@ -1,18 +1,22 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
 import { CaseItem, Case } from "@solspin/game-engine-types"; // Assuming CaseModel type is defined here
 import { WebSocketOrchestrationPayload } from "@solspin/websocket-types";
-import { ApiHandler } from "sst/node/api";
 import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
+import { WebSocketApiHandler } from "sst/node/websocket-api";
+import { ApiGatewayManagementApi } from "aws-sdk";
 
-export const handler = ApiHandler(async (event) => {
+export const handler = WebSocketApiHandler(async (event) => {
+  console.time("TotalExecutionTime");
+
   if (!event.body) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Request body is missing" }),
     };
   }
+  console.log(event.body);
 
   let payload: WebSocketOrchestrationPayload;
   try {
@@ -24,7 +28,10 @@ export const handler = ApiHandler(async (event) => {
     };
   }
 
-  const { caseId, clientSeed, connectionId } = payload;
+  const { caseId, clientSeed } = payload;
+  const connectionId = event.requestContext?.connectionId;
+  const { stage, domainName } = event.requestContext;
+
   if (!caseId || clientSeed === undefined || !connectionId) {
     return {
       statusCode: 400,
@@ -34,9 +41,15 @@ export const handler = ApiHandler(async (event) => {
     };
   }
 
+  const apiG = new ApiGatewayManagementApi({
+    endpoint: `${domainName}/${stage}`,
+  });
+
   try {
-    // Call the getUserFromWebSocket function
+    console.time("getUserFromWebSocket");
     const connectionInfoPayload = await getUserFromWebSocket(connectionId);
+    console.timeEnd("getUserFromWebSocket");
+
     let user: ConnectionInfo;
     try {
       user = JSON.parse(connectionInfoPayload.body).connectionInfo;
@@ -64,8 +77,9 @@ export const handler = ApiHandler(async (event) => {
     }
     const serverSeed = user.serverSeed;
 
-    // Call the getCaseHandler Lambda function to retrieve case details
+    console.time("callGetCase");
     const caseData = await callGetCase(caseId);
+    console.timeEnd("callGetCase");
 
     if (caseData.statusCode !== 200) {
       throw new Error("Failed to fetch case details");
@@ -73,31 +87,43 @@ export const handler = ApiHandler(async (event) => {
 
     const caseModel: Case = JSON.parse(caseData.body);
 
-    // Call the getBalance Lambda function
-    // const balancePayload = await callGetBalance(user.userId);
     const balancePayload = {
       balance: 300,
     };
 
     if (balancePayload.balance >= caseModel.casePrice) {
-      // If balance is sufficient, perform spin
+      console.time("performSpin");
       const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
+      console.timeEnd("performSpin");
+
       const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
 
       let newBalance = balancePayload.balance - caseModel.casePrice;
       newBalance += caseRolledItem.price;
 
-      // save new balance
-      // Record bet and send to front end for live drop feed
+      const responseMessage = {
+        caseRolledItem,
+        newBalance,
+      };
 
+      try {
+        await apiG
+          .postToConnection({
+            ConnectionId: connectionId,
+            Data: JSON.stringify(responseMessage),
+          })
+          .promise();
+      } catch (error) {
+        console.error("Error posting to connection:", error);
+      }
+
+      console.timeEnd("TotalExecutionTime");
       return {
         statusCode: 200,
-        body: JSON.stringify({
-          caseRolledItem,
-          newBalance,
-        }),
+        body: JSON.stringify(responseMessage),
       };
     } else {
+      console.timeEnd("TotalExecutionTime");
       return {
         statusCode: 403,
         body: JSON.stringify({
@@ -108,6 +134,7 @@ export const handler = ApiHandler(async (event) => {
     }
   } catch (error) {
     console.error("Error in orchestration handler:", error);
+    console.timeEnd("TotalExecutionTime");
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

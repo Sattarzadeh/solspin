@@ -1,9 +1,10 @@
 // sst/src/handlers/generateSeedHandler.ts
 import { ApiHandler } from "sst/node/api";
+import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { generateServerSeed } from "../../../../../../websocket-handler/src/services/handleConnections"; // Adjust the path as necessary
 
-export const handler = ApiHandler(async (event) => {
-  const connectionId = event.queryStringParameters?.connectionId;
+export const handler = WebSocketApiHandler(async (event) => {
+  const connectionId = event.requestContext?.connectionId;
 
   if (!connectionId) {
     return {
@@ -21,7 +22,10 @@ export const handler = ApiHandler(async (event) => {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Failed to generate server seed", error: error.message }),
+      body: JSON.stringify({
+        message: "Failed to generate server seed",
+        error: (error as Error).message,
+      }),
     };
   }
 });

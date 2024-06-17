@@ -1,9 +1,10 @@
 import { ApiHandler } from "sst/node/api";
+import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleConnectionClose } from "../../../../../../websocket-handler/src/services/handleConnections";
 
-export const handler = ApiHandler(async (event) => {
-  const connectionId = event.queryStringParameters?.connectionId;
-
+export const handler = WebSocketApiHandler(async (event) => {
+  const connectionId = event.requestContext?.connectionId;
+  console.log(connectionId);
   if (!connectionId) {
     return {
       statusCode: 400,
@@ -20,7 +21,10 @@ export const handler = ApiHandler(async (event) => {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Failed to close connection", error: error.message }),
+      body: JSON.stringify({
+        message: "Failed to close connection",
+        error: (error as Error).message,
+      }),
     };
   }
 });
