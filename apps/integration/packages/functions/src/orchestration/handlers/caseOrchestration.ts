@@ -21,6 +21,7 @@ export const handler = WebSocketApiHandler(async (event) => {
   try {
     payload = JSON.parse(event.body);
   } catch (error) {
+    logger.error(`WebSocketOrchestrationPayload was not in the correct format`);
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Invalid JSON format" }),
@@ -32,6 +33,7 @@ export const handler = WebSocketApiHandler(async (event) => {
   const { stage, domainName } = event.requestContext;
 
   if (!caseId || clientSeed === undefined || !connectionId) {
+    logger.error(`caseId, clientSeed, or connectionId is missing`);
     return {
       statusCode: 400,
       body: JSON.stringify({
@@ -59,6 +61,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
     logger.info("Received connection info from getUserFromWebSocket lambda: ", user);
     if (!user || !user.isAuthenticated) {
+      logger.error(`User with connectionId: ${connectionId} is unauthenticated`);
       return {
         statusCode: 403,
         body: JSON.stringify({ isAuthorized: false, message: "Unauthenticated" }),
@@ -66,6 +69,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     if (!user.serverSeed) {
+      logger.error(`User with connectionId: ${connectionId} has not requested a server seed`);
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -121,7 +125,7 @@ export const handler = WebSocketApiHandler(async (event) => {
         body: JSON.stringify(responseMessage),
       };
     } else {
-      logger.info(
+      logger.error(
         `User with connectionId: ${connectionId} has an insufficient balance. Case price: ${caseModel.casePrice} and balance: ${balancePayload.balance}`
       );
       return {
