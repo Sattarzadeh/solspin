@@ -1,9 +1,9 @@
 import { CustomError } from "./CustomError";
 
-export class CaseDoesNotExistError extends CustomError {
+class CaseDoesNotExistError extends CustomError {
   public statusCode: number;
-  constructor(caseName: string) {
-    super(`Case with name ${caseName} not found`);
+  constructor(caseId: string) {
+    super(`Case with name ${caseId} not found`);
     this.name = "CaseNotFoundError";
     this.statusCode = 404;
 
@@ -14,3 +14,5 @@ export class CaseDoesNotExistError extends CustomError {
     return [{ message: this.message }];
   }
 }
+
+export { CaseDoesNotExistError };
