@@ -26,7 +26,8 @@
       "@solspin/orchestration-types": ["@solspin/types/src/service/orchestration/types.ts"],
       "@solspin/websocket-types": ["@solspin/types/src/service/websocket/types.ts"],
       "@solspin/game-engine-types": ["@solspin/types/src/service/game-engine/types.ts"],
-      "@solspin/logger": ["@solspin/utils/logger.ts"]
+      "@solspin/logger": ["@solspin/utils/logger.ts"],
+      "@solspin/validator": ["@solspin/utils/validator.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

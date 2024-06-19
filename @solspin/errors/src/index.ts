@@ -12,3 +12,5 @@ export * from "./FetchCasesError";
 export * from "./SaveConnectionInfoError";
 export * from "./DeleteConnectionInfoError";
 export * from "./GetConnectionInfoError";
+export * from "./UnknownValidationTypeError";
+export * from "./ValidationError";

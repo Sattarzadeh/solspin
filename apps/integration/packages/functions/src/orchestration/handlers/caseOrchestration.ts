@@ -7,6 +7,7 @@ import { performSpin } from "../helpers/performSpinHelper";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { ApiGatewayManagementApi } from "aws-sdk";
 import logger from "@solspin/logger";
+import { validateUserInput } from "@solspin/validator";
 
 export const handler = WebSocketApiHandler(async (event) => {
   if (!event.body) {
@@ -27,26 +28,25 @@ export const handler = WebSocketApiHandler(async (event) => {
       body: JSON.stringify({ message: "Invalid JSON format" }),
     };
   }
-
-  const { caseId, clientSeed } = payload;
-  const connectionId = event.requestContext?.connectionId;
-  const { stage, domainName } = event.requestContext;
-
-  if (!caseId || clientSeed === undefined || !connectionId) {
-    logger.error(`caseId, clientSeed, or connectionId is missing`);
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "caseId, clientSeed, or connectionId is missing",
-      }),
-    };
-  }
-
-  const apiG = new ApiGatewayManagementApi({
-    endpoint: `${domainName}/${stage}`,
-  });
-
   try {
+    const caseId = validateUserInput(payload.caseId, "uuid");
+    const clientSeed = validateUserInput(payload.clientSeed, "alphanumeric");
+    const connectionId = event.requestContext.connectionId;
+    const { stage, domainName } = event.requestContext;
+
+    if (!caseId || !clientSeed || !connectionId) {
+      logger.error(`caseId, clientSeed, or connectionId is missing`);
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "caseId, clientSeed, or connectionId is missing",
+        }),
+      };
+    }
+
+    const apiG = new ApiGatewayManagementApi({
+      endpoint: `${domainName}/${stage}`,
+    });
     logger.info("Invoking getUserFromWebSocket lambda with connectionId: ", connectionId);
     const connectionInfoPayload = await getUserFromWebSocket(connectionId);
 
@@ -59,7 +59,9 @@ export const handler = WebSocketApiHandler(async (event) => {
         body: JSON.stringify({ message: "Invalid JSON format" }),
       };
     }
-    logger.info("Received connection info from getUserFromWebSocket lambda: ", user);
+    logger.info(
+      `Received connection info from getUserFromWebSocket lambda. IsAuthenticated: ${user.isAuthenticated}`
+    );
     if (!user || !user.isAuthenticated) {
       logger.error(`User with connectionId: ${connectionId} is unauthenticated`);
       return {
@@ -137,7 +139,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
     }
   } catch (error) {
-    logger.error("Error in orchestration handler:", (error as Error).message);
+    logger.error("Error in orchestration handler:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

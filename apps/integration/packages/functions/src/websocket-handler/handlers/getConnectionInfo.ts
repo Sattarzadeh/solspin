@@ -14,7 +14,6 @@ export const handler = ApiHandler(async (event) => {
 
   try {
     const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
-    logger.info(`Received connection info: ${connectionInfo}`);
     return {
       statusCode: 200,
       body: JSON.stringify({ connectionInfo }),
