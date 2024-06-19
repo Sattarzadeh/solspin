@@ -14,3 +14,7 @@ export * from "./DeleteConnectionInfoError";
 export * from "./GetConnectionInfoError";
 export * from "./UnknownValidationTypeError";
 export * from "./ValidationError";
+export * from "./SaveUserError";
+export * from "./UpdateUserError";
+export * from "./DeleteUserError";
+export * from "./GetUserError";
