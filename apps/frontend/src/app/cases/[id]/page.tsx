@@ -1,8 +1,13 @@
-import { CaseCarouselSection } from "./components/CaseCarouselSection";
+"use client";
+
 import { CaseDetails } from "./components/CaseDetails";
 import { CaseItems } from "./components/CaseItems";
 import React from "react";
 import { PreviousDrops } from "./components/PreviousDrops";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { toggleDemoClicked } from "../../../store/slices/demoSlice";
+import { CaseCarousel } from "./components/CaseCarousel";
 
 const caseExample = {
   name: "Watson Power",
@@ -13,12 +18,22 @@ const caseExample = {
 };
 
 export default function CasePage({ params }: { params: { id: string } }) {
+  const demoClicked = useSelector((state: RootState) => state.demo.demoClicked);
+  const dispatch = useDispatch();
+
   const id = params.id;
 
+  const handleDemoClick = (clicked: boolean): boolean => {
+    console.log("re render");
+    if (!demoClicked) {
+      dispatch(toggleDemoClicked());
+    }
+    return true;
+  };
   return (
-    <div className="w-full h-full flex flex-col space-y-10">
+    <div className="w-full h-full flex flex-col space-y-10 p-12">
       <CaseDetails {...caseExample} />
-      <CaseCarouselSection />
+      <CaseCarousel />
       <CaseItems />
       <PreviousDrops />
     </div>

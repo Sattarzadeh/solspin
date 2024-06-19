@@ -1,12 +1,23 @@
 import Image from "next/image";
 
-export const CarouselItem = () => {
+interface CarouselItemProps {
+  name: string;
+  price: number;
+  rarity: string;
+  tag: string;
+  image: string;
+}
+
+export const CarouselItem: React.FC<CarouselItemProps> = ({ name, price, rarity, tag, image }) => {
   return (
-    <div className="relative h-32 w-32 flex-shrink-0 min-w-0">
+    <div
+      className="relative flex flex-col items-center justify-center"
+      style={{ width: 176, height: 176 }}
+    >
       <div className="absolute top-0 left-0 h-full w-full">
         <Image
-          src={"/cases/gun.svg"}
-          alt={"gun"}
+          src={image}
+          alt={"case"}
           objectFit="contain"
           className="object-contain"
           width={176}
