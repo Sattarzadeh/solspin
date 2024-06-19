@@ -11,10 +11,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <Provider store={store}>
       <html lang="en" className={"w-dvh h-dvh overflow-x-hidden bg-background overscroll-none"}>
-        <body className={"w-full h-full"}>
+        <body className={"relative w-full h-full"}>
           <NavBar />
-          <Chatbar />
-          {children}
+          <div className="flex">
+            <Chatbar />
+            {children}
+          </div>
         </body>
       </html>
     </Provider>

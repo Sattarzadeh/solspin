@@ -1,3 +1,18 @@
+import { ChatInputElement } from "./ChatInputElement";
+
 export const ChatBody = () => {
-  return <div className="h-full bg-custom_gray"></div>;
+  return (
+    <div className="overflow-y-auto">
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+      <ChatInputElement />
+    </div>
+  );
 };

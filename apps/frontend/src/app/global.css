@@ -15,6 +15,11 @@
   --case-restricted-color: rgba(174, 54, 255, 0.2);
   --purple-gradient: linear-gradient(90deg, #AE49F2 0%, #8A66D9 100%);
   --bg-dark: rgb(31 32 41);
+  --chat-bar-color: rgba(25, 29, 48, 1);
+}
+
+.chat-bar {
+  background: var(--chat-bar-color);
 }
 
 .transition-custom {
