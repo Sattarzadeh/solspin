@@ -4,23 +4,45 @@ import React from "react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { DismissButton } from "./DismissButton";
 
-export const Chatbar = () => {
-  const isOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
+interface ChatbarProps {
+  chatOpenCallback: () => void;
+}
+
+export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
+  const [isChatOpen, setChatOpen] = React.useState(true);
+
+  const toggleChatOpen = () => {
+    setChatOpen(!isChatOpen);
+    chatOpenCallback();
+  };
 
   return (
     <div
-      className={`left-0 top-20 h-[calc(100dvh-5rem)] flex flex-col justify-between w-80 z-20 sticky chat-bar`}
+      className="absolute md:relative h-[calc(100dvh-5rem)] z-20 transition-all duration-500 ease-in-out flex-shrink-0 bg-background"
       style={{
-        transform: isOpen ? `translate3d(-320px, 0px, 0px)` : `translate3d(0px, 0px, 0px)`,
-        transitionDuration: "500ms",
+        width: isChatOpen ? "320px" : "0px", // Adjust the collapsed width as needed
       }}
     >
-      <ChatHeader />
-      <ChatBody />
-      <ChatInput />
+      <div
+        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500`}
+        style={{
+          width: "320px",
+          transform: isChatOpen ? "translateX(0)" : "translateX(-320px)", // Adjust based on your collapsed width
+        }}
+      >
+        <ChatHeader />
+        <ChatBody />
+        <ChatInput />
+      </div>
+      <div
+        className={`absolute bottom-5 right-0 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
+          isChatOpen ? "" : "rotate-180"
+        }`}
+      >
+        <DismissButton toggleChatOpen={toggleChatOpen} />
+      </div>
     </div>
   );
 };

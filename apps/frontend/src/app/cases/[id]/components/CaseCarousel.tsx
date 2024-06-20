@@ -17,7 +17,7 @@ type AnimationCalculation = {
   tickerOffset: number;
 };
 
-const distanceInItems = 15;
+const distanceInItems = 5;
 const itemWidth = 176;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
@@ -34,14 +34,14 @@ const animationCalculation = (): AnimationCalculation => {
   // Offset the ticker to the midpoint of the animation distance
 
   return {
-    distance: randomAnimationDistance,
+    distance: -randomAnimationDistance,
     tickerOffset: animationDistanceBounds.midpoint - randomAnimationDistance,
   };
 };
 
 let cases: any[] = [];
 
-for (let i = 0; i < 71; i++) {
+for (let i = 0; i < 49; i++) {
   cases.push({
     name: "Watson Power",
     price: 4.99,
@@ -60,6 +60,7 @@ export const CaseCarousel = () => {
   const animationInfo = animationCalculation();
   const visibleCases = useMemo(() => cases, [cases]);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(15 * itemWidth);
 
   useEffect(() => {
     console.log(animationStep);
@@ -82,10 +83,10 @@ export const CaseCarousel = () => {
   useEffect(() => {
     if (animationStep === 0 && selector) {
       // First animation
-      console.log("Starting first animation");
+      console.log("Starting first animation", animationInfo.distance + offset);
       setTransformStyle({
         transform: !isSm
-          ? `translate3d(-${animationInfo.distance}px, 0px, 0px)`
+          ? `translate3d(-${animationInfo.distance + offset}px, 0px, 0px)`
           : `translate3d(0px, -${animationInfo.distance}px, 0px)`,
         transitionDuration: "6000ms",
       });
@@ -94,7 +95,9 @@ export const CaseCarousel = () => {
       console.log("Starting second animation");
       setTransformStyle({
         transform: !isSm
-          ? `translate3d(-${animationInfo.tickerOffset + animationInfo.distance}px, 0px, 0px)`
+          ? `translate3d(${
+              animationInfo.tickerOffset + animationInfo.distance + offset
+            }px, 0px, 0px)`
           : `translate3d(0px, -${animationInfo.tickerOffset + animationInfo.distance}px, 0px)`,
         transitionDuration: "500ms",
       });
@@ -105,7 +108,7 @@ export const CaseCarousel = () => {
       setAnimationStep(0);
     }
   }, [animationStep, selector]);
-
+  console.log(transformStyle, "rerender");
   return (
     <div className="relative">
       <Image
@@ -121,8 +124,9 @@ export const CaseCarousel = () => {
         <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
           <div
             className="flex transform-gpu will-change-transform carousel-animation"
-            style={transformStyle}
+            // style={selector ? transformStyle : { transform: `translateX(${-1 * offset}px)` }}
             ref={carouselRef}
+            style={transformStyle}
           >
             {visibleCases.map((item, index) => (
               <div className={`flex`} key={index}>
