@@ -36,8 +36,8 @@ export const NavBar = () => {
   };
 
   return (
-    <header className="text-white top-0 left-0 bg-background py-4 px-6 w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50">
-      <div className="flex justify-between items-center w-full">
+    <header className="text-white top-0 left-0 bg-background py-4 px-6 w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-20">
+      <div className="flex justify-between items-center w-full h-full">
         <div className="flex items-center justify-between space-x-24">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold text-gradient">SolSpin</span>
