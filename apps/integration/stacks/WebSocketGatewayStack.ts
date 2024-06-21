@@ -1,4 +1,4 @@
-import { StackContext, WebSocketApi, use } from "sst/constructs";
+import { StackContext, WebSocketApi, use, Cron } from "sst/constructs";
 import { PolicyStatement, User } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "./GameEngineStack";
@@ -118,6 +118,30 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
     },
   });
+
+  const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+  const domainName = `${matches && matches[1]}/${stack.stage}`;
+  const pruneConnectionCRON = new Cron(stack, "PruneConnectionsCron", {
+    schedule: "rate(10 minutes)",
+    job: {
+      function: {
+        handler: "packages/functions/src/websocket/handlers/pruneConnections.handler",
+        permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
+        environment: {
+          TABLE_NAME: websocketTable.tableName,
+          DOMAIN: domainName,
+        },
+      },
+    },
+  });
+
+  pruneConnectionCRON.attachPermissions([
+    "dynamodb:Scan",
+    "dynamodb:DeleteItem",
+    "execute-api:ManageConnections",
+  ]);
+
+  pruneConnectionCRON.bind([websocketTable]);
 
   stack.addOutputs({
     ApiEndpoint: api.url,

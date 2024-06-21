@@ -1,7 +1,9 @@
 import { StackContext, Api, Table, Config, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { RemovalPolicy } from "aws-cdk-lib/core";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
+  const removeOnDelete = stack.stage !== "prod";
   const userTable = new Table(stack, "users", {
     fields: {
       userId: "string",
@@ -15,6 +17,11 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
     globalIndexes: {
       walletAddressIndex: {
         partitionKey: "walletAddress",
+      },
+    },
+    cdk: {
+      table: {
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
       },
     },
   });

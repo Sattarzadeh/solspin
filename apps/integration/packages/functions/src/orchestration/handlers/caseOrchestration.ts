@@ -29,13 +29,12 @@ export const handler = WebSocketApiHandler(async (event) => {
     };
   }
   try {
-    const caseId = validateUserInput(payload.caseId, "uuid");
     const clientSeed = validateUserInput(payload.clientSeed, "alphanumeric");
     const connectionId = event.requestContext.connectionId;
     const { stage, domainName } = event.requestContext;
-
-    if (!caseId || !clientSeed || !connectionId) {
-      logger.error(`caseId, clientSeed, or connectionId is missing`);
+    console.log(stage, domainName);
+    if (!clientSeed || !connectionId) {
+      logger.error(`clientSeed or connectionId is missing`);
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -70,7 +69,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
     }
 
-    if (!user.serverSeed) {
+    if (!user.serverSeed || !user.caseId) {
       logger.error(`User with connectionId: ${connectionId} has not requested a server seed`);
       return {
         statusCode: 400,
@@ -79,8 +78,9 @@ export const handler = WebSocketApiHandler(async (event) => {
         }),
       };
     }
-    const serverSeed = user.serverSeed;
 
+    const serverSeed = user.serverSeed;
+    const caseId = user.caseId;
     logger.info("Invoking getCase lambda with caseId: ", caseId);
     const caseData = await callGetCase(caseId);
 

@@ -18,8 +18,10 @@ export const handler = WebSocketApiHandler(async (event) => {
   try {
     const domain = event.requestContext.domainName;
     const stage = event.requestContext.stage;
+
     const connectionId = event.requestContext.connectionId;
     const callbackUrl = `https://${domain}/${stage}`;
+    console.log(callbackUrl);
     const client = new ApiGatewayManagementApiClient({ endpoint: callbackUrl });
 
     const params = {
