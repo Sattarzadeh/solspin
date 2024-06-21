@@ -9,9 +9,14 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       createdAt: "string",
       updatedAt: "string",
       level: "number",
-      walletId: "string",
+      walletAddress: "string",
     },
     primaryIndex: { partitionKey: "userId" },
+    globalIndexes: {
+      walletAddressIndex: {
+        partitionKey: "walletAddress",
+      },
+    },
   });
 
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");

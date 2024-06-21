@@ -2,19 +2,13 @@ import { ApiHandler } from "sst/node/api";
 import { validateUserInput } from "@solspin/validator";
 import logger from "@solspin/logger";
 import { createUser } from "../repository/userRepository";
-
+import { User } from "@solspin/user-management-types";
+import { randomUUID } from "crypto";
 export const handler = ApiHandler(async (event) => {
   try {
-    const user = JSON.parse(event.body || "{}");
+    const payload = JSON.parse(event.body || "{}");
 
-    if (
-      !user.userId ||
-      !user.discord ||
-      !user.createdAt ||
-      !user.updatedAt ||
-      !user.level ||
-      !user.walletId
-    ) {
+    if (!payload.walletAddress) {
       return {
         statusCode: 400,
         body: JSON.stringify({ message: "Missing required user fields" }),
@@ -22,14 +16,20 @@ export const handler = ApiHandler(async (event) => {
     }
 
     // Validate user fields
-    validateUserInput(user.userId, "uuid");
-    validateUserInput(user.discord, "alphanumeric");
-    validateUserInput(user.createdAt, "alphanumeric");
-    validateUserInput(user.updatedAt, "alphanumeric");
-    validateUserInput(user.level, "int");
-    validateUserInput(user.walletId, "alphanumeric");
+    validateUserInput(payload.walletAddress, "alphanumeric");
 
-    logger.info(`Creating user with ID: ${user.userId}`);
+    logger.info(`Creating user with wallet address: ${payload.walletAddress}`);
+    // call create wallet here before proceeding
+
+    let user: User = {
+      userId: randomUUID(),
+      username: payload.walletAddress,
+      walletAddress: payload.walletAddress,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      level: 0,
+      discord: "",
+    };
 
     await createUser(user);
 

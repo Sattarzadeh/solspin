@@ -5,6 +5,7 @@ import {
   DeleteCommand,
   GetCommand,
   UpdateCommand,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 import {
   EnvironmentVariableError,
@@ -14,14 +15,30 @@ import {
   UpdateUserError,
 } from "@solspin/errors";
 import logger from "@solspin/logger";
+import { User } from "@solspin/user-management-types";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 const tableName = process.env.TABLE_NAME;
+const walletAddressIndexName = "walletAddressIndex";
 
 if (!tableName) {
   throw new EnvironmentVariableError("TABLE_NAME");
 }
+
+const walletAddressExists = async (walletAddress: string): Promise<boolean> => {
+  const params = {
+    TableName: tableName,
+    IndexName: walletAddressIndexName,
+    KeyConditionExpression: "walletAddress = :walletAddress",
+    ExpressionAttributeValues: {
+      ":walletAddress": walletAddress,
+    },
+  };
+
+  const result = await ddbDocClient.send(new QueryCommand(params));
+  return result.Items && result.Items.length > 0;
+};
 
 export const buildUpdateExpression = (updateFields: Record<string, any>) => {
   let UpdateExpression = "set";
@@ -43,17 +60,26 @@ export const buildUpdateExpression = (updateFields: Record<string, any>) => {
   };
 };
 
-export const createUser = async (user: Record<string, any>): Promise<void> => {
+export const createUser = async (user: User): Promise<void> => {
+  const exists = await walletAddressExists(user.walletAddress);
+
+  if (exists) {
+    throw new Error(`User with walletAddress ${user.walletAddress} already exists.`);
+  }
+
   const params = {
     TableName: tableName,
     Item: user,
+    ConditionExpression: "attribute_not_exists(userId)", // Ensure userId is unique
   };
 
   try {
     await ddbDocClient.send(new PutCommand(params));
   } catch (error) {
-    logger.error(`Failed to create user: ${(error as Error).message}`);
-    throw new SaveUserError((error as Error).message);
+    if (error.name === "ConditionalCheckFailedException") {
+      throw new Error(`User with userId ${user.userId} already exists.`);
+    }
+    throw new Error(`Failed to create user: ${error.message}`);
   }
 };
 
