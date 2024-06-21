@@ -1,4 +1,4 @@
-import { StackContext, Api, Table, Config } from "sst/constructs";
+import { StackContext, Api, Table, Config, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
@@ -18,8 +18,13 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
     },
   });
-
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
+  const callAuthorizerFunction = new Function(stack, "authorizerFunction", {
+    handler: "packages/functions/src/userManagement/handlers/authorize.handler",
+    bind: [TEST_SECRET],
+    environment: { TABLE_NAME: userTable.tableName },
+  });
+  callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
 
   const api = new Api(stack, "UserManagementApi", {
     defaults: {
@@ -93,4 +98,8 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
   });
+
+  return {
+    callAuthorizerFunction,
+  };
 }

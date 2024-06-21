@@ -10,6 +10,7 @@ const schemas = {
   int: Joi.number().integer(),
   float: Joi.number(),
   boolean: Joi.boolean(),
+  jwt: Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/),
 };
 
 export const validateInput = (input: any, type: keyof typeof schemas): boolean => {

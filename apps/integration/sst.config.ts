@@ -13,9 +13,9 @@ export default {
   },
   stacks(app) {
     app
+      .stack(UserManagementHandlerAPI)
       .stack(WebSocketHandlerAPI)
       .stack(GameEngineHandlerAPI)
-      .stack(WebSocketGateway)
-      .stack(UserManagementHandlerAPI);
+      .stack(WebSocketGateway);
   },
 } satisfies SSTConfig;

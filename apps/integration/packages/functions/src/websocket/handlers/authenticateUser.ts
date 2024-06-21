@@ -1,10 +1,11 @@
 import logger from "@solspin/logger";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { authenticateUser } from "../../../../../../websocket-handler/src/services/handleConnections";
+import { callAuthorizer } from "../helpers/callAuthorizer";
 
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
-  // Need to add lambda call to authorizer with jwt token in user management
+
   logger.info(`Authenticate user lambda handler invoked with connectionId: ${connectionId}`);
   if (!event.body) {
     return {
@@ -23,18 +24,36 @@ export const handler = WebSocketApiHandler(async (event) => {
     };
   }
 
-  const userId: string = parsedBody?.userId;
+  const token: string = parsedBody?.token;
 
-  logger.info(`Received userId: ${userId} || connectionId: ${connectionId} from event body`);
-  if (!connectionId || !userId) {
+  logger.info(`Received token: ${token} || connectionId: ${connectionId} from event body`);
+  if (!connectionId || !token) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: "connectionId and userId are required" }),
+      body: JSON.stringify({ message: "connectionId and token are required" }),
     };
   }
 
   try {
+    const authorizerResponse = await callAuthorizer(token);
+    if (authorizerResponse.statusCode !== 200) {
+      logger.error(`Authorizer returned status code: ${authorizerResponse.statusCode}`);
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: "Unauthorized" }),
+      };
+    }
+    const parsedBody = JSON.parse(authorizerResponse.body);
+    const userId = parsedBody.userId;
+
+    if (!userId) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: "UserId not found in authorizer payload" }),
+      };
+    }
     await authenticateUser(connectionId, userId);
+
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "User has been marked as authenticated" }),
