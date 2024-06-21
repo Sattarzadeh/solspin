@@ -20,7 +20,7 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
 
   return (
     <div
-      className="absolute md:relative h-[calc(100dvh-5rem)] z-20 transition-all duration-500 ease-in-out flex-shrink-0 bg-background"
+      className="absolute md:relative h-[calc(100dvh-5rem)] z-20 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar"
       style={{
         width: isChatOpen ? "320px" : "0px", // Adjust the collapsed width as needed
       }}

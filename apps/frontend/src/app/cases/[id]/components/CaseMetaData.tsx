@@ -54,10 +54,10 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span className="text-white">1</span>
           </button>
         </div>
-        <button className="flex sign-in-button rounded-md h-12 p-4 space-x-1 justify-center items-center">
-          <span className="text-black">Open 1 Case</span>
-          <span className="hidden sm:block text-black text-sm">·</span>
-          <span className="text-black">${price}</span>
+        <button className="flex bg-red-500 rounded-md h-12 p-4 space-x-1 justify-center items-center">
+          <span className="text-white font-bold">Open 1 Case</span>
+          <span className="hidden sm:block text-white font-bold text-sm">·</span>
+          <span className="text-white font-bold">${price}</span>
         </button>
         <div className="flex justify-between items-center space-x-2">
           <button

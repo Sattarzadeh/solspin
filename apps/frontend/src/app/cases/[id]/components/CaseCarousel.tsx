@@ -69,6 +69,10 @@ export const CaseCarousel = () => {
       setAnimationStep((prevStep) => prevStep + 1);
     };
 
+    window.addEventListener("resize", () => {
+      setIsSm(window.innerWidth <= 640);
+    });
+
     if (carouselRef.current) {
       carouselRef.current.addEventListener("transitionend", handleTransitionEnd);
     }
@@ -110,29 +114,34 @@ export const CaseCarousel = () => {
   }, [animationStep, selector]);
   console.log(transformStyle, "rerender");
   return (
-    <div className="relative">
-      <Image
-        src="/icons/down-arrow.svg"
-        alt="Arrow Down"
-        width={24}
-        height={24}
-        className={
-          "absolute inset-x-0 top-[-10px] z-10 mx-auto transition-colors duration-1000 text-yellow-2 bg-amber-300"
-        }
-      />
-      <div className="mt-md flex overflow-hidden rounded-lg flex-col gap-xs h-[310px] xl:h-[180px]">
-        <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
-          <div
-            className="flex transform-gpu will-change-transform carousel-animation"
-            // style={selector ? transformStyle : { transform: `translateX(${-1 * offset}px)` }}
-            ref={carouselRef}
-            style={transformStyle}
-          >
-            {visibleCases.map((item, index) => (
-              <div className={`flex`} key={index}>
-                <CarouselItem {...item} key={index} />
-              </div>
-            ))}
+    <div className="py-12 px-6 rounded-md main-element">
+      <div className="relative shadow-lg">
+        <Image
+          src="/icons/down-arrow.svg"
+          alt="Arrow Down"
+          width={24}
+          height={24}
+          className={
+            "absolute inset-x-0 top-[-10px] z-10 mx-auto transition-colors duration-1000 text-yellow-2 bg-amber-300"
+          }
+        />
+        <div className="mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px] xl:h-[180px]">
+          <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-search_bar_gray z-10"></div>
+              <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-search_bar_gray z-10"></div>
+            </div>
+            <div
+              className="flex transform-gpu will-change-transform carousel-animation"
+              ref={carouselRef}
+              style={transformStyle}
+            >
+              {visibleCases.map((item, index) => (
+                <div className={`flex`} key={index}>
+                  <CarouselItem {...item} key={index} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

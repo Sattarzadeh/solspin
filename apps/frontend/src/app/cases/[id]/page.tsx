@@ -31,7 +31,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
     return true;
   };
   return (
-    <div className="w-full h-full flex flex-col space-y-10 p-12">
+    <div className="w-full h-full flex flex-col space-y-10 p-2">
       <CaseDetails {...caseExample} />
       <CaseCarousel />
       <CaseItems />

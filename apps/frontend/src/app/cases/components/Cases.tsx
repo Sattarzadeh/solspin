@@ -194,7 +194,7 @@ const cases = [
 
 export const Cases = () => {
   return (
-    <div className="grid grid-cols-dynamic gap-6 justify-center grid-flow-row-dense">
+    <div className="grid grid-cols-dynamic gap-6 justify-center grid-flow-row-dense cases-container">
       {cases.map((item, index) => (
         <Case key={index} {...item} />
       ))}
