@@ -1,24 +1,39 @@
 "use client";
 
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { CarouselItem } from "./CarouselItem";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "apps/frontend/src/store";
+import { useDispatch } from "react-redux";
 import { toggleDemoClicked } from "../../../../store/slices/demoSlice";
+import { CaseProps } from "../../components/Case";
 
-/*
- * This function calculates the animation distance for the carousel from its starting position to its ending position.
- * This process is random to give the carousel a non-deterministic feel (i.e. it doesn't always move the same distance).
- */
+type CarouselStyle = React.CSSProperties & {
+  "--transform-distance": string;
+};
 
 type AnimationCalculation = {
   distance: number;
   tickerOffset: number;
 };
 
-const distanceInItems = 5;
+interface CaseCarouselProps {
+  cases: CaseProps[];
+  isDemoClicked: boolean;
+}
+
+function getRandomInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/*
+ * This function calculates the animation distance for the carousel from its starting position to its ending position.
+ * This process is random to give the carousel a non-deterministic feel (i.e. it doesn't always move the same distance).
+ */
+
 const itemWidth = 176;
+const distanceInItems = 20;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
   upper: (distanceInItems + 0.5) * itemWidth,
@@ -30,7 +45,6 @@ const animationCalculation = (): AnimationCalculation => {
     animationDistanceBounds.lower,
     animationDistanceBounds.upper
   );
-  console.log(animationDistanceBounds, randomAnimationDistance);
   // Offset the ticker to the midpoint of the animation distance
 
   return {
@@ -39,80 +53,79 @@ const animationCalculation = (): AnimationCalculation => {
   };
 };
 
-let cases: any[] = [];
-
-for (let i = 0; i < 49; i++) {
-  cases.push({
-    name: "Watson Power",
-    price: 4.99,
-    rarity: "Extrodinary",
-    tag: "Hot",
-    image: Math.random() < 0.5 ? "/cases/dota_3.svg" : "/cases/gun.svg",
+export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked }) => {
+  const [offset, setOffset] = useState<AnimationCalculation>({
+    distance: 0,
+    tickerOffset: 0,
   });
-}
-
-export const CaseCarousel = () => {
-  const selector = useSelector((state: RootState) => state.demo.demoClicked);
+  const [animationStage, setAnimationStage] = useState(0);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
   const dispatch = useDispatch();
-  const [animationStep, setAnimationStep] = useState(0);
-  const [isSm, setIsSm] = useState(false);
-  const [transformStyle, setTransformStyle] = useState<React.CSSProperties>({});
-  const animationInfo = animationCalculation();
-  const visibleCases = useMemo(() => cases, [cases]);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(15 * itemWidth);
 
   useEffect(() => {
-    console.log(animationStep);
-    const handleTransitionEnd = () => {
-      console.log("Animation ended, current step: ", animationStep);
-      setAnimationStep((prevStep) => prevStep + 1);
-    };
-
-    window.addEventListener("resize", () => {
-      setIsSm(window.innerWidth <= 640);
-    });
-
-    if (carouselRef.current) {
-      carouselRef.current.addEventListener("transitionend", handleTransitionEnd);
+    console.log("cases changed", animationStage, offset);
+    if (animationStage === 3) {
+      setAnimationStage(0);
+      setOffset({ distance: 0, tickerOffset: 0 });
     }
+  }, [cases]);
 
-    return () => {
-      if (carouselRef.current) {
-        carouselRef.current.removeEventListener("transitionend", handleTransitionEnd);
-      }
-    };
+  const startAnimation = useCallback(() => {
+    if (animationStage !== 0) return;
+    setAnimationStage(1);
+    const animationInfoCalc = animationCalculation();
+    setOffset(animationInfoCalc);
+  }, [animationStage]);
+
+  useEffect(() => {
+    if (isDemoClicked && animationStage === 0) {
+      startAnimation();
+    }
+  }, [isDemoClicked, animationStage, startAnimation]);
+
+  const handleFirstStageEnd = useCallback(() => {
+    setAnimationStage(2);
   }, []);
 
-  useEffect(() => {
-    if (animationStep === 0 && selector) {
-      // First animation
-      console.log("Starting first animation", animationInfo.distance + offset);
-      setTransformStyle({
-        transform: !isSm
-          ? `translate3d(-${animationInfo.distance + offset}px, 0px, 0px)`
-          : `translate3d(0px, -${animationInfo.distance}px, 0px)`,
-        transitionDuration: "6000ms",
-      });
-    } else if (animationStep === 1) {
-      // Second animation
-      console.log("Starting second animation");
-      setTransformStyle({
-        transform: !isSm
-          ? `translate3d(${
-              animationInfo.tickerOffset + animationInfo.distance + offset
-            }px, 0px, 0px)`
-          : `translate3d(0px, -${animationInfo.tickerOffset + animationInfo.distance}px, 0px)`,
-        transitionDuration: "500ms",
-      });
-    } else if (animationStep === 2) {
-      // Reset animation
-      dispatch(toggleDemoClicked());
-      setTransformStyle({});
-      setAnimationStep(0);
+  const handleSecondStageEnd = useCallback(() => {
+    dispatch(toggleDemoClicked());
+    setAnimationStage(3);
+  }, []);
+
+  const handleTransitionEnd = useCallback(() => {
+    if (animationStage === 1) {
+      handleFirstStageEnd();
+    } else if (animationStage === 2) {
+      handleSecondStageEnd();
     }
-  }, [animationStep, selector]);
-  console.log(transformStyle, "rerender");
+  }, [animationStage, handleFirstStageEnd, handleSecondStageEnd]);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener("transitionend", handleTransitionEnd);
+      return () => carousel.removeEventListener("transitionend", handleTransitionEnd);
+    }
+  }, [handleTransitionEnd]);
+
+  const transformDistance =
+    animationStage == 1
+      ? offset.distance
+      : animationStage == 2 || (animationStage == 3 && !isDemoClicked)
+      ? offset.distance - offset.tickerOffset
+      : 0;
+
+  const carouselStyle: CarouselStyle = {
+    "--transform-distance": `${transformDistance}px`,
+    transform: "translateY(var(--transform-distance))",
+    transition:
+      animationStage === 1
+        ? "transform 6s ease-in-out"
+        : animationStage === 2
+        ? "transform 0.5s ease-in-out"
+        : "none",
+  };
+
   return (
     <div className="py-12 px-6 rounded-md main-element">
       <div className="relative shadow-lg">
@@ -121,9 +134,7 @@ export const CaseCarousel = () => {
           alt="Arrow Down"
           width={24}
           height={24}
-          className={
-            "absolute inset-x-0 top-[-10px] z-10 mx-auto transition-colors duration-1000 text-yellow-2 bg-amber-300"
-          }
+          className="absolute inset-x-0 top-[-10px] z-10 mx-auto transition-colors duration-1000 text-yellow-2 bg-amber-300"
         />
         <div className="mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px] xl:h-[180px]">
           <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
@@ -132,14 +143,12 @@ export const CaseCarousel = () => {
               <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-search_bar_gray z-10"></div>
             </div>
             <div
-              className="flex transform-gpu will-change-transform carousel-animation"
               ref={carouselRef}
-              style={transformStyle}
+              className="flex flex-col sm:flex-row transform-gpu will-change-transform carousel-animation"
+              style={carouselStyle}
             >
-              {visibleCases.map((item, index) => (
-                <div className={`flex`} key={index}>
-                  <CarouselItem {...item} key={index} />
-                </div>
+              {cases.map((item, index) => (
+                <CarouselItem key={index} {...item} />
               ))}
             </div>
           </div>
@@ -148,9 +157,3 @@ export const CaseCarousel = () => {
     </div>
   );
 };
-
-function getRandomInt(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}

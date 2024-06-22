@@ -54,14 +54,14 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span className="text-white">1</span>
           </button>
         </div>
-        <button className="flex bg-red-500 rounded-md h-12 p-4 space-x-1 justify-center items-center">
-          <span className="text-white font-bold">Open 1 Case</span>
-          <span className="hidden sm:block text-white font-bold text-sm">·</span>
-          <span className="text-white font-bold">${price}</span>
+        <button className="flex bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center">
+          <span className="text-white font-semibold">Open 1 Case</span>
+          <span className="hidden sm:block text-white font-semibold text-sm">·</span>
+          <span className="text-white font-semibold">${price}</span>
         </button>
         <div className="flex justify-between items-center space-x-2">
           <button
-            className="flex justify-center items-center bg-custom_gray  rounded-md h-12 p-3"
+            className="flex justify-center items-center bg-custom_gray rounded-md h-12 p-3"
             onClick={() => {
               if (!selector) {
                 dispatch(toggleDemoClicked());
@@ -70,7 +70,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
           >
             <span className="text-white">Demo</span>
           </button>
-          <button className="flex justify-center items-center bg-custom_gray  rounded-md h-12 p-3">
+          <button className="flex justify-center items-center bg-custom_gray rounded-md h-12 p-3">
             <span className="text-white">Quick</span>
           </button>
         </div>

@@ -4,7 +4,7 @@ export const CaseItem = () => {
   return (
     <div className="flex items-center w-full rounded-sm space-x-2 p-4 main-element overflow-hidden">
       <div
-        className="relative flex flex-col items-center justify-center border-black border-[1px] rounded-sm"
+        className="relative flex flex-col items-center justify-center bg-gray-900 border-black border-[2px] rounded-lg"
         style={{ width: 125, height: 125 }}
       >
         <div className="relative flex justify-center items-center h-full w-full">

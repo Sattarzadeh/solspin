@@ -8,11 +8,12 @@ module.exports = {
     join(__dirname, "{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}"),
     ...createGlobPatternsForDependencies(__dirname),
   ],
-  // #121319 - CSGOLUCK || #1d2126 - CSGOROLL || #1A1C24
+  // #121319 - CSGOLUCK || #1d2126 - CSGOROLL || #1A1C24 || #303239
   theme: {
     extend: {
       colors: {
         background: "#1A1C24",
+        main_background: "#252833",
         custom_gray: "#23303A",
         search_bar_gray: "#0e151a",
       },

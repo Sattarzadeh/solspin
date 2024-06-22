@@ -19,12 +19,6 @@
   --main-element-background: rgba(29, 33, 38, 1);
 }
 
-.chat-bar {
-  border-right: 1px solid transparent;
-  border-image: var(--gradient-border-nav);
-  border-image-slice: 1;
-}
-
 .transition-custom {
   transition: all 0.25s ease-in-out;
 }
@@ -36,23 +30,8 @@
   background-clip: text;
 }
 
-.gradient-border-bottom {
-  border-bottom: 1px solid transparent;
-  border-image: var(--gradient-border-nav);
-  border-image-slice: 1;
-}
-
-.gradient-border-top {
-  border-top: 1px solid transparent;
-  border-image: var(--gradient-border-nav);
-  border-image-slice: 1;
-}
 
 .gradient-background {
-  background: var(--green-gradient);
-}
-
-.sign-in-button {
   background: var(--green-gradient);
 }
 
@@ -86,6 +65,12 @@
 
 .bg-dark {
   background: var(--bg-dark);
+}
+
+@media (min-width: 640px) {
+  .carousel-animation {
+    transform: translateX(var(--transform-distance)) !important;
+  }
 }
 
 .carousel-animation {
