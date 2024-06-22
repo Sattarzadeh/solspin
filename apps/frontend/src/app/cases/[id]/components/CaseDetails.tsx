@@ -1,8 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import { CaseMetaData } from "./CaseMetaData";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "apps/frontend/src/store";
 
 interface CaseDetailsProps {
   name: string;
@@ -13,9 +11,6 @@ interface CaseDetailsProps {
 }
 
 export const CaseDetails: React.FC<CaseDetailsProps> = ({ name, price, rarity, tag, image }) => {
-  const isDemo = useSelector((state: RootState) => state.demo.demoClicked);
-  const dispatch = useDispatch();
-
   return (
     <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full space-y-4">
       <div className="relative">

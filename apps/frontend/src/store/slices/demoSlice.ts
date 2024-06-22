@@ -3,10 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface DemoState {
   demoClicked: boolean;
+  numCases: number;
 }
 
 const initialState: DemoState = {
   demoClicked: false,
+  numCases: 1,
 };
 
 const demoSlice = createSlice({
@@ -16,8 +18,11 @@ const demoSlice = createSlice({
     toggleDemoClicked(state) {
       state.demoClicked = !state.demoClicked;
     },
+    setNumCases(state, action) {
+      state.numCases = action.payload;
+    },
   },
 });
 
-export const { toggleDemoClicked } = demoSlice.actions;
+export const { toggleDemoClicked, setNumCases } = demoSlice.actions;
 export default demoSlice.reducer;

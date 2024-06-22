@@ -21,6 +21,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const id = params.id;
   const [cases, setCases] = useState<CaseProps[]>([]);
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
+  const numCases = useSelector((state: RootState) => state.demo.numCases);
 
   const generateCases = useCallback(() => {
     return Array.from({ length: 59 }, (_, i) => ({
@@ -36,13 +37,21 @@ export default function CasePage({ params }: { params: { id: string } }) {
     if (isDemoClicked) {
       setCases(generateCases());
     }
-  }, [isDemoClicked]);
+  }, [isDemoClicked, generateCases]);
 
-  console.log("cases rerendered", cases[0]?.name, cases[1]?.name, cases[2]?.name);
   return (
     <div className="w-full h-full flex flex-col space-y-10 p-2">
       <CaseDetails {...caseExample} />
-      <CaseCarousel cases={cases} isDemoClicked={isDemoClicked} />
+      <div className="flex flex-col xl:flex-row justify-between items-center w-full">
+        {Array.from({ length: numCases }, (_, index) => (
+          <CaseCarousel
+            key={index}
+            cases={cases}
+            isDemoClicked={isDemoClicked}
+            numCases={numCases}
+          />
+        ))}
+      </div>
       <CaseItems />
       <PreviousDrops />
     </div>

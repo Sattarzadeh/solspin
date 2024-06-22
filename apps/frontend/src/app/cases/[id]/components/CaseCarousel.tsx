@@ -19,6 +19,7 @@ type AnimationCalculation = {
 interface CaseCarouselProps {
   cases: CaseProps[];
   isDemoClicked: boolean;
+  numCases: number;
 }
 
 function getRandomInt(min: number, max: number) {
@@ -33,7 +34,7 @@ function getRandomInt(min: number, max: number) {
  */
 
 const itemWidth = 176;
-const distanceInItems = 20;
+const distanceInItems = 25;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
   upper: (distanceInItems + 0.5) * itemWidth,
@@ -53,7 +54,7 @@ const animationCalculation = (): AnimationCalculation => {
   };
 };
 
-export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked }) => {
+export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked, numCases }) => {
   const [offset, setOffset] = useState<AnimationCalculation>({
     distance: 0,
     tickerOffset: 0,
@@ -127,7 +128,7 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
   };
 
   return (
-    <div className="py-12 px-6 rounded-md main-element">
+    <div className="py-12 px-6 rounded-md main-element flex-grow w-full ">
       <div className="relative shadow-lg">
         <Image
           src="/icons/down-arrow.svg"
@@ -136,7 +137,9 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
           height={24}
           className="absolute inset-x-0 top-[-10px] z-10 mx-auto transition-colors duration-1000 text-yellow-2 bg-amber-300"
         />
-        <div className="mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px] xl:h-[180px]">
+        <div
+          className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px] xl:h-[180px]`}
+        >
           <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-search_bar_gray z-10"></div>
@@ -144,7 +147,9 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
             </div>
             <div
               ref={carouselRef}
-              className="flex flex-col sm:flex-row transform-gpu will-change-transform carousel-animation"
+              className={`flex sm:flex-row transform-gpu will-change-transform carousel-animation ${
+                numCases > 1 ? "flex-col" : "sm:flex-row flex-col"
+              }`}
               style={carouselStyle}
             >
               {cases.map((item, index) => (
