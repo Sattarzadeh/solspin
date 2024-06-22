@@ -15,8 +15,20 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@solpin/events": ["@solpin/events/src/index.ts"],
-      "@solpin/types": ["@solpin/types/src/index.ts"]
+      "@bets/service": ["apps/betting/src/services/BettingService.ts"],
+      "@betting/*": ["apps/betting/src/*"],
+      "@solspin/betting-types": ["@solspin/types/src/service/betting/types.ts"],
+      "@solspin/errors": ["@solspin/errors/src/index.ts"],
+      "@solspin/events": ["@solspin/events/src/index.ts"],
+      "@solspin/treasury-types": ["@solspin/types/src/service/treasury/types.ts"],
+      "@solspin/types": ["@solspin/types/src/index.ts"],
+      "@solspin/wallet-types": ["@solspin/types/src/service/wallet/types.ts"],
+      "@solspin/orchestration-types": ["@solspin/types/src/service/orchestration/types.ts"],
+      "@solspin/websocket-types": ["@solspin/types/src/service/websocket/types.ts"],
+      "@solspin/game-engine-types": ["@solspin/types/src/service/game-engine/types.ts"],
+      "@solspin/logger": ["@solspin/utils/logger.ts"],
+      "@solspin/validator": ["@solspin/utils/validator.ts"],
+      "@solspin/user-management-types": ["@solspin/types/src/service/user-management/types.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

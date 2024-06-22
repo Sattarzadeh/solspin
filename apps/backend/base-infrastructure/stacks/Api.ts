@@ -1,10 +1,10 @@
-import { Api, StackContext } from 'sst/constructs';
+import { Api, StackContext } from "sst/constructs";
 
 export function api({ stack }: StackContext) {
   // Create a new API
-  const api = new Api(stack, 'Api', {
+  const api = new Api(stack, "Api", {
     routes: {
-      $default: '../packages/functions/src/lambda.handler',
+      "POST /bets/record/{userId}": "packages/functions/src/recordBet.handler",
     },
   });
 

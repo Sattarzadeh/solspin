@@ -33,13 +33,14 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-test-ledger
 
 # System Files
 .DS_Store
 Thumbs.db
 .env
-.nx/*
+.nx/cache
+.nx/workspace-data
+test-ledger/*
 
 # Next.js
 .next

@@ -1,31 +1,27 @@
-import { SSTConfig } from 'sst';
-import { VPC } from './stacks/Vpc';
-import { Event } from './stacks/EventBus';
-import { TableStack } from './stacks/Table';
-import { api } from './stacks/Api';
-import { Lambdas } from './stacks/Lambda';
+import { SSTConfig } from "sst";
+import { api } from "./stacks/Api";
+
+require("dotenv").config();
 
 export default {
   config(_input) {
     return {
-      name: 'base-infrastructure',
-      region: 'us-west-1',
+      name: "base-infrastructure",
+      region: "eu-west-1",
     };
   },
   stacks(app) {
     app.setDefaultFunctionProps({
-      runtime: 'nodejs18.x',
-      architecture: 'arm_64',
+      runtime: "nodejs18.x",
+      architecture: "arm_64",
       environment: {
         STAGE: app.stage,
         REGION: app.region,
       },
     });
 
-    app.stack(VPC);
-    app.stack(TableStack);
-    app.stack(Event);
+    // app.stack(VPC);
     app.stack(api);
-    app.stack(Lambdas);
+    // app.stack(Event);
   },
 } satisfies SSTConfig;
