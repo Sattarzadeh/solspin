@@ -25,7 +25,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem"],
+              actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [websocketTable.tableArn],
             }),
           ],
@@ -118,7 +118,6 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
     },
   });
-
   const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   const domainName = `${matches && matches[1]}/${stack.stage}`;
   const pruneConnectionCRON = new Cron(stack, "PruneConnectionsCron", {

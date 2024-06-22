@@ -4,7 +4,7 @@ import {
   ApiGatewayManagementApiClient,
   DeleteConnectionCommand,
 } from "@aws-sdk/client-apigatewaymanagementapi";
-
+import { disconnectClient } from "../helpers/disconnectClient";
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
   logger.info(`Handle connection close lambda invoked with connectionId: ${connectionId}`);
@@ -19,17 +19,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const domain = event.requestContext.domainName;
     const stage = event.requestContext.stage;
 
-    const connectionId = event.requestContext.connectionId;
-    const callbackUrl = `https://${domain}/${stage}`;
-    console.log(callbackUrl);
-    const client = new ApiGatewayManagementApiClient({ endpoint: callbackUrl });
-
-    const params = {
-      ConnectionId: connectionId,
-    };
-
-    const command = new DeleteConnectionCommand(params);
-    client.send(command);
+    await disconnectClient(domain, stage, connectionId);
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "User connection closed" }),
