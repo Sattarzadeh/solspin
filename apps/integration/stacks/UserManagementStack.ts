@@ -1,7 +1,9 @@
-import { StackContext, Api, Table, Config } from "sst/constructs";
+import { StackContext, Api, Table, Config, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { RemovalPolicy } from "aws-cdk-lib/core";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
+  const removeOnDelete = stack.stage !== "prod";
   const userTable = new Table(stack, "users", {
     fields: {
       userId: "string",
@@ -17,9 +19,19 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
         partitionKey: "walletAddress",
       },
     },
+    cdk: {
+      table: {
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
   });
-
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
+  const callAuthorizerFunction = new Function(stack, "authorizerFunction", {
+    handler: "packages/functions/src/userManagement/handlers/authorize.handler",
+    bind: [TEST_SECRET],
+    environment: { TABLE_NAME: userTable.tableName },
+  });
+  callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
 
   const api = new Api(stack, "UserManagementApi", {
     defaults: {
@@ -93,4 +105,8 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
   });
+
+  return {
+    callAuthorizerFunction,
+  };
 }

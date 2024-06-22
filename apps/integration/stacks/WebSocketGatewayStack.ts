@@ -1,11 +1,14 @@
-import { StackContext, WebSocketApi, use } from "sst/constructs";
-import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { StackContext, WebSocketApi, use, Cron } from "sst/constructs";
+import { PolicyStatement, User } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "./GameEngineStack";
+import { UserManagementHandlerAPI } from "./UserManagementStack";
 export function WebSocketGateway({ stack }: StackContext) {
   const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
   const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
+  const { callAuthorizerFunction } = use(UserManagementHandlerAPI);
 
+  callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
   getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
   getCaseFunction.attachPermissions(["lambda:InvokeFunction"]);
 
@@ -18,22 +21,26 @@ export function WebSocketGateway({ stack }: StackContext) {
     routes: {
       $connect: {
         function: {
-          handler: "packages/functions/src/websocket-handler/handlers/handleNewConnection.handler",
+          handler: "packages/functions/src/websocket/handlers/handleNewConnection.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem"],
+              actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [websocketTable.tableArn],
             }),
           ],
           environment: { TABLE_NAME: websocketTable.tableName },
         },
       },
-      $default: "src/default.main",
+      $default: {
+        function: {
+          handler: "packages/functions/src/websocket/handlers/closeConnection.handler",
+          timeout: 10,
+        },
+      },
       $disconnect: {
         function: {
-          handler:
-            "packages/functions/src/websocket-handler/handlers/handleConnectionClose.handler",
+          handler: "packages/functions/src/websocket/handlers/handleConnectionClose.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -46,7 +53,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       logout: {
         function: {
-          handler: "packages/functions/src/websocket-handler/handlers/handleLogout.handler",
+          handler: "packages/functions/src/websocket/handlers/handleLogout.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -59,7 +66,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       generateSeed: {
         function: {
-          handler: "packages/functions/src/websocket-handler/handlers/generateServerSeed.handler",
+          handler: "packages/functions/src/websocket/handlers/generateServerSeed.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -72,15 +79,18 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       authenticate: {
         function: {
-          handler: "packages/functions/src/websocket-handler/handlers/authenticateUser.handler",
+          handler: "packages/functions/src/websocket/handlers/authenticateUser.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem", "dynamodb:GetItem"],
-              resources: [websocketTable.tableArn],
+              actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
+              resources: [websocketTable.tableArn, callAuthorizerFunction.functionArn],
             }),
           ],
-          environment: { TABLE_NAME: websocketTable.tableName },
+          environment: {
+            TABLE_NAME: websocketTable.tableName,
+            AUTHORIZER_FUNCTION_NAME: callAuthorizerFunction.functionName,
+          },
         },
       },
       caseSpin: {
@@ -108,6 +118,29 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
     },
   });
+  const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+  const domainName = `${matches && matches[1]}/${stack.stage}`;
+  const pruneConnectionCRON = new Cron(stack, "PruneConnectionsCron", {
+    schedule: "rate(10 minutes)",
+    job: {
+      function: {
+        handler: "packages/functions/src/websocket/handlers/pruneConnections.handler",
+        permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
+        environment: {
+          TABLE_NAME: websocketTable.tableName,
+          DOMAIN: domainName,
+        },
+      },
+    },
+  });
+
+  pruneConnectionCRON.attachPermissions([
+    "dynamodb:Scan",
+    "dynamodb:DeleteItem",
+    "execute-api:ManageConnections",
+  ]);
+
+  pruneConnectionCRON.bind([websocketTable]);
 
   stack.addOutputs({
     ApiEndpoint: api.url,

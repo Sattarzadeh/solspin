@@ -24,6 +24,12 @@ async function getSecret(): Promise<string> {
 }
 
 export const handler = ApiHandler(async (event) => {
+  const secret = await getSecret();
+  // const payload = {
+  //   sub: "adowadoawkdawd", // Use `sub` to store the userId
+  // };
+  // const token = jwt.sign(payload, secret, { algorithm: "HS256", expiresIn: "24h" });
+  // console.log(token);
   const token = event.queryStringParameters?.token;
 
   if (!token) {
@@ -34,9 +40,9 @@ export const handler = ApiHandler(async (event) => {
   }
 
   try {
-    validateUserInput(token, "alphanumeric");
+    validateUserInput(token, "jwt");
     logger.info(`Authenticate user lambda handler invoked with token: ${token}`);
-    const secret = await getSecret();
+
     const decoded = jwt.verify(token, secret);
 
     if (!decoded || typeof decoded === "string" || !decoded.sub) {

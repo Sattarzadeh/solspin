@@ -3,6 +3,7 @@ export interface ConnectionInfo {
   userId?: string;
   serverSeed?: string;
   connectionId: string;
+  caseId?: string;
 }
 
 export interface WebSocketOrchestrationPayload {

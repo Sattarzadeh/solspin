@@ -1,6 +1,8 @@
 import { StackContext, Api, Table, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { RemovalPolicy } from "aws-cdk-lib/core";
 export function GameEngineHandlerAPI({ stack }: StackContext) {
+  const removeOnDelete = stack.stage !== "prod";
   const casesTable = new Table(stack, "cases", {
     fields: {
       caseId: "string",
@@ -13,6 +15,11 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
       item_prefix_sums: "string",
     },
     primaryIndex: { partitionKey: "caseId" },
+    cdk: {
+      table: {
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
   });
   const getCaseFunction = new Function(stack, "getCaseFunction", {
     handler: "packages/functions/src/gameEngineHandlers/getCase.handler",

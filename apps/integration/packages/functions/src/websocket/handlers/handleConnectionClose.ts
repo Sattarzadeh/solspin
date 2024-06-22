@@ -1,4 +1,3 @@
-import { ApiHandler } from "sst/node/api";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleConnectionClose } from "../../../../../../websocket-handler/src/services/handleConnections";
 import logger from "@solspin/logger";
@@ -14,7 +13,6 @@ export const handler = WebSocketApiHandler(async (event) => {
 
   try {
     await handleConnectionClose(connectionId);
-
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "Connection closed" }),

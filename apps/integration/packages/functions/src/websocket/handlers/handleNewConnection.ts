@@ -1,19 +1,30 @@
 import logger from "@solspin/logger";
-import { ApiHandler } from "sst/node/api";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleNewConnection } from "../../../../../../websocket-handler/src/services/handleConnections";
 
+const whiteListedOrigins = ["https://piehost.com"];
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
-  logger.info(`Handle new connection lambda invoked with connectionId: ${connectionId}`);
-  if (!connectionId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "connectionId is required" }),
-    };
-  }
-
+  const origin = event.headers?.Origin;
+  logger.info(
+    `Handle new connection lambda invoked with connectionId: ${connectionId} and origin: ${origin}`
+  );
   try {
+    if (!connectionId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "connectionId is required" }),
+      };
+    }
+
+    if (!origin || !whiteListedOrigins.includes(origin)) {
+      logger.warn(`Connection attempt from non-whitelisted origin: ${origin}`);
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ message: "Forbidden: Origin not allowed" }),
+      };
+    }
+
     await handleNewConnection(connectionId);
     return {
       statusCode: 200,
