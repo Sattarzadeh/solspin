@@ -42,7 +42,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       BetTransaction.event,
       {
         userId,
-        betId: response.id,
         amount: outcomeAmount - amountBet,
       } as BetTransaction.type,
       Service.BETTING

@@ -1,25 +1,22 @@
 import { ZodError } from "zod";
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { UpdateUserBalanceRequestSchema } from "@solspin/types";
+import { EventBridgeEvent } from "aws-lambda";
 import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { updateWalletBalance } from "../../../data-access/updateWalletBalance";
+import { UpdateBalanceEvent, UpdateBalanceEventSchema } from "../schema/schema";
 
 const logger = getLogger("update-balance");
 
-export const handler: APIGatewayProxyHandlerV2 = async (event) => {
+export const handler = async (event: EventBridgeEvent<"event", UpdateBalanceEvent>) => {
   logger.info("Received update balance request", { event });
 
   let userId: string | undefined;
   let amount: number | undefined;
 
   try {
-    const parsedBody = JSON.parse(event.body || "{}");
+    const eventDetails = UpdateBalanceEventSchema.parse(event.detail);
 
-    const updateBalanceRequest = UpdateUserBalanceRequestSchema.parse(parsedBody);
-
-    ({ userId, amount } = updateBalanceRequest);
-
+    ({ userId, amount } = eventDetails.payload);
     if (amount <= 0) {
       return errorResponse(new Error("Amount must be greater than 0"), 400);
     }

@@ -3,7 +3,9 @@ import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge
 import { Service } from "@solspin/types";
 import { EventBody, EventProvider } from "./types";
 import { validateEvent } from "./validate";
+import { getLogger } from "@solspin/logger";
 
+const logger = getLogger("publish-event");
 const eventBridgeClient = new EventBridgeClient({});
 
 /**
@@ -36,7 +38,7 @@ export async function publishEvent<T>(
     },
     payload,
   };
-
+  logger.info("Publishing event", { event: event.name, payload: eventBody });
   const command = new PutEventsCommand({
     Entries: [
       {

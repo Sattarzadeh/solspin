@@ -1,5 +1,5 @@
 import { RemovalPolicy } from "aws-cdk-lib/core";
-import { StackContext, Table, Function, use } from "sst/constructs";
+import { Function, StackContext, Table } from "sst/constructs";
 
 export function WebSocketHandlerAPI({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";
@@ -20,7 +20,7 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
   });
 
   const getConnectionFunction = new Function(stack, "getConnectionFunction", {
-    handler: "packages/functions/src/websocket/handlers/getConnectionInfo.handler",
+    handler: "packages/functions/src/websocket/handler/getConnectionInfo.handler",
     environment: {
       TABLE_NAME: websocketConnectionsTable.tableName,
     },

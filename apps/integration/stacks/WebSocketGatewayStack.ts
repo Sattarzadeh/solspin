@@ -1,8 +1,9 @@
-import { StackContext, WebSocketApi, use, Cron } from "sst/constructs";
-import { PolicyStatement, User } from "aws-cdk-lib/aws-iam";
+import { Cron, StackContext, use, WebSocketApi } from "sst/constructs";
+import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "./GameEngineStack";
 import { UserManagementHandlerAPI } from "./UserManagementStack";
+
 export function WebSocketGateway({ stack }: StackContext) {
   const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
   const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
@@ -21,7 +22,7 @@ export function WebSocketGateway({ stack }: StackContext) {
     routes: {
       $connect: {
         function: {
-          handler: "packages/functions/src/websocket/handlers/handleNewConnection.handler",
+          handler: "packages/functions/src/websocket/handler/handleNewConnection.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -34,13 +35,13 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       $default: {
         function: {
-          handler: "packages/functions/src/websocket/handlers/closeConnection.handler",
+          handler: "packages/functions/src/websocket/handler/closeConnection.handler",
           timeout: 10,
         },
       },
       $disconnect: {
         function: {
-          handler: "packages/functions/src/websocket/handlers/handleConnectionClose.handler",
+          handler: "packages/functions/src/websocket/handler/handleConnectionClose.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -53,7 +54,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       logout: {
         function: {
-          handler: "packages/functions/src/websocket/handlers/handleLogout.handler",
+          handler: "packages/functions/src/websocket/handler/handleLogout.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -66,7 +67,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       generateSeed: {
         function: {
-          handler: "packages/functions/src/websocket/handlers/generateServerSeed.handler",
+          handler: "packages/functions/src/websocket/handler/generateServerSeed.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -79,7 +80,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       authenticate: {
         function: {
-          handler: "packages/functions/src/websocket/handlers/authenticateUser.handler",
+          handler: "packages/functions/src/websocket/handler/authenticateUser.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -95,7 +96,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       caseSpin: {
         function: {
-          handler: "packages/functions/src/orchestration/handlers/caseOrchestration.handler",
+          handler: "packages/functions/src/orchestration/handler/caseOrchestration.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -124,7 +125,7 @@ export function WebSocketGateway({ stack }: StackContext) {
     schedule: "rate(10 minutes)",
     job: {
       function: {
-        handler: "packages/functions/src/websocket/handlers/pruneConnections.handler",
+        handler: "packages/functions/src/websocket/handler/pruneConnections.handler",
         permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
         environment: {
           TABLE_NAME: websocketTable.tableName,

@@ -1,16 +1,46 @@
-import { Api, StackContext, use } from "sst/constructs";
+import { Api, Function, StackContext, use } from "sst/constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
-  const { walletsTableArn, transactionsTableArn } = use(DatabaseStack);
+  const { walletsTableArn } = use(DatabaseStack);
+  const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
+
+  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
+    stack,
+    "solspin-event-bus",
+    eventBusArn
+  );
+
+  const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
+    handler: "src/service/event/handler/update-balance.handler",
+    environment: {
+      WALLETS_TABLE_ARN: walletsTableArn,
+    },
+    permissions: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:UpdateItem"],
+        resources: [walletsTableArn],
+      }),
+    ],
+  });
+
+  new cdk.aws_events.Rule(stack, "BetTransactionRule", {
+    eventBus: existingEventBus,
+    eventPattern: {
+      source: ["betting_service.BetTransaction"],
+      detailType: ["event"],
+    },
+    targets: [new cdk.aws_events_targets.LambdaFunction(betTransactionHandler)],
+  });
 
   const api = new Api(stack, "api", {
     defaults: {
       function: {
         environment: {
           WALLETS_TABLE_ARN: walletsTableArn,
-          TRANSACTIONS_TABLE_ARN: transactionsTableArn,
         },
       },
     },
@@ -58,18 +88,6 @@ export function ApiStack({ stack }: StackContext) {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ["dynamodb:UpdateItem", "dynamodb:PutItem"],
-              resources: [walletsTableArn],
-            }),
-          ],
-        },
-      },
-      "POST /wallets/update-balance": {
-        function: {
-          handler: "src/service/api/handler/update-balance.handler",
-          permissions: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ["dynamodb:UpdateItem"],
               resources: [walletsTableArn],
             }),
           ],

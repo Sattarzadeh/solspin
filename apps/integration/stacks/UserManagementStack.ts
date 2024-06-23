@@ -1,4 +1,4 @@
-import { StackContext, Api, Table, Config, Function } from "sst/constructs";
+import { Api, Config, Function, StackContext, Table } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RemovalPolicy } from "aws-cdk-lib/core";
 
@@ -27,7 +27,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   });
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
   const callAuthorizerFunction = new Function(stack, "authorizerFunction", {
-    handler: "packages/functions/src/userManagement/handlers/authorize.handler",
+    handler: "packages/functions/src/userManagement/handler/authorize.handler",
     bind: [TEST_SECRET],
     environment: { TABLE_NAME: userTable.tableName },
   });
@@ -42,14 +42,14 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
     routes: {
       "POST /authorize": {
         function: {
-          handler: "packages/functions/src/userManagement/handlers/authorize.handler",
+          handler: "packages/functions/src/userManagement/handler/authorize.handler",
           bind: [TEST_SECRET],
           environment: { TABLE_NAME: userTable.tableName },
         },
       },
       "POST /user": {
         function: {
-          handler: "packages/functions/src/userManagement/handlers/createUser.handler",
+          handler: "packages/functions/src/userManagement/handler/createUser.handler",
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem"],
@@ -62,7 +62,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
       "GET /user": {
         function: {
-          handler: "packages/functions/src/userManagement/handlers/getUser.handler",
+          handler: "packages/functions/src/userManagement/handler/getUser.handler",
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:GetItem"],
@@ -75,7 +75,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
       "PUT /user": {
         function: {
-          handler: "packages/functions/src/userManagement/handlers/updateUser.handler",
+          handler: "packages/functions/src/userManagement/handler/updateUser.handler",
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:UpdateItem"],
@@ -88,7 +88,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
       "DELETE /user": {
         function: {
-          handler: "packages/functions/src/userManagement/handlers/deleteUser.handler",
+          handler: "packages/functions/src/userManagement/handler/deleteUser.handler",
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:DeleteItem"],

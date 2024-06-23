@@ -1,6 +1,5 @@
-// sst/src/handlers/generateSeedHandler.ts
+// sst/src/handler/generateSeedHandler.ts
 import logger from "@solspin/logger";
-import { ApiHandler } from "sst/node/api";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { generateServerSeed } from "../../../../../../websocket-handler/src/services/handleConnections"; // Adjust the path as necessary
 

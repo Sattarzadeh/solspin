@@ -1,4 +1,4 @@
-import { StackContext, Api, Table } from "sst/constructs";
+import { Api, StackContext, Table } from "sst/constructs";
 
 export function API({ stack }: StackContext) {
   const sessionsTable = new Table(stack, "Sessions", {
@@ -20,8 +20,8 @@ export function API({ stack }: StackContext) {
       },
     },
     routes: {
-      "POST /api/session": "packages/functions/src/handlers/createSession.handler",
-      "GET /api/session": "packages/functions/src/handlers/getSession.handler",
+      "POST /api/session": "packages/functions/src/handler/createSession.handler",
+      "GET /api/session": "packages/functions/src/handler/getSession.handler",
       "DELETE /api/session": "packages/functions/src/deleteSession.handler",
     },
   });

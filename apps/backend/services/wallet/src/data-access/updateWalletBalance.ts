@@ -38,8 +38,8 @@ export const updateWalletBalance = async (
     return result.Attributes as WalletsDBObject;
   } catch (error: unknown) {
     if (error instanceof ConditionalCheckFailedException) {
-      logger.error("Wallet is locked", { userId, error });
-      throw new Error("Wallet is currently locked");
+      logger.error("Wallet is locked or doesn't exist", { userId, error });
+      throw new Error("Wallet is currently locked or doesn't exist. Please try again later.");
     }
     logger.error("Error updating wallet balance:", { userId, amount, error });
     throw error;
