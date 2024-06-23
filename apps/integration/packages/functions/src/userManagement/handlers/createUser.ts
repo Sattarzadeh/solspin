@@ -1,35 +1,54 @@
 import { ApiHandler } from "sst/node/api";
-import { validateUserInput } from "@solspin/validator";
+import { CreateUserRequestSchema, User, UserSchema } from "@solspin/user-management-types";
 import logger from "@solspin/logger";
 import { createUser } from "../repository/userRepository";
-import { User } from "@solspin/user-management-types";
 import { randomUUID } from "crypto";
+import { ZodError } from "zod";
+
+const validatePayload = (payload: any) => {
+  try {
+    return CreateUserRequestSchema.parse(payload);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      logger.error("Validation error in create user payload", { error: error.errors });
+      throw new Error(JSON.stringify({ message: "Validation Error", errors: error.errors }));
+    }
+    throw error;
+  }
+};
+
+const validateUser = (user: User) => {
+  try {
+    UserSchema.parse(user);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      logger.error("Validation error in user object", { error: error.errors });
+      throw new Error(JSON.stringify({ message: "Validation Error", errors: error.errors }));
+    }
+    throw error;
+  }
+};
+
 export const handler = ApiHandler(async (event) => {
   try {
     const payload = JSON.parse(event.body || "{}");
 
-    if (!payload.walletAddress) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Missing required user fields" }),
-      };
-    }
+    const validatedPayload = validatePayload(payload);
 
-    // Validate user fields
-    validateUserInput(payload.walletAddress, "alphanumeric");
+    logger.info(`Creating user with wallet address: ${validatedPayload.walletAddress}`);
 
-    logger.info(`Creating user with wallet address: ${payload.walletAddress}`);
-    // call create wallet here before proceeding
-
-    let user: User = {
+    const now = new Date().toISOString();
+    const user: User = {
       userId: randomUUID(),
-      username: payload.walletAddress,
-      walletAddress: payload.walletAddress,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      level: 0,
-      discord: "",
+      username: validatedPayload.walletAddress, // Use walletAddress as username if no username is provided
+      walletAddress: validatedPayload.walletAddress,
+      createdAt: now,
+      updatedAt: now,
+      level: 0, // Default level to 0
+      discord: "", // Default discord to empty string
     };
+
+    validateUser(user);
 
     await createUser(user);
 
@@ -38,10 +57,11 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify({ message: "User created successfully" }),
     };
   } catch (error) {
-    logger.error("Error creating user:", (error as Error).message);
+    logger.error("Error creating user:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error", error: (error as Error).message }),
+      body: JSON.stringify({ message: errorMessage }),
     };
   }
 });

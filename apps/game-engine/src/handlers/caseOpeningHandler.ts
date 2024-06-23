@@ -1,6 +1,5 @@
 import { generateRollValue, determineItem } from "../services/caseItemDeterminationService";
-import { CaseItem } from "../models/case_item_model";
-import { Case } from "../models/case_model";
+import { Case, CaseItem } from "@solspin/game-engine-types";
 
 export const handleSpin = async (
   caseModel: Case,

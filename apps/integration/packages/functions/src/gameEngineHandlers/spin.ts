@@ -1,46 +1,33 @@
 import { ApiHandler } from "sst/node/api";
 import { handleSpin } from "../../../../../game-engine/src/handlers/caseOpeningHandler";
-import { SpinPayload } from "@solspin/orchestration-types";
+import { SpinPayloadSchema, CreateSpinPayloadRequestSchema } from "@solspin/orchestration-types";
 import logger from "@solspin/logger";
+import { ZodError } from "zod";
+
 export const handler = ApiHandler(async (event) => {
-  logger.info(`Perform spin lambda invoked with event body: ${event.body}`);
-  if (!event.body) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Request body is missing",
-      }),
-    };
-  }
-
-  let parsedBody: SpinPayload;
-
   try {
-    parsedBody = JSON.parse(event.body);
-    console.log("Parsed body:", parsedBody);
-  } catch (parseError) {
-    console.error("Failed to parse body:", parseError);
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Invalid JSON format",
-        error: (parseError as Error).message,
-      }),
-    };
-  }
+    logger.info(`Perform spin lambda invoked with event body: ${event.body}`);
+    const parsedBody = JSON.parse(event.body || "{}");
 
-  const { caseModel, serverSeed, clientSeed } = parsedBody;
+    let spinPayload;
+    try {
+      spinPayload = CreateSpinPayloadRequestSchema.parse(parsedBody);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        logger.error("Validation error creating spin payload", { error });
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            message: "Validation Error",
+            errors: error.errors,
+          }),
+        };
+      }
+      throw error;
+    }
 
-  if (!caseModel || !serverSeed || !clientSeed) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "caseModel, serverSeed, or clientSeed is missing",
-      }),
-    };
-  }
+    const { caseModel, serverSeed, clientSeed } = spinPayload;
 
-  try {
     const rewardItem = await handleSpin(caseModel, serverSeed, clientSeed);
 
     return {
@@ -48,7 +35,7 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify(rewardItem),
     };
   } catch (error) {
-    console.error("Error in handleSpin:", error);
+    logger.error("Error in handleSpin:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({

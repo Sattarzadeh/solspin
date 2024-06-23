@@ -1,9 +1,5 @@
 import logger from "@solspin/logger";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
-import {
-  ApiGatewayManagementApiClient,
-  DeleteConnectionCommand,
-} from "@aws-sdk/client-apigatewaymanagementapi";
 import { disconnectClient } from "../helpers/disconnectClient";
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
