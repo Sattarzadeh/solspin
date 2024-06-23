@@ -3,3 +3,5 @@
  */
 
 export * from "./general/types";
+export * from "./service/betting/types";
+export * from "./service/betting/schemas";

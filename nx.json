@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -17,16 +20,30 @@
   "targetDefaults": {
     "@nx/esbuild:esbuild": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "@nx/js:tsc": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "@nx/eslint:lint": {
-      "inputs": ["default", "{projectRoot}/.eslintrc.json", "{projectRoot}/.eslintignore"]
+      "inputs": [
+        "default",
+        "{projectRoot}/.eslintrc.json",
+        "{projectRoot}/.eslintignore"
+      ]
     }
   },
   "plugins": [
@@ -41,7 +58,9 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/payment-e2e/**/*"]
+      "exclude": [
+        "apps/payment-e2e/**/*"
+      ]
     },
     {
       "plugin": "@nx/next/plugin",

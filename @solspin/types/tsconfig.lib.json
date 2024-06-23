@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "types": ["node"]
+  },
+  "include": ["../../@solpin/types/src/**/*.ts"],
+  "exclude": ["../../@solpin/types/jest.config.ts", "../../@solpin/types/src/**/*.spec.ts", "../../@solpin/types/src/**/*.test.ts"]
+}
