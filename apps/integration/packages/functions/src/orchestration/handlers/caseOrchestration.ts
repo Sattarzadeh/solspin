@@ -5,9 +5,9 @@ import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
-import { ApiGatewayManagementApi } from "aws-sdk";
 import logger from "@solspin/logger";
 import { validateUserInput } from "@solspin/validator";
+import { sendWebSocketMessage } from "@solspin/web-socket-message";
 
 export const handler = WebSocketApiHandler(async (event) => {
   if (!event.body) {
@@ -43,9 +43,6 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
     }
 
-    const apiG = new ApiGatewayManagementApi({
-      endpoint: `${domainName}/${stage}`,
-    });
     logger.info("Invoking getUserFromWebSocket lambda with connectionId: ", connectionId);
     const connectionInfoPayload = await getUserFromWebSocket(connectionId);
 
@@ -110,13 +107,8 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
 
       try {
-        logger.info(`Sending message to client with connectionId: ${connectionId}`);
-        await apiG
-          .postToConnection({
-            ConnectionId: connectionId,
-            Data: JSON.stringify(responseMessage),
-          })
-          .promise();
+        const messageEndpoint = `${domainName}/${stage}`;
+        await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
       } catch (error) {
         logger.error("Error posting to connection:", (error as Error).message);
       }
