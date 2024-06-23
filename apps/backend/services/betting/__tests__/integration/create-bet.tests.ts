@@ -104,7 +104,7 @@ describe("create-bet-handler", () => {
   });
 
   // Unhappy Path Tests
-  it.only("should return a validation error for missing required fields", async () => {
+  it("should return a validation error for missing required fields", async () => {
     const mockBet = BetFactory.createMockBet({
       userId: undefined,
       gameId: undefined,

@@ -1,5 +1,6 @@
 import type { SSTConfig } from "sst";
-import { ApiStack } from "./stacks/api";
+import { ApiStack } from "./stacks/Api";
+import { DatabaseStack } from "./stacks/Database";
 
 export default {
   config() {
@@ -15,6 +16,7 @@ export default {
       architecture: "arm_64",
     });
 
+    app.stack(DatabaseStack);
     app.stack(ApiStack);
   },
 } satisfies SSTConfig;

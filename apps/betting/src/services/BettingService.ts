@@ -1,4 +1,4 @@
-import { GameOutcome } from "@solspin/betting-types";
+import { GameOutcome } from "../../../../@solspin/types/src/service/betting/schemas";
 import { InvalidInputError } from "@solspin/errors";
 import { createTransactionForBet } from "../remote/WalletRemote";
 import { getBet, getBetHistory, recordBet } from "../repository/Repository";

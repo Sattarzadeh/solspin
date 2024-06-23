@@ -1,6 +1,6 @@
 import { InvalidInputError } from "@solspin/errors";
 import { retrieveBet, retrieveBetHistory, saveBet } from "../../services/BettingService";
-import { Bet } from "@solspin/betting-types";
+import { Bet } from "../../../../../@solspin/types/src/service/betting/schemas";
 import axios from "axios";
 import * as remoteServiceMock from "../../remote/WalletRemote";
 import * as databaseHandlerServiceMock from "../../repository/Repository";

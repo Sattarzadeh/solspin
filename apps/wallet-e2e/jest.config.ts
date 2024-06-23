@@ -14,6 +14,6 @@ export default {
       },
     ],
   },
-  moduleFileExtensions: 'ts'",'js'",'html'"],
-  coverageDirectory:'../../coverage/wallet-e2e',
+  moduleFileExtensions: ["ts", "js", "html"],
+  coverageDirectory: "../../coverage/wallet-e2e",
 };

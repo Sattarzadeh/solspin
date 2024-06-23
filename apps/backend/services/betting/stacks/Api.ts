@@ -1,7 +1,7 @@
 import { Api, StackContext, use } from "sst/constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
-import * as cdk from "@aws-cdk/core";
-import { DatabaseStack } from "./database";
+import * as cdk from "aws-cdk-lib";
+import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
   const { betsTableArn } = use(DatabaseStack);
@@ -11,7 +11,7 @@ export function ApiStack({ stack }: StackContext) {
     routes: {
       "POST /bets": {
         function: {
-          handler: "src/create-bet.main",
+          handler: "src/service/api/handler/create-bet.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -28,7 +28,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /bets/{id}": {
         function: {
-          handler: "src/get-bet-by-id.main",
+          handler: "src/service/api/handler/get-bet-by-id.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -38,9 +38,9 @@ export function ApiStack({ stack }: StackContext) {
           ],
         },
       },
-      "GET /bets/{userId}": {
+      "GET /bets/user/{userId}": {
         function: {
-          handler: "src/list-bets-by-user-id.main",
+          handler: "src/list-bets-by-user-id.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -50,9 +50,9 @@ export function ApiStack({ stack }: StackContext) {
           ],
         },
       },
-      "GET /bets/{gameId}": {
+      "GET /bets/game/{gameId}": {
         function: {
-          handler: "src/list-bets-by-game-id.main",
+          handler: "src/list-bets-by-game-id.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,

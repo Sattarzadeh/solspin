@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { GameOutcome } from "@solspin/betting-types";
+
+export enum GameOutcome {
+  WIN = "WIN",
+  LOSE = "LOSE",
+  MOCK = "MOCK",
+}
 
 export const BaseBetSchema = z.object({
   id: z.string().uuid(),

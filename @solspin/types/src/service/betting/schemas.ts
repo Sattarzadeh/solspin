@@ -10,7 +10,7 @@ import {
   GetBetsByGameIdResponseSchema,
   GetBetsByUserIdRequestSchema,
   GetBetsByUserIdResponseSchema,
-} from "../../../../events/src/service/betting/schemas";
+} from "@solspin/events/src/service/betting/schemas";
 
 export enum GameOutcome {
   WIN = "WIN",

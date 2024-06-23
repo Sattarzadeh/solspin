@@ -1,8 +1,11 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { GetBetByIdRequestSchema, GetBetByIdResponseSchema } from "@solspin/types";
+import { Betting } from "@solspin/events";
 import { queryBetById } from "../../../data-access/query-by-id";
-import { errorResponse, successResponse } from "../../../utils/gateway-responses";
-import { getLogger } from "../../../utils/logger";
+import {
+  errorResponse,
+  successResponse,
+} from "../../../../../../../../@solspin/utils/gateway-responses";
+import { getLogger } from "@solspin/logger";
 
 const logger = getLogger("get-bet-by-id-handler");
 
@@ -10,7 +13,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   logger.info("Received get bet by ID request", { event });
 
   try {
-    const { id } = GetBetByIdRequestSchema.parse(event.pathParameters);
+    const { id } = Betting.GetBetByIdRequestSchema.parse(event.pathParameters);
 
     const bet = await queryBetById(id);
 
@@ -20,7 +23,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       return errorResponse(new Error("Bet not found"), 404);
     }
 
-    const response = GetBetByIdResponseSchema.parse(bet);
+    const response = Betting.GetBetByIdResponseSchema.parse(bet);
 
     logger.info("Bet retrieved successfully", { response });
 

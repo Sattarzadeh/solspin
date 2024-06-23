@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import dynamoDB from "../db/DbConnection";
-import { Bet, GameOutcome } from "@solspin/betting-types";
+import { Bet, GameOutcome } from "../../../../@solspin/types/src/service/betting/schemas";
 import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { ResourceNotFoundError } from "@solspin/errors";
 

@@ -1,4 +1,5 @@
 import { SSTConfig } from "sst";
+import { Event } from "./stacks/EventBus";
 
 export default {
   config(_input) {
@@ -19,6 +20,6 @@ export default {
     });
 
     // app.stack(VPC);
-    // app.stack(Event);
+    app.stack(Event);
   },
 } satisfies SSTConfig;
