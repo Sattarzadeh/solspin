@@ -1,5 +1,5 @@
 {
-  "name": "wallet",
+  "name": "wallets",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/wallet/src",
   "projectType": "application",
@@ -9,14 +9,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "wallet:build"
+        "buildTarget": "wallets:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "wallet:build:development"
+          "buildTarget": "wallets:build:development"
         },
         "production": {
-          "buildTarget": "wallet:build:production"
+          "buildTarget": "wallets:build:production"
         }
       }
     }

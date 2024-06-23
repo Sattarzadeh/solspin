@@ -1,4 +1,4 @@
-import { Wallet } from "@solspin/wallet-types";
+import { Wallet } from "../../../../@solspin/types/src/service/wallet/schemas";
 import {
   InsufficientBalanceError,
   InvalidInputError,
@@ -11,7 +11,7 @@ import {
   unlockWallet,
   withdrawFromDb,
 } from "../repository/Repository";
-import { getCurrentPrice } from "../remote/JupiterRemote";
+import { getCurrentPrice } from "../../../backend/services/wallet/src/remote/jupiterClient";
 import {
   broadcastDepositTransaction,
   broadcastWithdrawalTransaction,

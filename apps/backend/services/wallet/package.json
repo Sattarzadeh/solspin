@@ -1,0 +1,6 @@
+{
+  "name": "wallet",
+  "scripts": {
+    "sst": "sst"
+  }
+}

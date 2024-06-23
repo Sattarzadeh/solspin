@@ -30,6 +30,7 @@
       "@solspin/validator": ["@solspin/utils/validator.ts"],
       "@solspin/user-management-types": ["@solspin/types/src/service/user-management/types.ts"],
       "@solspin/betting-schema": ["@solspin/schemas/src/service/betting/schema.ts"],
+      "@solspin/gateway-responses": ["@solspin/utils/gateway-responses.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

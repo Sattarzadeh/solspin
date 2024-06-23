@@ -1,5 +1,5 @@
 import axios from "axios";
-import { DepositTransactionResponse } from "@solspin/wallet-types";
+import { DepositTransactionResponse } from "../../../../@solspin/types/src/service/wallet/schemas";
 
 const baseURL = "http://localhost:3001/treasury";
 const client = axios.create({ baseURL });

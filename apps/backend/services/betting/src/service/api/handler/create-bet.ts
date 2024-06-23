@@ -3,10 +3,7 @@ import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { Service } from "@solspin/types";
 import { Betting, BetTransaction, publishEvent } from "@solspin/events";
 import { recordBet } from "../../../data-access/record-bet";
-import {
-  errorResponse,
-  successResponse,
-} from "../../../../../../../../@solspin/utils/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { EVENT_BUS_ARN } from "../../../foundation/runtime";
 

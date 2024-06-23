@@ -40,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /bets/user/{userId}": {
         function: {
-          handler: "src/list-bets-by-user-id.handler",
+          handler: "src/service/api/handler/list-bets-by-user-id.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -52,7 +52,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /bets/game/{gameId}": {
         function: {
-          handler: "src/list-bets-by-game-id.handler",
+          handler: "src/service/api/handler/list-bets-by-game-id.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,

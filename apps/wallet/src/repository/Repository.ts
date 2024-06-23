@@ -3,7 +3,11 @@ import {
   InvalidResourceError,
   ResourceNotFoundError,
 } from "@solspin/errors";
-import { Transaction, TransactionPurpose, Wallet } from "@solspin/wallet-types";
+import {
+  Transaction,
+  TransactionPurpose,
+  Wallet,
+} from "../../../../@solspin/types/src/service/wallet/schemas";
 import { GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import dynamoDB from "../db/DbConnection";
 import { ConditionalCheckFailedException, ReturnValue } from "@aws-sdk/client-dynamodb";

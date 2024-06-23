@@ -1,7 +1,7 @@
 // test/DatabaseHandlerintegration.test.js
 import { DeleteCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import dynamoDB from "../../db/DbConnection";
-import { Wallet } from "@solspin/wallet-types";
+import { Wallet } from "../../../../../@solspin/types/src/service/wallet/schemas";
 import { getWallet, lockWallet } from "../../repository/Repository";
 
 jest.setTimeout(15000);

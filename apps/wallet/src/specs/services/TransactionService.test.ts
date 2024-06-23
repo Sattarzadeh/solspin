@@ -1,4 +1,4 @@
-import { DepositTransactionResponse, Wallet } from '@solspin/wallet-types';
+import { DepositTransactionResponse, Wallet } from '../../../../../@solspin/types/src/service/wallet/schemas';
 import { InsufficientBalanceError, InvalidInputError, ResourceNotFoundError } from '@solspin/errors';
 import * as Repository from '../../repository/Repository';
 import * as TreasuryRemote from '../../remote/TreasuryRemote';

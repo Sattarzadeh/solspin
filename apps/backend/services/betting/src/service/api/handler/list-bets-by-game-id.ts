@@ -1,10 +1,7 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { Betting } from "@solspin/events";
 import { queryBetsByGameId } from "../../../data-access/query-by-game-id";
-import {
-  errorResponse,
-  successResponse,
-} from "../../../../../../../../@solspin/utils/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 
 const logger = getLogger("get-bets-by-game-id-handler");
@@ -15,7 +12,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
     const { gameId } = Betting.GetBetsByGameIdRequestSchema.parse(event.pathParameters);
 
-    const query = Betting.BetQuerySchema.parse(event.queryStringParameters);
+    const query = Betting.BetQuerySchema.parse(event.queryStringParameters || {});
 
     const { gameOutcome, outcomeAmount, betAmount } = query;
 

@@ -1,4 +1,4 @@
-import { DepositTransactionResponse } from "@solspin/wallet-types";
+import { DepositTransactionResponse } from "../../../../@solspin/types/src/service/wallet/schemas";
 import BlockchainService from "../services/BlockchainService";
 import { Transaction } from "@solana/web3.js";
 import { BuildTransactionResponse } from "@solspin/treasury-types";
