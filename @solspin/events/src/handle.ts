@@ -1,12 +1,13 @@
 import { Context, EventBridgeEvent, SQSEvent } from "aws-lambda";
-import { EventBody, EventConfig, EventProvider } from "./types";
+import { Service } from "@solpin/types";
+import { EventBody, EventProvider } from "./types";
 import { validateEvent } from "./validate";
 
 export interface EventHandlerConfig<T> {
   eventProvider: EventProvider;
   handler: (
     payload: T,
-    config: EventConfig,
+    publisher: Service,
     event: EventBridgeEvent<"event", EventBody<T>>,
     context: Context
   ) => Promise<void>;
@@ -26,21 +27,17 @@ export function handleEvent<T>(
 
       const promises = event.Records.map(async (record) => {
         const eventBridgeEvent = JSON.parse(record.body) as EventBridgeEvent<"event", EventBody<T>>;
-        const { metadata, payload, publisher } = eventBridgeEvent.detail;
-
-        const eventConfig: EventConfig = {
-          publisher,
-        };
+        const { payload, publisher } = eventBridgeEvent.detail;
 
         console.log("Event payload:", JSON.stringify(payload));
-        console.log("Event config:", JSON.stringify(eventConfig));
+        console.log("Event Publisher:", JSON.stringify(publisher));
 
         try {
           console.log("Validating event payload...");
           const validatedPayload = validateEvent(payload, config.eventProvider.schema);
 
           console.log("Handling event...");
-          await config.handler(validatedPayload, eventConfig, eventBridgeEvent, context);
+          await config.handler(validatedPayload, publisher, eventBridgeEvent, context);
 
           console.log("Event handling completed successfully");
         } catch (error) {

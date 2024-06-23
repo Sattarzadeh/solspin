@@ -5,6 +5,6 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "include": ["../../@solpin/types/src/**/*.ts"],
+  "exclude": ["../../@solpin/types/jest.config.ts", "../../@solpin/types/src/**/*.spec.ts", "../../@solpin/types/src/**/*.test.ts"]
 }

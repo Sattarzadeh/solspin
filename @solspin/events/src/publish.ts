@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
-import { EventBody, EventConfig, EventProvider } from "./types";
+import { Service } from "@solpin/types";
+import { EventBody, EventProvider } from "./types";
 import { validateEvent } from "./validate";
 
 const eventBridgeClient = new EventBridgeClient({});
@@ -16,11 +17,11 @@ const eventBridgeClient = new EventBridgeClient({});
 export async function publishEvent<T>(
   event: EventProvider,
   payload: T,
-  config: EventConfig
+  publisher: Service
 ): Promise<void> {
-  const eventBusName = process.env["EVENT_BUS_NAME"];
+  const eventBusArn = process.env["EVENT_BUS_ARN"];
 
-  if (!eventBusName) {
+  if (!eventBusArn) {
     throw new Error("Event bus name could not be established");
   }
 
@@ -29,7 +30,7 @@ export async function publishEvent<T>(
   validateEvent(payload, event.schema);
 
   const eventBody: EventBody<T> = {
-    publisher: config.publisher,
+    publisher,
     metadata: {
       requestId,
     },
@@ -39,8 +40,8 @@ export async function publishEvent<T>(
   const command = new PutEventsCommand({
     Entries: [
       {
-        EventBusName: eventBusName,
-        Source: `${config.publisher}.${event.name}`,
+        EventBusName: eventBusArn,
+        Source: `${publisher}.${event.name}`,
         DetailType: "event",
         Detail: JSON.stringify(eventBody),
       },
