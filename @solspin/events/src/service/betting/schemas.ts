@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GameOutcome } from "./types";
+import { GameOutcome } from "@solspin/betting-types";
 
 export const BaseBetSchema = z.object({
   id: z.string().uuid(),

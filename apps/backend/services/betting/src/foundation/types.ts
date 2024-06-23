@@ -1,4 +1,4 @@
-import { GameOutcome } from "@solpin/types";
+import { GameOutcome } from "@solspin/types";
 
 export interface BetDBObject {
   id: string;

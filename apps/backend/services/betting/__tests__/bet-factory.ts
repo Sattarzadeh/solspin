@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { Bet, GameOutcome } from "@solpin/types";
+import { Bet, GameOutcome } from "@solspin/types";
 
 export class BetFactory {
   /**

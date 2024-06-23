@@ -11,7 +11,7 @@ export default {
   coverageDirectory: "../../coverage/apps/backend/services/betting",
   passWithNoTests: true,
   moduleNameMapper: {
-    "^@solpin/types$": "<rootDir>/../../../../@solpin/types/src/index.ts",
-    "^@solpin/events$": "<rootDir>/../../../../@solpin/events/src/index.ts",
+    "^@solspin/types$": "<rootDir>/../../../../@solspin/types/src/index.ts",
+    "^@solspin/events$": "<rootDir>/../../../../@solspin/events/src/index.ts",
   },
 };

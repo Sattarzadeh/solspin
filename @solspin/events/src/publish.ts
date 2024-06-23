@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
-import { Service } from "@solpin/types";
+import { Service } from "@solspin/types";
 import { EventBody, EventProvider } from "./types";
 import { validateEvent } from "./validate";
 

@@ -1,9 +1,4 @@
 import { SSTConfig } from "sst";
-import { VPC } from "./stacks/Vpc";
-import { Event } from "./stacks/EventBus";
-import { TableStack } from "./stacks/Table";
-import { api } from "./stacks/Api";
-import { Lambdas } from "./stacks/Lambda";
 
 export default {
   config(_input) {
@@ -23,10 +18,7 @@ export default {
       },
     });
 
-    app.stack(VPC);
-    app.stack(TableStack);
-    app.stack(Event);
-    app.stack(api);
-    app.stack(Lambdas);
+    // app.stack(VPC);
+    // app.stack(Event);
   },
 } satisfies SSTConfig;

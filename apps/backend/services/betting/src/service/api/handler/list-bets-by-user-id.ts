@@ -3,7 +3,7 @@ import {
   BetQuerySchema,
   GetBetsByUserIdRequestSchema,
   GetBetsByUserIdResponseSchema,
-} from "@solpin/types";
+} from "@solspin/types";
 import { queryBetsByUserId } from "../../../data-access/query-by-user-id";
 import { errorResponse, successResponse } from "../../../utils/gateway-responses";
 import { getLogger } from "../../../utils/logger";

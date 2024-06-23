@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { GetBetByIdRequestSchema, GetBetByIdResponseSchema } from "@solpin/types";
+import { GetBetByIdRequestSchema, GetBetByIdResponseSchema } from "@solspin/types";
 import { queryBetById } from "../../../data-access/query-by-id";
 import { errorResponse, successResponse } from "../../../utils/gateway-responses";
 import { getLogger } from "../../../utils/logger";

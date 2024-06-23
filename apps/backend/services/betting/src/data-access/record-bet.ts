@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import { GameOutcome } from "@solpin/types";
+import { GameOutcome } from "@solspin/types";
 import { BetDBObject } from "../foundation/types";
 import { BETS_TABLE_ARN } from "../foundation/runtime";
 

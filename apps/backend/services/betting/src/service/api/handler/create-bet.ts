@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { CreateBetRequestSchema, CreateBetResponseSchema, Service } from "@solpin/types";
-import { BetTransaction, publishEvent } from "@solpin/events";
+import { CreateBetRequestSchema, CreateBetResponseSchema, Service } from "@solspin/types";
+import { BetTransaction, publishEvent } from "@solspin/events";
 import { recordBet } from "../../../data-access/record-bet";
 import { errorResponse, successResponse } from "../../../utils/gateway-responses";
 import { getLogger } from "../../../utils/logger";

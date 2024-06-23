@@ -4,7 +4,7 @@ import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge
 import { mockClient } from "aws-sdk-client-mock";
 import { handler } from "../../src/service/api/handler/create-bet";
 import { BetFactory } from "../bet-factory";
-import { GameOutcome } from "@solpin/types";
+import { GameOutcome } from "@solspin/types";
 
 jest.mock("../../src/foundation/runtime", () => ({
   BETS_TABLE_ARN: "mock-dynamo-db-arn",
