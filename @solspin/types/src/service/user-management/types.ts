@@ -1,9 +1,55 @@
-export interface User {
-  username: string;
-  userId: string;
-  discord: string;
-  createdAt: string;
-  updatedAt: string;
-  level: number;
-  walletAddress: string;
-}
+import { z } from "zod";
+
+// Define the schema for User
+export const UserSchema = z.object({
+  username: z.string(),
+  userId: z.string().uuid(),
+  discord: z.string(),
+  createdAt: z.coerce.date().transform((date) => date.toISOString()),
+  updatedAt: z.coerce.date().transform((date) => date.toISOString()),
+  level: z.number().int(),
+  walletAddress: z.string(),
+});
+export const UpdateFieldsSchema = z
+  .object({
+    username: z.string().optional(),
+    discord: z.string().optional(),
+    walletId: z.string().optional(),
+    createdAt: z.coerce
+      .date()
+      .transform((date) => date.toISOString())
+      .optional(),
+    updatedAt: z.coerce
+      .date()
+      .transform((date) => date.toISOString())
+      .optional(),
+    level: z.number().int().optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "updateFields must contain at least one valid field",
+  });
+
+// Request Schemas
+export const CreateUserRequestSchema = UserSchema.omit({
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+  username: true,
+  discord: true,
+  level: true,
+});
+
+// Define the schema for the updateUser request
+export const UpdateUserRequestSchema = z.object({
+  userId: z.string().uuid(),
+  updateFields: UpdateFieldsSchema,
+});
+export const GetUserByIdRequestSchema = UserSchema.pick({ userId: true });
+export const DeleteUserRequestSchema = UserSchema.pick({ userId: true });
+
+// Response Schemas
+export const CreateUserResponseSchema = UserSchema;
+export const GetUserByIdResponseSchema = UserSchema;
+
+export type User = z.infer<typeof UserSchema>;
+export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;

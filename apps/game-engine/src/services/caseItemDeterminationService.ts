@@ -1,5 +1,4 @@
-import { CaseItem } from "../models/case_item_model";
-import { Case } from "../models/case_model";
+import { Case, CaseItem } from "@solspin/game-engine-types";
 import { createHmac } from "crypto";
 const findItem = (rollNumber: number, prefixSums: Array<number>): number => {
   let leftPointer = 0;

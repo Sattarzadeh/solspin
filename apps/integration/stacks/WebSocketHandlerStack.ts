@@ -25,7 +25,7 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
       TABLE_NAME: websocketConnectionsTable.tableName,
     },
   });
-  getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
+  getConnectionFunction.attachPermissions("*");
 
   return {
     getConnectionFunction,

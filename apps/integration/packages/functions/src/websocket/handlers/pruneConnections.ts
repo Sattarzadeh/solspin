@@ -27,7 +27,7 @@ export const handler = ApiHandler(async (event) => {
         };
         await sendWebSocketMessage(messageEndpoint, connectionId, message);
       } catch (error) {
-        if (error.name === "GoneException") {
+        if ((error as Error).name === "GoneException") {
           // Connection is closed, delete it from the table
           logger.info(`Connection ${connectionId} is closed. Deleting from table.`);
           await handleConnectionClose(connectionId);

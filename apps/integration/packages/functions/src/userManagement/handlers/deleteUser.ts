@@ -1,21 +1,27 @@
 import { ApiHandler } from "sst/node/api";
-import { validateUserInput } from "@solspin/validator";
+import { DeleteUserRequestSchema } from "@solspin/user-management-types";
 import logger from "@solspin/logger";
 import { deleteUser } from "../repository/userRepository";
+import { ZodError } from "zod";
 
 export const handler = ApiHandler(async (event) => {
   try {
-    const userId = event.queryStringParameters?.userId;
+    const queryStringParameters = event.queryStringParameters || {};
 
-    if (!userId) {
+    // Validate query parameters using DeleteUserRequestSchema
+    const parsedParams = DeleteUserRequestSchema.safeParse(queryStringParameters);
+    if (!parsedParams.success) {
+      logger.error("Validation error in query parameters", { error: parsedParams.error.errors });
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: "userId is missing in query parameters" }),
+        body: JSON.stringify({
+          message: "Validation Error",
+          errors: parsedParams.error.errors,
+        }),
       };
     }
 
-    // Validate userId
-    validateUserInput(userId, "uuid");
+    const { userId } = parsedParams.data;
 
     logger.info(`Deleting user data for userId: ${userId}`);
 
@@ -26,10 +32,11 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify({ message: "User deleted successfully" }),
     };
   } catch (error) {
-    logger.error("Error deleting user data:", (error as Error).message);
+    logger.error("Error deleting user data:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error", error: (error as Error).message }),
+      body: JSON.stringify({ message: errorMessage }),
     };
   }
 });

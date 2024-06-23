@@ -1,12 +1,18 @@
-export interface ConnectionInfo {
-  isAuthenticated: boolean;
-  userId?: string;
-  serverSeed?: string;
-  connectionId: string;
-  caseId?: string;
-}
+import { z } from "zod";
 
-export interface WebSocketOrchestrationPayload {
-  caseId: string;
-  clientSeed: string;
-}
+const ConnectionInfoSchema = z.object({
+  isAuthenticated: z.boolean(),
+  userId: z.string().uuid().optional(),
+  serverSeed: z.string().optional(),
+  connectionId: z.string(),
+});
+
+const WebSocketOrchestrationPayloadSchema = z.object({
+  caseId: z.string().uuid(),
+  clientSeed: z.string().regex(/^[a-zA-Z0-9]+$/),
+});
+
+export { ConnectionInfoSchema, WebSocketOrchestrationPayloadSchema };
+
+export type ConnectionInfo = z.infer<typeof ConnectionInfoSchema>;
+export type WebSocketOrchestrationPayload = z.infer<typeof WebSocketOrchestrationPayloadSchema>;

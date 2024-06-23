@@ -1,13 +1,13 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
-import { CaseItem, Case } from "@solspin/game-engine-types"; // Assuming CaseModel type is defined here
-import { WebSocketOrchestrationPayload } from "@solspin/websocket-types";
+import { CaseItem, Case } from "@solspin/game-engine-types";
 import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import logger from "@solspin/logger";
-import { validateUserInput } from "@solspin/validator";
 import { sendWebSocketMessage } from "@solspin/web-socket-message";
+import { WebSocketOrchestrationPayloadSchema } from "@solspin/websocket-types";
+import { ZodError } from "zod";
 
 export const handler = WebSocketApiHandler(async (event) => {
   if (!event.body) {
@@ -18,19 +18,26 @@ export const handler = WebSocketApiHandler(async (event) => {
   }
   logger.info("Orchestration service was initiated with event body: ", event.body);
 
-  let payload: WebSocketOrchestrationPayload;
+  const parsedBody = JSON.parse(event.body || "{}");
+
+  let payload;
   try {
-    payload = JSON.parse(event.body);
+    payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
   } catch (error) {
-    logger.error(`WebSocketOrchestrationPayload was not in the correct format`);
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Invalid JSON format" }),
-    };
+    if (error instanceof ZodError) {
+      logger.error("Validation error in WebSocket orchestration payload", { error });
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "Validation Error",
+          errors: error.errors,
+        }),
+      };
+    }
+    throw error;
   }
   try {
-    const clientSeed = validateUserInput(payload.clientSeed, "alphanumeric");
-    const caseId = validateUserInput(payload.caseId, "uuid");
+    const { caseId, clientSeed } = payload;
     const connectionId = event.requestContext.connectionId;
     const { stage, domainName } = event.requestContext;
     if (!clientSeed || !connectionId || !caseId) {
@@ -55,9 +62,8 @@ export const handler = WebSocketApiHandler(async (event) => {
         body: JSON.stringify({ message: "Invalid JSON format" }),
       };
     }
-    logger.info(
-      `Received connection info from getUserFromWebSocket lambda. IsAuthenticated: ${user.isAuthenticated}`
-    );
+    logger.info(`Received connection info from getUserFromWebSocket lambda.`);
+
     if (!user || !user.isAuthenticated) {
       logger.error(`User with connectionId: ${connectionId} is unauthenticated`);
       return {
@@ -66,7 +72,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
     }
 
-    if (!user.serverSeed || !user.caseId) {
+    if (!user.serverSeed) {
       logger.error(`User with connectionId: ${connectionId} has not requested a server seed`);
       return {
         statusCode: 400,

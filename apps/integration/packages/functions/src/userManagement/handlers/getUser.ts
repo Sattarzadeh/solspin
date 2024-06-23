@@ -3,21 +3,35 @@ import { validateUserInput } from "@solspin/validator";
 import logger from "@solspin/logger";
 import { getUser } from "../repository/userRepository";
 import { ValidationError } from "@solspin/errors";
-
+import { GetUserByIdRequestSchema } from "@solspin/user-management-types";
+import { ZodError } from "zod";
 export const handler = ApiHandler(async (event) => {
-  try {
-    const userId = event.queryStringParameters?.userId;
+  const userId = event.queryStringParameters?.userId;
+  logger.info(`Get user lambda called with userId: ${userId}`);
 
-    if (!userId) {
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "userId is required" }),
+    };
+  }
+
+  try {
+    GetUserByIdRequestSchema.parse({ userId });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      logger.error("Validation error in userId", { error });
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: "userId is missing in query parameters" }),
+        body: JSON.stringify({
+          message: "Validation Error",
+          errors: error.errors,
+        }),
       };
     }
-
-    // Validate userId
-    validateUserInput(userId, "uuid");
-
+    throw error;
+  }
+  try {
     logger.info(`Fetching user data for userId: ${userId}`);
 
     const result = await getUser(userId);
