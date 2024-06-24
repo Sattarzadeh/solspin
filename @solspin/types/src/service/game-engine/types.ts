@@ -1,40 +1,72 @@
-interface BaseCaseItem {
-  price: number;
-  probability: number;
-  item_id: number;
-  item_type: string;
-  item_name: string;
-  image_url: string;
-  number_range: object;
-  rarity: string;
-}
-interface CsgoCaseItem extends BaseCaseItem {
-  is_stattrak: boolean;
-  is_souvenir: boolean;
-  item_wear: string;
-}
+import { z } from "zod";
 
-type NftCaseItem = BaseCaseItem;
+// Define the CaseType enum using Zod
+const CaseType = z.enum(["nft", "csgo"]);
 
-export type CaseItem = CsgoCaseItem | NftCaseItem;
+// Define the schema for BaseCaseItem
+const BaseCaseItemSchema = z.object({
+  price: z.number(),
+  probability: z.number(),
+  item_id: z.number(),
+  item_type: z.string(),
+  item_name: z.string(),
+  image_url: z.string().url(),
+  number_range: z.object({}),
+  rarity: z.string(),
+});
 
-export enum CaseType {
-  NFT = "nft",
-  CSGO = "csgo",
-}
+// Define the schema for CsgoCaseItem
+const CsgoCaseItemSchema = BaseCaseItemSchema.extend({
+  is_stattrak: z.boolean(),
+  is_souvenir: z.boolean(),
+  item_wear: z.string(),
+});
 
-interface BaseCase {
-  caseType: CaseType;
-  caseName: string;
-  casePrice: number;
-  caseId: string;
-  image_url: string;
-}
+const NftCaseItemSchema = BaseCaseItemSchema;
 
-export interface Case extends BaseCase {
-  caseHash: string;
-  items: Array<CaseItem>;
-  item_prefix_sums: Array<number>;
-}
+const CaseItemSchema = z.union([CsgoCaseItemSchema, NftCaseItemSchema]);
 
-export interface CaseOverview extends BaseCase {}
+const BaseCaseSchema = z.object({
+  caseType: CaseType,
+  caseName: z.string(),
+  casePrice: z.number(),
+  caseId: z.string().uuid(),
+  image_url: z.string().url(),
+});
+
+const CaseSchema = BaseCaseSchema.extend({
+  caseHash: z.string(),
+  items: z.array(CaseItemSchema),
+  item_prefix_sums: z.array(z.number()),
+});
+
+const CaseOverviewSchema = BaseCaseSchema;
+
+export const GetCaseByIdRequestSchema = CaseSchema.pick({ caseId: true });
+
+export const CaseQuerySchema = z.object({
+  caseType: CaseType.optional(),
+  caseName: z.string().optional(),
+  casePrice: z.number().positive().optional(),
+});
+
+export const GetCaseByIdResponseSchema = CaseSchema;
+
+export {
+  CaseType,
+  BaseCaseItemSchema,
+  CsgoCaseItemSchema,
+  NftCaseItemSchema,
+  CaseItemSchema,
+  BaseCaseSchema,
+  CaseSchema,
+  CaseOverviewSchema,
+};
+
+export type BaseCaseItem = z.infer<typeof BaseCaseItemSchema>;
+export type CsgoCaseItem = z.infer<typeof CsgoCaseItemSchema>;
+export type NftCaseItem = z.infer<typeof NftCaseItemSchema>;
+export type CaseItem = z.infer<typeof CaseItemSchema>;
+export type BaseCase = z.infer<typeof BaseCaseSchema>;
+export type Case = z.infer<typeof CaseSchema>;
+export type CaseOverview = z.infer<typeof CaseOverviewSchema>;

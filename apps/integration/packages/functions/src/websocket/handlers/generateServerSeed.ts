@@ -2,9 +2,12 @@
 import logger from "@solspin/logger";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { generateServerSeed } from "../../../../../../websocket-handler/src/services/handleConnections"; // Adjust the path as necessary
+import { hashString } from "@solspin/hash";
+import { sendWebSocketMessage } from "@solspin/web-socket-message";
 
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
+  const { stage, domainName } = event.requestContext;
   logger.info(`Generate seed lambda invoked with connectionId: ${connectionId}`);
   if (!connectionId) {
     return {
@@ -15,7 +18,14 @@ export const handler = WebSocketApiHandler(async (event) => {
 
   try {
     const serverSeed = await generateServerSeed(connectionId);
-    logger.info(`Received server seed: ${connectionId}`);
+    logger.info(`Generated server seed: ${serverSeed}`);
+    const hashedServerSeed = hashString(serverSeed);
+
+    const messageEndpoint = `${domainName}/${stage}`;
+    const webSocketMessage = {
+      "server-seed-hash": hashedServerSeed,
+    };
+    await sendWebSocketMessage(messageEndpoint, connectionId, webSocketMessage);
     return {
       statusCode: 200,
       body: JSON.stringify({ serverSeed }),

@@ -1,43 +1,26 @@
 import { ApiHandler } from "sst/node/api";
-import { validateUserInput } from "@solspin/validator";
+import { UpdateUserRequestSchema } from "@solspin/user-management-types";
 import logger from "@solspin/logger";
 import { updateUser } from "../repository/userRepository";
+import { ZodError } from "zod";
 
 export const handler = ApiHandler(async (event) => {
   try {
-    const { userId, updateFields } = JSON.parse(event.body || "{}");
+    const payload = JSON.parse(event.body || "{}");
 
-    if (!userId || !updateFields) {
+    const parsedPayload = UpdateUserRequestSchema.safeParse(payload);
+    if (!parsedPayload.success) {
+      logger.error("Validation error in request payload", { error: parsedPayload.error.errors });
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: "Missing userId or updateFields" }),
+        body: JSON.stringify({
+          message: "Validation Error",
+          errors: parsedPayload.error.errors,
+        }),
       };
     }
 
-    // Validate userId
-    validateUserInput(userId, "uuid");
-
-    // Validate each entry in updateFields
-    for (const [key, value] of Object.entries(updateFields)) {
-      switch (key) {
-        case "discord":
-        case "walletId":
-          validateUserInput(value, "alphanumeric");
-          break;
-        case "createdAt":
-        case "updatedAt":
-          validateUserInput(value, "alphanumeric");
-          break;
-        case "level":
-          validateUserInput(value, "int");
-          break;
-        default:
-          return {
-            statusCode: 400,
-            body: JSON.stringify({ message: `Invalid field ${key} in updateFields` }),
-          };
-      }
-    }
+    const { userId, updateFields } = parsedPayload.data;
 
     logger.info(
       `Updating user data for userId: ${userId} with fields: ${JSON.stringify(updateFields)}`
@@ -50,10 +33,11 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify(result),
     };
   } catch (error) {
-    logger.error("Error updating user data:", (error as Error).message);
+    logger.error("Error updating user data:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error", error: (error as Error).message }),
+      body: JSON.stringify({ message: errorMessage }),
     };
   }
 });

@@ -29,7 +29,7 @@ export const authenticateUser = async (connectionId: string, userId: string): Pr
 export const generateServerSeed = async (connectionId: string): Promise<string> => {
   const connectionInfo = await getConnectionInfoFromDB(connectionId);
 
-  if (connectionInfo && connectionInfo.isAuthenticated) {
+  if (connectionInfo) {
     const serverSeed = randomBytes(32).toString("hex");
     connectionInfo.serverSeed = serverSeed;
     await saveConnectionInfo(connectionId, connectionInfo);

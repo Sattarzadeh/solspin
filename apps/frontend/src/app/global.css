@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: 78, 180, 191;
+  --color-secondary: #4EB4BF;
+  --gradient-border-nav: linear-gradient(90deg, rgba(78, 180, 191, 0.12) 0%, rgba(43, 217, 168, 0.12) 100%);
+  --green-gradient: linear-gradient(90deg, #4EB4BF 0%, #2BD9A8 100%);
+  --filter-dropdown: rgba(83, 108, 122, 0.15);
+  --filter-dropdown-hover: rgba(83, 108, 122, 0.4);
+  --case-background: rgba(90, 127, 148, 0.16);
+  --case-min-height: 280px;
+  --case-min-width: 270px;
+  --case-restricted-color: rgba(174, 54, 255, 0.2);
+  --purple-gradient: linear-gradient(90deg, #AE49F2 0%, #8A66D9 100%);
+  --bg-dark: rgb(31 32 41);
+  --carousel-color: rgba(10, 24, 45, 1);
+  --main-element-background: rgba(29, 33, 38, 1);
+}
+
+.transition-custom {
+  transition: all 0.25s ease-in-out;
+}
+
+.gradient-text {
+  background: var(--green-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+.gradient-background {
+  background: var(--green-gradient);
+}
+
+.filter-dropdown {
+  background: var(--filter-dropdown);
+}
+
+.filter-dropdown:hover {
+  background: var(--filter-dropdown-hover);
+}
+
+.case {
+  background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%);
+  min-height: var(--case-min-height, 272px);
+  min-width: var(--case-min-width, 280px);
+}
+
+.purple-gradient-border {
+  border: 1px solid transparent;
+  border-image: var(--purple-gradient);
+  border-image-slice: 1;
+}
+
+
+.purple-gradient-text {
+  background: var(--purple-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-dark {
+  background: var(--bg-dark);
+}
+
+@media (min-width: 640px) {
+  .carousel-animation {
+    transform: translateX(var(--transform-distance)) !important;
+  }
+}
+
+.carousel-animation {
+    transition-timing-function: cubic-bezier(0, 0.5, 0.1, 1);
+}
+
+.carousel-color {
+  background: var(--carousel-color);
+}
+
+.carousel-item {
+  box-shadow: 0px 5px 20px 0px rgba(235, 76, 75, 1);
+  border: 1px solid;
+}
+
+.cases-container {
+  transition: grid-template-columns 0.5s ease-in-out;
+}
+
+.main-element {
+  box-shadow: 0 4px #1a1d22, 0 20px 50px #00000073, inset 0 1px #252a30;
+}

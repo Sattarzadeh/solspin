@@ -28,6 +28,8 @@
       "@solspin/game-engine-types": ["@solspin/types/src/service/game-engine/types.ts"],
       "@solspin/logger": ["@solspin/utils/logger.ts"],
       "@solspin/validator": ["@solspin/utils/validator.ts"],
+      "@solspin/web-socket-message": ["@solspin/utils/sendWebSocketMessage.ts"],
+      "@solspin/hash": ["@solspin/utils/hash.ts"],
       "@solspin/user-management-types": ["@solspin/types/src/service/user-management/types.ts"],
       "@solspin/betting-schema": ["@solspin/schemas/src/service/betting/schema.ts"],
       "@solspin/gateway-responses": ["@solspin/utils/gateway-responses.ts"],
