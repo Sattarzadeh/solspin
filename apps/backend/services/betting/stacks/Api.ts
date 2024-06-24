@@ -1,4 +1,4 @@
-import { Api, StackContext, use } from "sst/constructs";
+import { Api, Function, StackContext, use } from "sst/constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
@@ -7,25 +7,42 @@ export function ApiStack({ stack }: StackContext) {
   const { betsTableArn } = use(DatabaseStack);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
 
+  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
+    stack,
+    "solspin-event-bus",
+    eventBusArn
+  );
+
+  const createBetHandler = new Function(stack, "CreateBetHandler", {
+    handler: "src/service/events/handler/create-bet.handler",
+    environment: {
+      BETS_TABLE_ARN: betsTableArn,
+    },
+    permissions: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:PutItem"],
+        resources: [betsTableArn],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["events:PutEvents"],
+        resources: [eventBusArn],
+      }),
+    ],
+  });
+
+  new cdk.aws_events.Rule(stack, "GameResultRule", {
+    eventBus: existingEventBus,
+    eventPattern: {
+      source: ["betting_service.BetTransaction"],
+      detailType: ["event"],
+    },
+    targets: [new cdk.aws_events_targets.LambdaFunction(createBetHandler)],
+  });
+
   const api = new Api(stack, "api", {
     routes: {
-      "POST /bets": {
-        function: {
-          handler: "src/service/api/handler/create-bet.handler",
-          permissions: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ["dynamodb:PutItem"],
-              resources: [betsTableArn],
-            }),
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ["events:PutEvents"],
-              resources: [eventBusArn],
-            }),
-          ],
-        },
-      },
       "GET /bets/{id}": {
         function: {
           handler: "src/service/api/handler/get-bet-by-id.handler",

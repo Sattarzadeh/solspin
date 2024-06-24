@@ -2,7 +2,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } fr
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 import { mockClient } from "aws-sdk-client-mock";
-import { handler } from "../../src/service/api/handler/create-bet";
+import { handler } from "../../src/service/events/handler/create-bet";
 import { BetFactory } from "../bet-factory";
 import { GameOutcome } from "@solspin/types";
 
