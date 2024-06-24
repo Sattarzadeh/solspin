@@ -8,16 +8,11 @@ import { lockWallet } from "../../../data-access/lockWallet";
 import { getCurrentPrice } from "../../../remote/jupiterClient";
 import { withdraw } from "../../../data-access/withdraw";
 import { unlockWallet } from "../../../data-access/unlockWallet";
+import { Lambda } from "aws-sdk";
+import { WITHDRAW_TREASURY_FUNCTION_ARN } from "../../../foundation/runtime";
 
 const logger = getLogger("withdraw-handler");
-
-// Mocked treasury service
-const treasuryService = {
-  creditWallet: async (walletAddress: string, amount: number): Promise<string> => {
-    // Simulate API call
-    return "mocked-txn-signature";
-  },
-};
+const lambda = new Lambda();
 
 /**
  * Initiates a withdrawal from the user's wallet. The amount is reserved first,
@@ -61,7 +56,21 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       const currentPriceSolFpn = Math.round((await getCurrentPrice()) * 100);
       const withdrawalAmountInSol = fpnAmount / currentPriceSolFpn;
 
-      const signature = await treasuryService.creditWallet(walletAddress, withdrawalAmountInSol);
+      const params = {
+        FunctionName: WITHDRAW_TREASURY_FUNCTION_ARN,
+        InvocationType: "RequestResponse",
+        Payload: JSON.stringify({
+          userId,
+          walletAddress,
+          withdrawalAmountInSol,
+        }),
+      };
+
+      const responsePayload = await lambda.invoke(params).promise();
+
+      // TODO - add schema validation
+      const { signature } = JSON.parse(responsePayload.Payload as string);
+
       logger.info("Withdrawal request processed on the blockchain", { signature });
 
       await withdraw(wallet, fpnAmount);

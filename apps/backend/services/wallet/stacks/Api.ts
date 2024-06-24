@@ -13,6 +13,18 @@ export function ApiStack({ stack }: StackContext) {
     eventBusArn
   );
 
+  const depositTreasuryFunction = Function.fromFunctionName(
+    stack,
+    "DepositTreasuryFunction",
+    "dev-treasury-ApiStack-deposit-to-wallet"
+  );
+
+  const withdrawTreasuryFunction = Function.fromFunctionName(
+    stack,
+    "WithdrawTreasuryFunction",
+    "dev-treasury-ApiStack-withdraw-from-wallet"
+  );
+
   const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
     handler: "src/service/event/handler/update-balance.handler",
     environment: {
@@ -41,6 +53,8 @@ export function ApiStack({ stack }: StackContext) {
       function: {
         environment: {
           WALLETS_TABLE_ARN: walletsTableArn,
+          DEPOSIT_TREASURY_FUNCTION_ARN: depositTreasuryFunction.functionArn,
+          WITHDRAW_TREASURY_FUNCTION_ARN: withdrawTreasuryFunction.functionArn,
         },
       },
     },
@@ -78,6 +92,11 @@ export function ApiStack({ stack }: StackContext) {
               actions: ["dynamodb:UpdateItem", "dynamodb:PutItem"],
               resources: [walletsTableArn],
             }),
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["lambda:InvokeFunction"],
+              resources: [depositTreasuryFunction.functionArn],
+            }),
           ],
         },
       },
@@ -89,6 +108,11 @@ export function ApiStack({ stack }: StackContext) {
               effect: iam.Effect.ALLOW,
               actions: ["dynamodb:UpdateItem", "dynamodb:PutItem"],
               resources: [walletsTableArn],
+            }),
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["lambda:InvokeFunction"],
+              resources: [withdrawTreasuryFunction.functionArn],
             }),
           ],
         },

@@ -8,26 +8,14 @@ import { lockWallet } from "../../../data-access/lockWallet";
 import { getCurrentPrice } from "../../../remote/jupiterClient";
 import { unlockWallet } from "../../../data-access/unlockWallet";
 import { deposit } from "../../../data-access/deposit";
+import { Lambda } from "aws-sdk";
+import { DEPOSIT_TREASURY_FUNCTION_ARN } from "../../../foundation/runtime";
 
 const logger = getLogger("withdraw-handler");
-
-// Mocked treasury service
-const treasuryService = {
-  creditWallet: async (
-    userId: string,
-    walletAddress: string,
-    txnSignature: string
-  ): Promise<any> => {
-    // Simulate API call
-    return {
-      depositAmountInCrypto: 1,
-      transactionId: "mocked-txn-signature",
-    };
-  },
-};
+const lambda = new Lambda();
 
 /**
- * Initiates a withdrawal from the user's wallet. The amount is reserved first,
+ * Initiates a deposit to the user's wallet. The amount is reserved first,
  * then the treasury service is called to credit the wallet, and finally the withdrawal is finalized. If any step fails, the reservation is released.
  * @param event The API Gateway event
  * @returns The response object
@@ -50,12 +38,24 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     try {
       const wallet = await lockWallet(userId);
 
-      // TODO - Implement this in treasury service instead of wallet service
-      const { depositAmountInCrypto, transactionId } = await treasuryService.creditWallet(
-        userId,
-        walletAddress,
-        txnSignature
+      const params = {
+        FunctionName: DEPOSIT_TREASURY_FUNCTION_ARN,
+        InvocationType: "RequestResponse",
+        Payload: JSON.stringify({
+          userId,
+          walletAddress,
+          txnSignature,
+        }),
+      };
+
+      const responsePayload = await lambda.invoke(params).promise();
+
+      // TODO - add schema validation
+      const { depositAmountInCrypto, transactionId } = JSON.parse(
+        responsePayload.Payload as string
       );
+
+      logger.info("Deposit request processed", { depositAmountInCrypto, transactionId });
 
       // Dollars are converted into FPN (floating point number) to avoid floating point arithmetic issues (i.e x100)
       const currentPriceSolFpn = (await getCurrentPrice()) * 100;
@@ -69,7 +69,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         depositAmount: depositAmountInUsdFpn / 100,
       });
     } catch (error) {
-      logger.error("Error processing withdrawal request", { error, withdrawId });
+      logger.error("Error processing deposit request", { error, withdrawId });
 
       if (error instanceof ZodError) {
         return errorResponse(error, 400);
@@ -81,7 +81,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       await unlockWallet(userId);
     }
   } catch (error) {
-    logger.error("Error processing withdrawal request", { error, withdrawId });
+    logger.error("Error processing deposit request", { error, withdrawId });
 
     if (error instanceof ZodError) {
       return errorResponse(error, 400);

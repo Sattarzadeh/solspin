@@ -21,6 +21,7 @@ export function ApiStack({ stack }: StackContext) {
     routes: {
       "POST /treasury/deposit": {
         function: {
+          functionName: `${stack.stackName}-deposit-to-wallet`,
           handler: "src/service/api/handler/deposit-to-wallet.handler",
           permissions: [
             new iam.PolicyStatement({
@@ -33,6 +34,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "POST /treasury/withdraw": {
         function: {
+          functionName: `${stack.stackName}-withdraw-from-wallet`,
           handler: "src/service/api/handler/withdraw-from-wallet.handler",
           permissions: [
             new iam.PolicyStatement({
@@ -46,7 +48,18 @@ export function ApiStack({ stack }: StackContext) {
     },
   });
 
+  const withdrawLambdaArn = api.getFunction("POST /treasury/withdraw");
+  const depositLambdaArn = api.getFunction("POST /treasury/deposit");
+
   stack.addOutputs({
     ApiEndpoint: api.url,
+    WithdrawLambdaArn: withdrawLambdaArn ? withdrawLambdaArn.functionName : "",
+    DepositLambdaArn: depositLambdaArn ? depositLambdaArn.functionName : "",
   });
+
+  return {
+    api,
+    withdrawLambdaName: withdrawLambdaArn ? withdrawLambdaArn.functionName : "",
+    depositLambdaArn: depositLambdaArn ? depositLambdaArn.functionName : "",
+  };
 }
