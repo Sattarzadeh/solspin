@@ -1,7 +1,6 @@
 import { SSTConfig } from "sst";
 import { WebSocketHandlerAPI } from "./stacks/WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "./stacks/GameEngineStack";
-import { OrchestrationStack } from "./stacks/OrchestrationStack";
 import { WebSocketGateway } from "./stacks/WebSocketGatewayStack";
 import { UserManagementHandlerAPI } from "./stacks/UserManagementStack";
 export default {
@@ -9,6 +8,9 @@ export default {
     return {
       name: "integration",
       region: "eu-west-2",
+      dev: {
+        port: 3002,
+      },
     };
   },
   stacks(app) {

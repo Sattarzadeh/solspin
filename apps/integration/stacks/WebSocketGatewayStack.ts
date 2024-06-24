@@ -1,17 +1,26 @@
-import { Cron, StackContext, use, WebSocketApi } from "sst/constructs";
+import { StackContext, WebSocketApi, use, Cron } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "./GameEngineStack";
 import { UserManagementHandlerAPI } from "./UserManagementStack";
+import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
   const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
   const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
   const { callAuthorizerFunction } = use(UserManagementHandlerAPI);
 
+  const eventBusArn = `arn:aws:events:eu-west-2:816229756125:event-bus/mehransattarzadeh-base-infrastructure-EventBus`;
+
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
   getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
   getCaseFunction.attachPermissions(["lambda:InvokeFunction"]);
+
+  // Attach permissions to publish events to the EventBus
+  const eventBusPolicy = new PolicyStatement({
+    actions: ["events:PutEvents"],
+    resources: [eventBusArn],
+  });
 
   const api = new WebSocketApi(stack, "WebSocketGatewayApi", {
     defaults: {
@@ -29,8 +38,12 @@ export function WebSocketGateway({ stack }: StackContext) {
               actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [websocketTable.tableArn],
             }),
+            eventBusPolicy,
           ],
-          environment: { TABLE_NAME: websocketTable.tableName },
+          environment: {
+            TABLE_NAME: websocketTable.tableName,
+            EVENT_BUS_NAME: eventBusArn,
+          },
         },
       },
       $default: {
@@ -65,7 +78,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           environment: { TABLE_NAME: websocketTable.tableName },
         },
       },
-      generateSeed: {
+      "generate-seed": {
         function: {
           handler: "packages/functions/src/websocket/handler/generateServerSeed.handler",
           timeout: 10,
@@ -94,18 +107,19 @@ export function WebSocketGateway({ stack }: StackContext) {
           },
         },
       },
-      caseSpin: {
+      "case-spin": {
         function: {
-          handler: "packages/functions/src/orchestration/handler/caseOrchestration.handler",
+          handler: "packages/functions/src/orchestration/handlers/case-orchestration.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["lambda:InvokeFunction", "dynamodb:GetItem"],
+              actions: ["lambda:InvokeFunction", "dynamodb:GetItem", "events:PutEvents"],
               resources: [
                 casesTable.tableArn,
                 getConnectionFunction.functionArn,
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
+                eventBusArn, // Allow publishing to EventBus
               ],
             }),
           ],
@@ -114,15 +128,18 @@ export function WebSocketGateway({ stack }: StackContext) {
             GET_USER_FROM_WEBSOCKET_FUNCTION_NAME: getConnectionFunction.functionName,
             GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
             PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
+            EVENT_BUS_NAME: eventBusArn,
           },
         },
       },
     },
   });
+
   const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   const domainName = `${matches && matches[1]}/${stack.stage}`;
+
   const pruneConnectionCRON = new Cron(stack, "PruneConnectionsCron", {
-    schedule: "rate(10 minutes)",
+    schedule: "rate(1 minute)",
     job: {
       function: {
         handler: "packages/functions/src/websocket/handler/pruneConnections.handler",

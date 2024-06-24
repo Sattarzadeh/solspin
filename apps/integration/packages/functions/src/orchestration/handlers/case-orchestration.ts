@@ -8,6 +8,9 @@ import logger from "@solspin/logger";
 import { sendWebSocketMessage } from "@solspin/web-socket-message";
 import { WebSocketOrchestrationPayloadSchema } from "@solspin/websocket-types";
 import { ZodError } from "zod";
+import { publishEvent, GameResult, EventConfig } from "@solspin/events";
+import { Service } from "@solspin/types";
+import { GameOutcome } from "@solspin/betting-types";
 
 export const handler = WebSocketApiHandler(async (event) => {
   if (!event.body) {
@@ -83,6 +86,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const serverSeed = user.serverSeed;
+    const userId = user.userId;
     logger.info("Invoking getCase lambda with caseId: ", caseId);
     const caseData = await callGetCase(caseId);
 
@@ -104,8 +108,35 @@ export const handler = WebSocketApiHandler(async (event) => {
       const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
 
       logger.info(`Case roll result is: ${caseRollResult}`);
+      const outcome =
+        caseModel.casePrice < caseRolledItem.price
+          ? GameOutcome.WIN
+          : caseModel.casePrice > caseRolledItem.price
+          ? GameOutcome.LOSE
+          : GameOutcome.NEUTRAL;
       let newBalance = balancePayload.balance - caseModel.casePrice;
-      newBalance += caseRolledItem.price;
+      const outcomeAmount = newBalance + caseRolledItem.price;
+
+      logger.info("Event published with data: ", {
+        userId,
+        gameType: GameResult.GameType.CASES,
+        amountBet: caseModel.casePrice,
+        outcome,
+        outcomeAmount,
+        timestamp: new Date().toISOString(),
+      });
+      publishEvent(
+        GameResult.gameResultEvent,
+        {
+          userId,
+          gameType: GameResult.GameType.CASES,
+          amountBet: caseModel.casePrice,
+          outcome,
+          outcomeAmount,
+          timestamp: new Date().toISOString(),
+        } as GameResult.GameResultType,
+        Service.ORCHESTRATION as unknown as EventConfig
+      );
 
       const responseMessage = {
         caseRolledItem,

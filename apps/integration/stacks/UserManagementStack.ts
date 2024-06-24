@@ -56,7 +56,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
               resources: [userTable.tableArn],
             }),
           ],
-          bind: [userTable],
+          bind: [userTable, TEST_SECRET],
           environment: { TABLE_NAME: userTable.tableName },
         },
       },

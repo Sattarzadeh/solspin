@@ -4,6 +4,27 @@ import logger from "@solspin/logger";
 import { createUser } from "../repository/userRepository";
 import { randomUUID } from "crypto";
 import { ZodError } from "zod";
+import jwt from "jsonwebtoken";
+import { Config } from "sst/node/config";
+
+let cachedSecret: string | undefined;
+
+async function getSecret(): Promise<string> {
+  if (cachedSecret) {
+    return cachedSecret;
+  }
+
+  // Directly use the secret from Config
+  const secret = Config.TEST_SECRET;
+
+  if (!secret) {
+    logger.error("JWT_SECRET_KEY is not set in the environment variables.");
+    throw new Error("JWT_SECRET_KEY is not set.");
+  }
+
+  cachedSecret = secret;
+  return cachedSecret as string;
+}
 
 const validatePayload = (payload: any) => {
   try {
@@ -52,6 +73,13 @@ export const handler = ApiHandler(async (event) => {
 
     await createUser(user);
 
+    const userId = user.userId;
+    const jwtpayload = {
+      sub: userId, // Use `sub` to store the userId
+    };
+    const secret = await getSecret();
+    const token = jwt.sign(jwtpayload, secret, { algorithm: "HS256", expiresIn: "24h" });
+    console.log(token);
     return {
       statusCode: 201,
       body: JSON.stringify({ message: "User created successfully" }),
