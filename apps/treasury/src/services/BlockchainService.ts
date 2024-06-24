@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionSignature,
 } from "@solana/web3.js";
-import { BuildTransactionResponse } from "@solspin/treasury-types";
+import { BuildTransactionResponse } from "../../../../@solspin/types/src/service/treasury/schemas";
 import { HOUSE_WALLET_ADDRESS, HOUSE_WALLET_PRIVATE_KEY } from "../utils/TreasuryUtils";
 import {
   BlockchainTransactionError,

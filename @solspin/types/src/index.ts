@@ -5,3 +5,4 @@
 export * from "./general/types";
 export * from "./service/betting/schemas";
 export * from "./service/wallet/schemas";
+export * from "./service/treasury/schemas";
