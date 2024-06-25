@@ -3,8 +3,7 @@
 import "./global.css";
 import React from "react";
 import { NavBar } from "./components/navbar/NavBar";
-import store from "../store";
-import { Provider } from "react-redux";
+import { Providers } from './providers'
 import { Chatbar } from "./components/chatbar/Chatbar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,9 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <Provider store={store}>
-      <html lang="en" className="w-full h-full">
-        <body className="flex flex-col w-full h-full overflow-hidden bg-background">
+    <html lang="en" className="w-full h-full">
+      <body className="flex flex-col w-full h-full overflow-hidden bg-background">
+        <Providers>
           <NavBar />
           <div className="flex flex-1 overflow-hidden relative">
             <Chatbar chatOpenCallback={toggleChatOpen} />
@@ -25,8 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="min-h-full">{children}</div>
             </main>
           </div>
-        </body>
-      </html>
-    </Provider>
+        </Providers>
+      </body>
+    </html>
   );
 }
