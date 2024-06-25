@@ -2,7 +2,6 @@ import type { SSTConfig } from "sst";
 import { WebSocketGateway } from "./stacks/WebSocketGatewayStack";
 import { WebSocketHandlerAPI } from "./stacks/WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "../game-engine/stacks/GameEngineStack";
-import { UserManagementHandlerAPI } from "../user-management/stacks/UserManagementStack";
 
 export default {
   config() {
@@ -22,7 +21,6 @@ export default {
         },
       },
     });
-    app.stack(UserManagementHandlerAPI);
     app.stack(GameEngineHandlerAPI);
     app.stack(WebSocketHandlerAPI);
     app.stack(WebSocketGateway);

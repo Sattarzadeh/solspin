@@ -119,14 +119,6 @@ export const handler = WebSocketApiHandler(async (event) => {
       let newBalance = balancePayload.balance - caseModel.casePrice;
       const outcomeAmount = newBalance + caseRolledItem.price;
 
-      logger.info("Event published with data: ", {
-        userId,
-        gameType: GameResult.GameType.CASES,
-        amountBet: caseModel.casePrice,
-        outcome,
-        outcomeAmount,
-        timestamp: new Date().toISOString(),
-      });
       publishEvent(
         GameResult.gameResultEvent,
         {
@@ -139,6 +131,14 @@ export const handler = WebSocketApiHandler(async (event) => {
         } as GameResult.GameResultType,
         Service.ORCHESTRATION as unknown as EventConfig
       );
+      logger.info("Event published with data: ", {
+        userId,
+        gameType: GameResult.GameType.CASES,
+        amountBet: caseModel.casePrice,
+        outcome,
+        outcomeAmount,
+        timestamp: new Date().toISOString(),
+      });
 
       const responseMessage = {
         caseRolledItem,

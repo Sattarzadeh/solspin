@@ -1,5 +1,5 @@
 {
-  "name": "treasury",
+  "name": "game-engine",
   "scripts": {
     "sst": "sst"
   },

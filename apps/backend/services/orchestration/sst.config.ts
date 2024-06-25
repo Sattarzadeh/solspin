@@ -1,5 +1,4 @@
 import type { SSTConfig } from "sst";
-import { GameEngineHandlerAPI } from "./stacks/GameEngineStack";
 
 export default {
   config() {
@@ -14,7 +13,5 @@ export default {
       runtime: "nodejs18.x",
       architecture: "arm_64",
     });
-
-    app.stack(GameEngineHandlerAPI);
   },
 } satisfies SSTConfig;

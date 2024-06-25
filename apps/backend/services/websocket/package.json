@@ -1,5 +1,5 @@
 {
-  "name": "treasury",
+  "name": "websocket",
   "scripts": {
     "sst": "sst"
   },

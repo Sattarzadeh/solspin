@@ -11,6 +11,18 @@ export function WebSocketGateway({ stack }: StackContext) {
   const { callAuthorizerFunction } = use(UserManagementHandlerAPI);
 
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
+  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
+    stack,
+    "solspin-event-bus",
+    eventBusArn
+  );
+  new cdk.aws_events.Rule(stack, "GameOutcomeRule", {
+    eventBus: existingEventBus,
+    eventPattern: {
+      source: ["orchestration_service.GameOutcome"],
+      detailType: ["GameOutcome"],
+    },
+  });
 
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
   getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
@@ -37,11 +49,9 @@ export function WebSocketGateway({ stack }: StackContext) {
               actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [websocketTable.tableArn],
             }),
-            eventBusPolicy,
           ],
           environment: {
             TABLE_NAME: websocketTable.tableName,
-            EVENT_BUS_NAME: eventBusArn,
           },
         },
       },
@@ -118,7 +128,7 @@ export function WebSocketGateway({ stack }: StackContext) {
                 getConnectionFunction.functionArn,
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
-                eventBusArn, // Allow publishing to EventBus
+                eventBusArn,
               ],
             }),
           ],
@@ -127,7 +137,7 @@ export function WebSocketGateway({ stack }: StackContext) {
             GET_USER_FROM_WEBSOCKET_FUNCTION_NAME: getConnectionFunction.functionName,
             GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
             PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
-            EVENT_BUS_NAME: eventBusArn,
+            EVENT_BUS_ARN: eventBusArn,
           },
         },
       },

@@ -1,5 +1,5 @@
 {
-  "name": "treasury",
+  "name": "websocket",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "tags": [],
@@ -36,7 +36,7 @@
       }
     },
     "lint": {
-      "command": "eslint apps/backend/services/treasury/**/*.ts"
+      "command": "eslint apps/backend/services/websocket/**/*.ts"
     }
   }
 }
