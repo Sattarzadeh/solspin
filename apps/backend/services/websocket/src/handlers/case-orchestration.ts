@@ -98,7 +98,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const caseModel: Case = JSON.parse(caseData.body);
-    const amount = caseModel.casePrice;
+    const amount = -1 * caseModel.casePrice;
     logger.info(`Case price is :${caseModel.casePrice}`);
     await debitUser(userId, amount);
 
