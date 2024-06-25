@@ -46,10 +46,6 @@ export const handler = async (
       return errorResponse(new Error("Invalid request"), 400);
     }
 
-    if (amount <= 0) {
-      return errorResponse(new Error("Amount must be greater than 0"), 400);
-    }
-
     const amountFpn = Math.round(amount * 100);
     await updateWalletBalance(userId, amountFpn);
     logger.info("Update balance successful", { userId, amount });
