@@ -1,11 +1,13 @@
 import { ApiHandler } from "sst/node/api";
 import { CreateUserRequestSchema, User, UserSchema } from "@solspin/user-management-types";
-import logger from "@solspin/logger";
-import { createUser } from "../repository/userRepository";
+import { createUser } from "../data-access/userRepository";
 import { randomUUID } from "crypto";
 import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
+import { getLogger } from "@solspin/logger";
+
+const logger = getLogger("create-user-handler");
 
 let cachedSecret: string | undefined;
 

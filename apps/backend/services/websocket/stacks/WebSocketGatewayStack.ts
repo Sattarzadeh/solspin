@@ -1,8 +1,8 @@
 import { StackContext, WebSocketApi, use, Cron } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
-import { GameEngineHandlerAPI } from "./GameEngineStack";
-import { UserManagementHandlerAPI } from "./UserManagementStack";
+import { GameEngineHandlerAPI } from "../../game-engine/stacks/GameEngineStack";
+import { UserManagementHandlerAPI } from "../../user-management/stacks/UserManagementStack";
 import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
@@ -10,13 +10,24 @@ export function WebSocketGateway({ stack }: StackContext) {
   const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
   const { callAuthorizerFunction } = use(UserManagementHandlerAPI);
 
-  const eventBusArn = `arn:aws:events:eu-west-2:816229756125:event-bus/mehransattarzadeh-base-infrastructure-EventBus`;
+  const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
+  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
+    stack,
+    "solspin-event-bus",
+    eventBusArn
+  );
+  new cdk.aws_events.Rule(stack, "GameOutcomeRule", {
+    eventBus: existingEventBus,
+    eventPattern: {
+      source: ["orchestration_service.GameOutcome"],
+      detailType: ["GameOutcome"],
+    },
+  });
 
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
   getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
   getCaseFunction.attachPermissions(["lambda:InvokeFunction"]);
 
-  // Attach permissions to publish events to the EventBus
   const eventBusPolicy = new PolicyStatement({
     actions: ["events:PutEvents"],
     resources: [eventBusArn],
@@ -31,30 +42,28 @@ export function WebSocketGateway({ stack }: StackContext) {
     routes: {
       $connect: {
         function: {
-          handler: "packages/functions/src/websocket/handler/handleNewConnection.handler",
+          handler: "src/handlers/handleNewConnection.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [websocketTable.tableArn],
             }),
-            eventBusPolicy,
           ],
           environment: {
             TABLE_NAME: websocketTable.tableName,
-            EVENT_BUS_NAME: eventBusArn,
           },
         },
       },
       $default: {
         function: {
-          handler: "packages/functions/src/websocket/handler/closeConnection.handler",
+          handler: "src/handlers/closeConnection.handler",
           timeout: 10,
         },
       },
       $disconnect: {
         function: {
-          handler: "packages/functions/src/websocket/handler/handleConnectionClose.handler",
+          handler: "src/handlers/handleConnectionClose.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -67,7 +76,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       logout: {
         function: {
-          handler: "packages/functions/src/websocket/handler/handleLogout.handler",
+          handler: "src/handlers/handleLogout.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -80,7 +89,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       "generate-seed": {
         function: {
-          handler: "packages/functions/src/websocket/handler/generateServerSeed.handler",
+          handler: "src/handlers/generateServerSeed.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -93,7 +102,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       authenticate: {
         function: {
-          handler: "packages/functions/src/websocket/handler/authenticateUser.handler",
+          handler: "src/handlers/authenticateUser.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -109,7 +118,7 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
       "case-spin": {
         function: {
-          handler: "packages/functions/src/orchestration/handlers/case-orchestration.handler",
+          handler: "src/handlers/case-orchestration.handler",
           timeout: 10,
           permissions: [
             new PolicyStatement({
@@ -119,7 +128,7 @@ export function WebSocketGateway({ stack }: StackContext) {
                 getConnectionFunction.functionArn,
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
-                eventBusArn, // Allow publishing to EventBus
+                eventBusArn,
               ],
             }),
           ],
@@ -128,7 +137,7 @@ export function WebSocketGateway({ stack }: StackContext) {
             GET_USER_FROM_WEBSOCKET_FUNCTION_NAME: getConnectionFunction.functionName,
             GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
             PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
-            EVENT_BUS_NAME: eventBusArn,
+            EVENT_BUS_ARN: eventBusArn,
           },
         },
       },
@@ -142,7 +151,7 @@ export function WebSocketGateway({ stack }: StackContext) {
     schedule: "rate(1 minute)",
     job: {
       function: {
-        handler: "packages/functions/src/websocket/handler/pruneConnections.handler",
+        handler: "src/handlers/pruneConnections.handler",
         permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
         environment: {
           TABLE_NAME: websocketTable.tableName,

@@ -1,5 +1,5 @@
 {
-  "name": "game-engine",
+  "name": "gameengine",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/game-engine/src",
   "projectType": "application",

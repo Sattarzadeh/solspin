@@ -1,4 +1,3 @@
-import logger from "./logger";
 import { ApiGatewayManagementApi } from "aws-sdk";
 
 export async function sendWebSocketMessage(
@@ -9,8 +8,6 @@ export async function sendWebSocketMessage(
   const apiG = new ApiGatewayManagementApi({
     endpoint,
   });
-
-  logger.info(`Sending message to client with connectionId: ${connectionId}`);
 
   await apiG
     .postToConnection({
