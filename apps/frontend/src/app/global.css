@@ -67,12 +67,6 @@
   background: var(--bg-dark);
 }
 
-@media (min-width: 640px) {
-  .carousel-animation {
-    transform: translateX(var(--transform-distance)) !important;
-  }
-}
-
 .carousel-animation {
     transition-timing-function: cubic-bezier(0, 0.5, 0.1, 1);
 }

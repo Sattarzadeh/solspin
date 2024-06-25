@@ -48,8 +48,15 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
               key={index}
               className={`bg-custom_gray group hover:bg-gray-700 rounded-md w-12 h-12 p-2 ${
                 index + 1 === numCases ? "bg-gray-700" : ""
+              } ${
+                demoClicked
+                  ? `opacity-50 cursor-not-allowed ${
+                      index + 1 === numCases ? "" : "hover:bg-custom_gray"
+                    }`
+                  : ""
               }`}
-              onClick={() => dispatch(setNumCases(index + 1))}
+              onClick={() => !demoClicked && dispatch(setNumCases(index + 1))}
+              disabled={demoClicked}
             >
               <span
                 className={`text-gray-300 group-hover:text-white ${
@@ -61,7 +68,12 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             </button>
           ))}
         </div>
-        <button className="flex bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center">
+        <button
+          className={`flex bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
+            demoClicked ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={demoClicked}
+        >
           <span className="text-white font-semibold">
             Open {numCases} Case{numCases > 1 ? "s" : ""}
           </span>
@@ -70,16 +82,24 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         </button>
         <div className="flex justify-between items-center space-x-2">
           <button
-            className="flex justify-center items-center bg-custom_gray rounded-md h-12 p-3"
+            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+              demoClicked ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => {
               if (!demoClicked) {
                 dispatch(toggleDemoClicked());
               }
             }}
+            disabled={demoClicked}
           >
             <span className="text-white">Demo</span>
           </button>
-          <button className="flex justify-center items-center bg-custom_gray rounded-md h-12 p-3">
+          <button
+            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+              demoClicked ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={demoClicked}
+          >
             <span className="text-white">Quick</span>
           </button>
         </div>

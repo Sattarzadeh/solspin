@@ -3,8 +3,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { CarouselItem } from "./CarouselItem";
-import { useDispatch } from "react-redux";
-import { toggleDemoClicked } from "../../../../store/slices/demoSlice";
 import { CaseProps } from "../../components/Case";
 
 type CarouselStyle = React.CSSProperties & {
@@ -20,6 +18,7 @@ interface CaseCarouselProps {
   cases: CaseProps[];
   isDemoClicked: boolean;
   numCases: number;
+  onAnimationComplete: () => void;
 }
 
 function getRandomInt(min: number, max: number) {
@@ -54,17 +53,20 @@ const animationCalculation = (): AnimationCalculation => {
   };
 };
 
-export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked, numCases }) => {
+export const CaseCarousel: React.FC<CaseCarouselProps> = ({
+  cases,
+  isDemoClicked,
+  numCases,
+  onAnimationComplete,
+}) => {
   const [offset, setOffset] = useState<AnimationCalculation>({
     distance: 0,
     tickerOffset: 0,
   });
   const [animationStage, setAnimationStage] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("cases changed", animationStage, offset);
     if (animationStage === 3) {
       setAnimationStage(0);
       setOffset({ distance: 0, tickerOffset: 0 });
@@ -89,7 +91,7 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
   }, []);
 
   const handleSecondStageEnd = useCallback(() => {
-    dispatch(toggleDemoClicked());
+    onAnimationComplete();
     setAnimationStage(3);
   }, []);
 
@@ -112,13 +114,16 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
   const transformDistance =
     animationStage == 1
       ? offset.distance
-      : animationStage == 2 || (animationStage == 3 && !isDemoClicked)
+      : animationStage == 2 || animationStage == 3
       ? offset.distance - offset.tickerOffset
       : 0;
 
   const carouselStyle: CarouselStyle = {
     "--transform-distance": `${transformDistance}px`,
-    transform: "translateY(var(--transform-distance))",
+    transform:
+      numCases > 1
+        ? `translateY(var(--transform-distance))`
+        : `translateX(var(--transform-distance))`,
     transition:
       animationStage === 1
         ? "transform 6s ease-in-out"
@@ -147,8 +152,8 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
             </div>
             <div
               ref={carouselRef}
-              className={`flex sm:flex-row transform-gpu will-change-transform carousel-animation ${
-                numCases > 1 ? "flex-col" : "sm:flex-row flex-col"
+              className={`flex transform-gpu will-change-transform carousel-animation ${
+                numCases > 1 ? "flex-row sm:flex-col" : "sm:flex-row flex-col"
               }`}
               style={carouselStyle}
             >
