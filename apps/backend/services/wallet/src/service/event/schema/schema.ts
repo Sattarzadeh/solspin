@@ -11,4 +11,10 @@ export const UpdateBalanceEventSchema = z.object({
   }),
 });
 
+export const UpdateBalanceRequestSchema = z.object({
+  userId: z.string(),
+  amount: z.number(),
+});
+
 export type UpdateBalanceEvent = z.infer<typeof UpdateBalanceEventSchema>;
+export type UpdateBalanceRequest = z.infer<typeof UpdateBalanceRequestSchema>;
