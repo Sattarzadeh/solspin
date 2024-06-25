@@ -26,7 +26,7 @@ export function ApiStack({ stack }: StackContext) {
   );
 
   const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
-    handler: "src/service/event/handler/update-balance.handler",
+    handler: "../wallet/src/service/event/handler/update-balance.handler",
     environment: {
       WALLETS_TABLE_ARN: walletsTableArn,
     },
@@ -61,7 +61,7 @@ export function ApiStack({ stack }: StackContext) {
     routes: {
       "POST /wallets": {
         function: {
-          handler: "src/service/api/handler/create-wallet.handler",
+          handler: "../wallet/src/service/api/handler/create-wallet.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -123,4 +123,8 @@ export function ApiStack({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
   });
+
+  return {
+    betTransactionHandler,
+  };
 }

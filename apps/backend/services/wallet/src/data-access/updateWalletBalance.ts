@@ -23,9 +23,9 @@ export const updateWalletBalance = async (
           SET balance = balance + :amount,
               updatedAt = :now
         `,
-        ConditionExpression: `lockedAt <= :lockExpired`,
+        ConditionExpression: `lockedAt <= :lockExpired AND balance >= :amount`,
         ExpressionAttributeValues: {
-          ":amount": amount,
+          ":amount": Math.abs(amount),
           ":now": now.toString(),
           ":lockExpired": (now - LOCK_DURATION).toString(),
         },

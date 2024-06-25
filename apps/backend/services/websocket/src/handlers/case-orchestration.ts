@@ -1,6 +1,7 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
 import { CaseItem, Case } from "@solspin/game-engine-types";
 import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
+import { debitUser } from "../helpers/debitUser";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
@@ -88,7 +89,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const serverSeed = user.serverSeed;
-    const userId = user.userId;
+    const userId = user.userId as string;
     logger.info("Invoking getCase lambda with caseId: ", caseId);
     const caseData = await callGetCase(caseId);
 
@@ -97,77 +98,63 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const caseModel: Case = JSON.parse(caseData.body);
-    const balancePayload = {
-      balance: 300,
-    };
+    const amount = caseModel.casePrice;
+    logger.info(`Case price is :${caseModel.casePrice}`);
+    await debitUser(userId, amount);
 
-    if (balancePayload.balance >= caseModel.casePrice) {
-      logger.info(
-        `Invoking performSpin lambda with clientSeed: ${clientSeed} and serverSeed: ${serverSeed}`
-      );
-      const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
+    logger.info(
+      `Invoking performSpin lambda with clientSeed: ${clientSeed} and serverSeed: ${serverSeed}`
+    );
+    const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
 
-      const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
+    const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
 
-      logger.info(`Case roll result is: ${caseRollResult}`);
-      const outcome =
-        caseModel.casePrice < caseRolledItem.price
-          ? GameOutcome.WIN
-          : caseModel.casePrice > caseRolledItem.price
-          ? GameOutcome.LOSE
-          : GameOutcome.NEUTRAL;
-      let newBalance = balancePayload.balance - caseModel.casePrice;
-      const outcomeAmount = newBalance + caseRolledItem.price;
+    logger.info(`Case roll result is: ${caseRollResult}`);
+    const outcome =
+      caseModel.casePrice < caseRolledItem.price
+        ? GameOutcome.WIN
+        : caseModel.casePrice > caseRolledItem.price
+        ? GameOutcome.LOSE
+        : GameOutcome.NEUTRAL;
 
-      publishEvent(
-        GameResult.gameResultEvent,
-        {
-          userId,
-          gameType: GameResult.GameType.CASES,
-          amountBet: caseModel.casePrice,
-          outcome,
-          outcomeAmount,
-          timestamp: new Date().toISOString(),
-        } as GameResult.GameResultType,
-        Service.ORCHESTRATION as unknown as EventConfig
-      );
-      logger.info("Event published with data: ", {
+    const outcomeAmount = caseRolledItem.price;
+
+    publishEvent(
+      GameResult.gameResultEvent,
+      {
         userId,
         gameType: GameResult.GameType.CASES,
         amountBet: caseModel.casePrice,
         outcome,
         outcomeAmount,
         timestamp: new Date().toISOString(),
-      });
+      } as GameResult.GameResultType,
+      Service.ORCHESTRATION as unknown as EventConfig
+    );
+    logger.info("Event published with data: ", {
+      userId,
+      gameType: GameResult.GameType.CASES,
+      amountBet: caseModel.casePrice,
+      outcome,
+      outcomeAmount,
+      timestamp: new Date().toISOString(),
+    });
 
-      const responseMessage = {
-        caseRolledItem,
-        newBalance,
-      };
+    const responseMessage = {
+      caseRolledItem,
+    };
 
-      try {
-        const messageEndpoint = `${domainName}/${stage}`;
-        await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
-      } catch (error) {
-        logger.error("Error posting to connection:", (error as Error).message);
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify(responseMessage),
-      };
-    } else {
-      logger.error(
-        `User with connectionId: ${connectionId} has an insufficient balance. Case price: ${caseModel.casePrice} and balance: ${balancePayload.balance}`
-      );
-      return {
-        statusCode: 403,
-        body: JSON.stringify({
-          isAuthorized: true,
-          message: "Insufficient balance",
-        }),
-      };
+    try {
+      const messageEndpoint = `${domainName}/${stage}`;
+      await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
+    } catch (error) {
+      logger.error("Error posting to connection:", (error as Error).message);
     }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(responseMessage),
+    };
   } catch (error) {
     logger.error("Error in orchestration handler:", error);
     return {

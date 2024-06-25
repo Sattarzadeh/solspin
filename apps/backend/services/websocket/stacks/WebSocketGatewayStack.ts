@@ -3,12 +3,14 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "../../game-engine/stacks/GameEngineStack";
 import { UserManagementHandlerAPI } from "../../user-management/stacks/UserManagementStack";
+import { ApiStack } from "../../wallet/stacks/Api";
 import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
   const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
   const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
   const { callAuthorizerFunction } = use(UserManagementHandlerAPI);
+  const { betTransactionHandler } = use(ApiStack);
 
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -27,6 +29,7 @@ export function WebSocketGateway({ stack }: StackContext) {
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
   getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
   getCaseFunction.attachPermissions(["lambda:InvokeFunction"]);
+  betTransactionHandler.attachPermissions(["lambda:InvokeFunction"]);
 
   const eventBusPolicy = new PolicyStatement({
     actions: ["events:PutEvents"],
@@ -128,6 +131,7 @@ export function WebSocketGateway({ stack }: StackContext) {
                 getConnectionFunction.functionArn,
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
+                betTransactionHandler.functionArn,
                 eventBusArn,
               ],
             }),
@@ -138,6 +142,7 @@ export function WebSocketGateway({ stack }: StackContext) {
             GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
             PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
             EVENT_BUS_ARN: eventBusArn,
+            BET_TRANSACTION_FUNCTION_NAME: betTransactionHandler.functionName,
           },
         },
       },

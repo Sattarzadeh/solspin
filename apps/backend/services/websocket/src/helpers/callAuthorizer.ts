@@ -2,12 +2,12 @@ import * as AWS from "aws-sdk";
 
 const lambda = new AWS.Lambda();
 
-export const getUserFromWebSocket = async (connectionId: string) => {
+export const callAuthorizer = async (token: string) => {
   const params = {
-    FunctionName: process.env.GET_USER_FROM_WEBSOCKET_FUNCTION_NAME || "cases",
+    FunctionName: process.env.AUTHORIZER_FUNCTION_NAME,
     Payload: JSON.stringify({
       queryStringParameters: {
-        connectionId,
+        token,
       },
     }),
   };
