@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export const CaseItem = () => {
   return (
-    <div className="flex items-center w-full rounded-sm space-x-2 p-4 main-element overflow-hidden">
+    <div className="flex items-center rounded-sm space-x-2 p-4 main-element overflow-hidden min-w-[240px] h-40">
       <div
         className="relative flex flex-col items-center justify-center bg-gray-900 border-black border-[2px] rounded-lg"
         style={{ width: 125, height: 125 }}

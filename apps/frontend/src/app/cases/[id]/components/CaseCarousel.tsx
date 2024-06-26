@@ -27,11 +27,6 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/*
- * This function calculates the animation distance for the carousel from its starting position to its ending position.
- * This process is random to give the carousel a non-deterministic feel (i.e. it doesn't always move the same distance).
- */
-
 const itemWidth = 176;
 const distanceInItems = 25;
 const animationDistanceBounds = {
@@ -45,8 +40,6 @@ const animationCalculation = (): AnimationCalculation => {
     animationDistanceBounds.lower,
     animationDistanceBounds.upper
   );
-  // Offset the ticker to the midpoint of the animation distance
-
   return {
     distance: -randomAnimationDistance,
     tickerOffset: animationDistanceBounds.midpoint - randomAnimationDistance,
@@ -66,8 +59,10 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({
   const [animationStage, setAnimationStage] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
+  console.log(offset, animationStage);
+
   useEffect(() => {
-    if (animationStage === 3) {
+    if (animationStage === 3 || (animationStage === 0 && isDemoClicked)) {
       setAnimationStage(0);
       setOffset({ distance: 0, tickerOffset: 0 });
     }
@@ -93,7 +88,7 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({
   const handleSecondStageEnd = useCallback(() => {
     onAnimationComplete();
     setAnimationStage(3);
-  }, []);
+  }, [onAnimationComplete]);
 
   const handleTransitionEnd = useCallback(() => {
     if (animationStage === 1) {
@@ -126,9 +121,9 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({
         : `translateX(var(--transform-distance))`,
     transition:
       animationStage === 1
-        ? "transform 6s ease-in-out"
+        ? "transform 5s cubic-bezier(0, 0.49, 0.1, 1)"
         : animationStage === 2
-        ? "transform 0.5s ease-in-out"
+        ? "transform 1s"
         : "none",
   };
 

@@ -26,8 +26,8 @@ export const updateWalletBalance = async (
         ConditionExpression: `lockedAt <= :lockExpired AND attribute_exists(userId) AND balance + :amount >= 0`,
         ExpressionAttributeValues: {
           ":amount": amount,
-          ":now": now.toString(),
-          ":lockExpired": (now - LOCK_DURATION).toString(),
+          ":now": now,
+          ":lockExpired": now - LOCK_DURATION,
         },
         ReturnValues: "ALL_NEW",
       })

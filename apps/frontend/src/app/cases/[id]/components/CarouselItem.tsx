@@ -12,7 +12,7 @@ interface CarouselItemProps {
 export const CarouselItem: React.FC<CarouselItemProps> = ({ name, price, rarity, tag, image }) => {
   return (
     <div
-      className="relative flex flex-col items-center justify-center border-[1px] border-black"
+      className={`relative flex flex-col items-center justify-center border-[1px] border-black transition-transform duration-300`}
       style={{ width: 176, height: 176 }}
     >
       <div className="relative flex justify-center items-center h-full w-full">
