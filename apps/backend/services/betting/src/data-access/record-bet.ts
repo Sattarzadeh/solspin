@@ -4,13 +4,14 @@ import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { GameOutcome } from "@solspin/types";
 import { BetDBObject } from "../foundation/types";
 import { BETS_TABLE_ARN } from "../foundation/runtime";
+import { GameType } from "../service/events/schemas/schema";
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const recordBet = async (
   userId: string,
-  gameId: string,
+  gameType: GameType,
   amountBet: number,
   outcome: GameOutcome,
   outcomeAmount: number
@@ -21,7 +22,7 @@ export const recordBet = async (
   const bet: BetDBObject = {
     id,
     userId,
-    gameId,
+    gameType,
     amountBet,
     outcome,
     outcomeAmount,
@@ -38,7 +39,7 @@ export const recordBet = async (
   return {
     id,
     userId,
-    gameId,
+    gameType,
     amountBet,
     outcome,
     outcomeAmount,
