@@ -3,8 +3,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { CarouselItem } from "./CarouselItem";
-import { useDispatch } from "react-redux";
-import { toggleDemoClicked } from "../../../../store/slices/demoSlice";
 import { CaseProps } from "../../components/Case";
 
 type CarouselStyle = React.CSSProperties & {
@@ -20,6 +18,7 @@ interface CaseCarouselProps {
   cases: CaseProps[];
   isDemoClicked: boolean;
   numCases: number;
+  onAnimationComplete: () => void;
 }
 
 function getRandomInt(min: number, max: number) {
@@ -27,11 +26,6 @@ function getRandomInt(min: number, max: number) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-/*
- * This function calculates the animation distance for the carousel from its starting position to its ending position.
- * This process is random to give the carousel a non-deterministic feel (i.e. it doesn't always move the same distance).
- */
 
 const itemWidth = 176;
 const distanceInItems = 25;
@@ -46,26 +40,29 @@ const animationCalculation = (): AnimationCalculation => {
     animationDistanceBounds.lower,
     animationDistanceBounds.upper
   );
-  // Offset the ticker to the midpoint of the animation distance
-
   return {
     distance: -randomAnimationDistance,
     tickerOffset: animationDistanceBounds.midpoint - randomAnimationDistance,
   };
 };
 
-export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked, numCases }) => {
+export const CaseCarousel: React.FC<CaseCarouselProps> = ({
+  cases,
+  isDemoClicked,
+  numCases,
+  onAnimationComplete,
+}) => {
   const [offset, setOffset] = useState<AnimationCalculation>({
     distance: 0,
     tickerOffset: 0,
   });
   const [animationStage, setAnimationStage] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  const dispatch = useDispatch();
+
+  console.log(offset, animationStage);
 
   useEffect(() => {
-    console.log("cases changed", animationStage, offset);
-    if (animationStage === 3) {
+    if (animationStage === 3 || (animationStage === 0 && isDemoClicked)) {
       setAnimationStage(0);
       setOffset({ distance: 0, tickerOffset: 0 });
     }
@@ -89,9 +86,9 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
   }, []);
 
   const handleSecondStageEnd = useCallback(() => {
-    dispatch(toggleDemoClicked());
+    onAnimationComplete();
     setAnimationStage(3);
-  }, []);
+  }, [onAnimationComplete]);
 
   const handleTransitionEnd = useCallback(() => {
     if (animationStage === 1) {
@@ -112,18 +109,21 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
   const transformDistance =
     animationStage == 1
       ? offset.distance
-      : animationStage == 2 || (animationStage == 3 && !isDemoClicked)
+      : animationStage == 2 || animationStage == 3
       ? offset.distance - offset.tickerOffset
       : 0;
 
   const carouselStyle: CarouselStyle = {
     "--transform-distance": `${transformDistance}px`,
-    transform: "translateY(var(--transform-distance))",
+    transform:
+      numCases > 1
+        ? `translateY(var(--transform-distance))`
+        : `translateX(var(--transform-distance))`,
     transition:
       animationStage === 1
-        ? "transform 6s ease-in-out"
+        ? "transform 5s cubic-bezier(0, 0.49, 0.1, 1)"
         : animationStage === 2
-        ? "transform 0.5s ease-in-out"
+        ? "transform 1s"
         : "none",
   };
 
@@ -147,8 +147,8 @@ export const CaseCarousel: React.FC<CaseCarouselProps> = ({ cases, isDemoClicked
             </div>
             <div
               ref={carouselRef}
-              className={`flex sm:flex-row transform-gpu will-change-transform carousel-animation ${
-                numCases > 1 ? "flex-col" : "sm:flex-row flex-col"
+              className={`flex transform-gpu will-change-transform carousel-animation ${
+                numCases > 1 ? "flex-row sm:flex-col" : "sm:flex-row flex-col"
               }`}
               style={carouselStyle}
             >
