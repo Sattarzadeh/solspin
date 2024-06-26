@@ -13,21 +13,21 @@ export const updateWalletBalance = async (
   amount: number
 ): Promise<WalletsDBObject> => {
   const now = Date.now();
-  logger.info("Came:", { userId, amount });
   try {
     const result = await docClient.send(
       new UpdateCommand({
         TableName: WALLETS_TABLE_ARN,
         Key: { userId: userId },
         UpdateExpression: `
-          SET balance = balance + :amount,
-              updatedAt = :now
-        `,
-        ConditionExpression: `lockedAt <= :lockExpired AND attribute_exists(userId) AND balance + :amount >= 0`,
+    SET balance = balance + :amount,
+        updatedAt = :now
+  `,
+        ConditionExpression: `lockedAt <= :lockExpired AND attribute_exists(userId) AND balance >= :negativeAmount`,
         ExpressionAttributeValues: {
           ":amount": amount,
-          ":now": now,
-          ":lockExpired": now - LOCK_DURATION,
+          ":now": now.toString(),
+          ":lockExpired": (now - LOCK_DURATION).toString(),
+          ":negativeAmount": amount >= 0 ? 0 : -amount,
         },
         ReturnValues: "ALL_NEW",
       })
@@ -39,8 +39,8 @@ export const updateWalletBalance = async (
   } catch (error: unknown) {
     if (error instanceof ConditionalCheckFailedException) {
       logger.info("Error updating wallet balance:", { userId, amount, error });
-      logger.error("Wallet is locked or doesn't exist", { userId, error });
-      throw new Error("Wallet is currently locked or doesn't exist. Please try again later.");
+      logger.error(`Error updating wallet balance for ${userId}`, { error });
+      throw new Error(`Error updating wallet balance for ${userId}.`);
     }
     logger.info("Error updating wallet balance:", { userId, amount, error });
     logger.error("Error updating wallet balance:", { userId, amount, error });
