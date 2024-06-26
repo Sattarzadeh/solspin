@@ -100,8 +100,11 @@ export const handler = WebSocketApiHandler(async (event) => {
     const caseModel: Case = JSON.parse(caseData.body);
     const amount = -1 * caseModel.casePrice;
     logger.info(`Case price is :${caseModel.casePrice}`);
-    await debitUser(userId, amount);
+    const updateBalance = await debitUser(userId, amount);
 
+    if (updateBalance.statusCode !== 200) {
+      throw new Error("Failed to update balance");
+    }
     logger.info(
       `Invoking performSpin lambda with clientSeed: ${clientSeed} and serverSeed: ${serverSeed}`
     );
@@ -109,7 +112,7 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
 
-    logger.info(`Case roll result is: ${caseRollResult}`);
+    logger.info(`Case roll result is: ${{ caseRollResult }}`);
     const outcome =
       caseModel.casePrice < caseRolledItem.price
         ? GameOutcome.WIN
@@ -148,7 +151,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       const messageEndpoint = `${domainName}/${stage}`;
       await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
     } catch (error) {
-      logger.error("Error posting to connection:", (error as Error).message);
+      logger.error("Error posting to connection:", error);
     }
 
     return {
