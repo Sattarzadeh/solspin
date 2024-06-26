@@ -15,12 +15,20 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
 
   try {
     const eventDetails = CreateBetRequestSchema.parse(event.detail);
-    const { userId, gameType, amountBet, outcome, outcomeAmount } = eventDetails.payload;
+    const { userId, gameType, amountBet, outcome, outcomeAmount, timestamp } = eventDetails.payload;
 
+    // TODO - Accept Idempotency Key and check if bet already exists
     // TODO - Check user exists
     // TODO - Check game exists
 
-    const createdBet = await recordBet(userId, gameType, amountBet, outcome, outcomeAmount);
+    const createdBet = await recordBet(
+      userId,
+      gameType,
+      amountBet,
+      outcome,
+      outcomeAmount,
+      timestamp
+    );
 
     const response = Betting.CreateBetResponseSchema.parse(createdBet);
 
@@ -30,7 +38,7 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
       BetTransaction.event,
       {
         userId,
-        amount: outcomeAmount - amountBet,
+        amount: outcomeAmount,
       } as BetTransaction.type,
       Service.BETTING
     );

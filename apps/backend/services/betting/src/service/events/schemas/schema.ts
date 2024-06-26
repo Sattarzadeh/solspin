@@ -18,6 +18,7 @@ export const CreateBetRequestSchema = z.object({
     amountBet: z.number().positive(),
     outcome: z.nativeEnum(GameOutcome),
     outcomeAmount: z.number(),
+    timestamp: z.date(),
   }),
 });
 
