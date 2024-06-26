@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GameType } from "../../registry/gameResultEventSchema";
 
 export enum GameOutcome {
   WIN = "WIN",
@@ -9,7 +10,7 @@ export enum GameOutcome {
 export const BaseBetSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
-  gameId: z.string().uuid(),
+  gameType: z.nativeEnum(GameType),
   amountBet: z.number().positive(),
   outcome: z.nativeEnum(GameOutcome),
   outcomeAmount: z.number().positive(),
@@ -20,7 +21,7 @@ export const BaseBetSchema = z.object({
 export const CreateBetRequestSchema = BaseBetSchema.omit({ id: true, createdAt: true });
 export const GetBetByIdRequestSchema = BaseBetSchema.pick({ id: true });
 export const GetBetsByUserIdRequestSchema = BaseBetSchema.pick({ userId: true });
-export const GetBetsByGameIdRequestSchema = BaseBetSchema.pick({ gameId: true });
+export const GetBetsByGameIdRequestSchema = BaseBetSchema.pick({ gameType: true });
 
 // Query Schemas
 export const BetQuerySchema = z.object({
