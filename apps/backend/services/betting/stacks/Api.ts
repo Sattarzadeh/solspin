@@ -17,6 +17,7 @@ export function ApiStack({ stack }: StackContext) {
     handler: "src/service/events/handler/create-bet.handler",
     environment: {
       BETS_TABLE_ARN: betsTableArn,
+      EVENT_BUS_ARN: eventBusArn,
     },
     permissions: [
       new iam.PolicyStatement({
