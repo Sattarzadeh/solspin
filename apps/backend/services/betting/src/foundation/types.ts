@@ -7,5 +7,5 @@ export interface BetDBObject {
   amountBet: number;
   outcome: GameOutcome;
   outcomeAmount: number;
-  timestamp: Date;
+  createdAt: string;
 }
