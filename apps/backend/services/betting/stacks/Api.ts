@@ -32,10 +32,10 @@ export function ApiStack({ stack }: StackContext) {
     ],
   });
 
-  new cdk.aws_events.Rule(stack, "GameResultRule", {
+  new cdk.aws_events.Rule(stack, "GameOutcomeRule", {
     eventBus: existingEventBus,
     eventPattern: {
-      source: ["betting_service.BetTransaction"],
+      source: ["orchestration_service.GameOutcome"],
       detailType: ["event"],
     },
     targets: [new cdk.aws_events_targets.LambdaFunction(createBetHandler)],
