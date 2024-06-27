@@ -1,6 +1,7 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
 import { CaseItem, Case } from "@solspin/game-engine-types";
 import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
+import { getConnectionInfo } from "../helpers/handleConnections";
 import { debitUser } from "../helpers/debitUser";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
@@ -57,17 +58,21 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     logger.info("Invoking getUserFromWebSocket lambda with connectionId: ", connectionId);
-    const connectionInfoPayload = await getUserFromWebSocket(connectionId);
+    const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
 
-    let user: ConnectionInfo;
-    try {
-      user = JSON.parse(connectionInfoPayload.body).connectionInfo;
-    } catch (error) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Invalid JSON format" }),
-      };
+    if (!connectionInfo) {
+      throw new Error("ConnectionId not found");
     }
+    const user = connectionInfo;
+    // let user: ConnectionInfo;
+    // try {
+    //   user = JSON.parse(connectionInfoPayload.body).connectionInfo;
+    // } catch (error) {
+    //   return {
+    //     statusCode: 400,
+    //     body: JSON.stringify({ message: "Invalid JSON format" }),
+    //   };
+    // }
     logger.info(`Received connection info from getUserFromWebSocket lambda.`);
 
     if (!user || !user.isAuthenticated) {
@@ -113,6 +118,17 @@ export const handler = WebSocketApiHandler(async (event) => {
     const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
 
     logger.info(`Case roll result is: ${{ caseRollResult }}`);
+    const responseMessage = {
+      caseRolledItem,
+    };
+
+    try {
+      const messageEndpoint = `${domainName}/${stage}`;
+      await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
+    } catch (error) {
+      logger.error("Error posting to connection:", error);
+    }
+
     const outcome =
       caseModel.casePrice < caseRolledItem.price
         ? GameOutcome.WIN
@@ -142,17 +158,6 @@ export const handler = WebSocketApiHandler(async (event) => {
       outcomeAmount,
       timestamp: new Date().toISOString(),
     });
-
-    const responseMessage = {
-      caseRolledItem,
-    };
-
-    try {
-      const messageEndpoint = `${domainName}/${stage}`;
-      await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
-    } catch (error) {
-      logger.error("Error posting to connection:", error);
-    }
 
     return {
       statusCode: 200,

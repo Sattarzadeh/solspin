@@ -12,7 +12,6 @@ export interface GameResultPayload {
   amountBet: number;
   outcome: GameOutcome;
   outcomeAmount: number;
-  timestamp: string;
 }
 
 export const gameResultEventSchema = z.object({
@@ -21,11 +20,10 @@ export const gameResultEventSchema = z.object({
   amountBet: z.number().positive(),
   outcome: z.nativeEnum(GameOutcome),
   outcomeAmount: z.number(),
-  timestamp: z.string().datetime(),
 });
 
 export type GameResultType = z.infer<typeof gameResultEventSchema>;
 export const gameResultEvent: EventProvider = {
-  name: "GameResult",
+  name: "GameOutcome",
   schema: gameResultEventSchema,
 };

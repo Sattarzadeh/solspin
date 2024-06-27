@@ -22,7 +22,7 @@ export function WebSocketGateway({ stack }: StackContext) {
     eventBus: existingEventBus,
     eventPattern: {
       source: ["orchestration_service.GameOutcome"],
-      detailType: ["GameOutcome"],
+      detailType: ["event"],
     },
   });
 
@@ -40,6 +40,10 @@ export function WebSocketGateway({ stack }: StackContext) {
     defaults: {
       function: {
         timeout: 20,
+        environment: {
+          CASES_TABLE_NAME: casesTable.tableName,
+          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketTable.tableName,
+        },
       },
     },
     routes: {
@@ -53,9 +57,6 @@ export function WebSocketGateway({ stack }: StackContext) {
               resources: [websocketTable.tableArn],
             }),
           ],
-          environment: {
-            TABLE_NAME: websocketTable.tableName,
-          },
         },
       },
       $default: {
@@ -74,7 +75,6 @@ export function WebSocketGateway({ stack }: StackContext) {
               resources: [websocketTable.tableArn],
             }),
           ],
-          environment: { TABLE_NAME: websocketTable.tableName },
         },
       },
       logout: {
@@ -87,7 +87,6 @@ export function WebSocketGateway({ stack }: StackContext) {
               resources: [websocketTable.tableArn],
             }),
           ],
-          environment: { TABLE_NAME: websocketTable.tableName },
         },
       },
       "generate-seed": {
@@ -100,7 +99,6 @@ export function WebSocketGateway({ stack }: StackContext) {
               resources: [websocketTable.tableArn],
             }),
           ],
-          environment: { TABLE_NAME: websocketTable.tableName },
         },
       },
       authenticate: {
@@ -114,7 +112,6 @@ export function WebSocketGateway({ stack }: StackContext) {
             }),
           ],
           environment: {
-            TABLE_NAME: websocketTable.tableName,
             AUTHORIZER_FUNCTION_NAME: callAuthorizerFunction.functionName,
           },
         },
@@ -133,11 +130,11 @@ export function WebSocketGateway({ stack }: StackContext) {
                 performSpinFunction.functionArn,
                 betTransactionHandler.functionArn,
                 eventBusArn,
+                websocketTable.tableArn,
               ],
             }),
           ],
           environment: {
-            TABLE_NAME: casesTable.tableName,
             GET_USER_FROM_WEBSOCKET_FUNCTION_NAME: getConnectionFunction.functionName,
             GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
             PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
@@ -159,7 +156,7 @@ export function WebSocketGateway({ stack }: StackContext) {
         handler: "src/handlers/pruneConnections.handler",
         permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
         environment: {
-          TABLE_NAME: websocketTable.tableName,
+          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketTable.tableName,
           DOMAIN: domainName,
         },
       },
