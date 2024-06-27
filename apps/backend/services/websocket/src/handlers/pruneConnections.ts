@@ -6,7 +6,7 @@ import { getLogger } from "@solspin/logger";
 
 const logger = getLogger("prune-connections-handler");
 const dynamoDbClient = new DynamoDBClient({});
-const TABLE_NAME = process.env.TABLE_NAME;
+const TABLE_NAME = process.env.WEBSOCKET_CONNECTIONS_TABLE_NAME;
 const messageEndpoint = process.env.DOMAIN as string;
 export const handler = ApiHandler(async (event) => {
   try {

@@ -8,7 +8,7 @@ import { mockCase } from "../__mock__/case_pot_of_gold.mock";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
-const tableName = process.env.TABLE_NAME;
+const tableName = process.env.TABLE_NAME || process.env.CASES_TABLE_NAME || "cases";
 
 if (!tableName) {
   throw new EnvironmentVariableError("TABLE_NAME");
