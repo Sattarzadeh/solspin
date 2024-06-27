@@ -61,7 +61,22 @@ export const WalletSignInButton = () => {
       };
 
       sendWalletConnectedRequest();
+    } else {
+      if (connectionStatus === "connected") {
+        const token = localStorage.getItem("token")
+
+        if (token) {
+          sendMessage(
+            JSON.stringify({
+              action: "unauthenticate",
+              token: token,
+            })
+          );
+        }
+
+      }
     }
+
   }, [connected, publicKey]);
 
   return (
