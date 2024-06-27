@@ -26,6 +26,14 @@ export const authenticateUser = async (connectionId: string, userId: string): Pr
   }
 };
 
+export const unauthenticateUser = async (connectionId: string): Promise<void> => {
+  const connectionInfo = await getConnectionInfoFromDB(connectionId);
+  if (connectionInfo) {
+    connectionInfo.isAuthenticated = false;
+    await saveConnectionInfo(connectionId, connectionInfo);
+  }
+};
+
 export const generateServerSeed = async (connectionId: string): Promise<string> => {
   const connectionInfo = await getConnectionInfoFromDB(connectionId);
 
