@@ -4,7 +4,7 @@ import { getLogger } from "@solspin/logger";
 
 const logger = getLogger("handle-new-connection-handler");
 
-const whiteListedOrigins = ["https://piehost.com", "http:localhost:3000"];
+const whiteListedOrigins = ["https://piehost.com", "http://localhost:3000"];
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
   const origin = event.headers?.Origin;

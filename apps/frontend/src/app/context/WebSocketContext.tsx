@@ -23,6 +23,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
 
     socketRef.current.onopen = () => {
       setConnectionStatus('connected');
+      
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        socketRef.current?.send(JSON.stringify({ action: 'authenticate', token }));
+      }
     };
 
     socketRef.current.onclose = () => {

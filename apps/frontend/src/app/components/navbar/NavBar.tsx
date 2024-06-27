@@ -1,10 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
+
+import { WalletModalProvider, WalletDisconnectButton, } from '@solana/wallet-adapter-react-ui';
+
 import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
-
+import { WalletSignInButton } from "../sign-in/WalletSignIn";
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 const navLinks = [
   {
     name: "Games",
@@ -78,9 +87,7 @@ export const NavBar = () => {
           <button className="hidden lg:block bg-custom_gray text-white py-2 px-5 rounded">
             Withdraw
           </button>
-          <button className="bg-green-500 text-white py-2 px-5 rounded font-semibold">
-            Sign In
-          </button>
+          <WalletSignInButton/>
           <Hamburger className={"lg:hidden"} onClick={() => {}} />
         </div>
       </div>

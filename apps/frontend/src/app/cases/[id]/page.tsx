@@ -69,7 +69,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (connectionStatus === "connected" && generateSeed) {
-      sendMessage(JSON.stringify({ action: "generateSeed" }));
+      sendMessage(JSON.stringify({ action: "generate-seed" }));
       setGenerateSeed(false);
     }
   }, [connectionStatus, sendMessage, generateSeed]);
