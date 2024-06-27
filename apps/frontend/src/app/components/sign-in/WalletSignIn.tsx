@@ -62,6 +62,7 @@ export const WalletSignInButton = () => {
 
       sendWalletConnectedRequest();
     } else {
+      
       if (connectionStatus === "connected") {
         const token = localStorage.getItem("token")
 
@@ -75,6 +76,7 @@ export const WalletSignInButton = () => {
         }
 
       }
+      localStorage.removeItem("token")
     }
 
   }, [connected, publicKey]);
