@@ -25,7 +25,7 @@ if (!tableName) {
   throw new EnvironmentVariableError("TABLE_NAME");
 }
 
-const walletAddressExists = async (walletAddress: string): Promise<boolean> => {
+export const walletAddressExists = async (walletAddress: string): Promise<boolean> => {
   const params = {
     TableName: tableName,
     IndexName: walletAddressIndexName,
@@ -37,6 +37,25 @@ const walletAddressExists = async (walletAddress: string): Promise<boolean> => {
 
   const result = await ddbDocClient.send(new QueryCommand(params));
   return result.Items && result.Items.length > 0;
+};
+
+export const getUserByWalletAddress = async (walletAddress: string): Promise<User | null> => {
+  const params = {
+    TableName: tableName,
+    IndexName: walletAddressIndexName,
+    KeyConditionExpression: "walletAddress = :walletAddress",
+    ExpressionAttributeValues: {
+      ":walletAddress": walletAddress,
+    },
+  };
+
+  const result = await ddbDocClient.send(new QueryCommand(params));
+
+  if (result.Items && result.Items.length > 0) {
+    return result.Items[0] as User;
+  }
+
+  return null;
 };
 
 export const buildUpdateExpression = (updateFields: Record<string, any>) => {
