@@ -116,6 +116,18 @@ export function WebSocketGateway({ stack }: StackContext) {
           },
         },
       },
+      unauthenticate: {
+        function: {
+          handler: "src/handlers/unauthenticateUser.handler",
+          timeout: 10,
+          permissions: [
+            new PolicyStatement({
+              actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
+              resources: [websocketTable.tableArn],
+            }),
+          ],
+        },
+      },
       "case-spin": {
         function: {
           handler: "src/handlers/case-orchestration.handler",
