@@ -51,7 +51,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
       if (connectionStatus === "connected") {
         sendMessage(
           JSON.stringify({
-            action: "caseSpin",
+            action: "case-spin",
             clientSeed: "awodwad",
             caseId: "1e72ca87-ecc3-4d11-890f-12fb811e20ea",
           })
