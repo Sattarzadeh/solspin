@@ -28,7 +28,7 @@ export const WalletSignInButton = () => {
       // Send HTTP request when the wallet connects
       const sendWalletConnectedRequest = async () => {
         try {
-          const response = await fetch('https://j6hxbcrcqj.execute-api.eu-west-2.amazonaws.com/wallet-connect', {
+          const response = await fetch('https://ho7nfeet1l.execute-api.eu-west-2.amazonaws.com/wallet-connect', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
