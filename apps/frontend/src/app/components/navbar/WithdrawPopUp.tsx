@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
+import { useSolPrice } from "./hooks/useSolPrice";
 
 interface WithdrawPopUpProps {
   handleClose: () => void;
@@ -9,9 +10,9 @@ interface WithdrawPopUpProps {
 
 export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
-  const [priceSol, setPriceSol] = React.useState<number | null>(null);
   const [dollarValue, setDollarValue] = React.useState<string>("");
   const [walletAddressValue, setWalletAddressValue] = React.useState<string>("");
+  const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
 
   function isValidSolanaAddress(address: string): boolean {
     try {
@@ -68,21 +69,8 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
   };
 
   useEffect(() => {
-    const fetchSolPrice = async () => {
-      try {
-        const response = await fetch("https://price.jup.ag/v4/price?ids=SOL");
-        const data = await response.json();
-        setPriceSol(data.data.SOL.price);
-      } catch (error) {
-        console.error("Error fetching SOL price:", error);
-        toast.error("Error fetching SOL price");
-      }
-    };
-
     document.addEventListener("keydown", handleKeyPress);
     document.addEventListener("mousedown", handleClickOutside);
-
-    fetchSolPrice();
 
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
