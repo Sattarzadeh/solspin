@@ -12,7 +12,7 @@ interface CarouselItemProps {
 export const CarouselItem: React.FC<CarouselItemProps> = ({ name, price, rarity, tag, image }) => {
   return (
     <div
-      className={`relative flex flex-col items-center justify-center border-[1px] border-black transition-transform duration-300`}
+      className={`relative flex flex-col items-center justify-center transition-transform duration-300`}
       style={{ width: 176, height: 176 }}
     >
       <div className="relative flex justify-center items-center h-full w-full">
@@ -23,13 +23,6 @@ export const CarouselItem: React.FC<CarouselItemProps> = ({ name, price, rarity,
         style={{
           background:
             "radial-gradient(50% 50% at 50% 50%, rgb(235, 76, 75) 0%, rgba(74, 34, 34, 0) 100%)",
-        }}
-      ></div>
-      <div
-        className="absolute bottom-2 w-3/4 h-0.5"
-        style={{
-          backgroundColor: "rgb(235, 76, 75)",
-          boxShadow: "0px 0px 10px 2px rgba(235, 76, 75, 0.75)",
         }}
       ></div>
     </div>

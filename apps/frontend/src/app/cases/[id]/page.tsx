@@ -3,7 +3,6 @@
 import { CaseDetails } from "./components/CaseDetails";
 import { CaseItems } from "./components/CaseItems";
 import React, { useCallback, useEffect, useState } from "react";
-import { PreviousDrops } from "./components/PreviousDrops";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { CaseCarousel } from "./components/CaseCarousel";
@@ -33,7 +32,7 @@ const generateCases = (): CaseProps[] => {
 const generateClientSeed = async (): Promise<string> => {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
 export default function CasePage({ params }: { params: { id: string } }) {
@@ -51,7 +50,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };
-  
+
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete((prev) => prev + 1);
   }, []);
@@ -65,7 +64,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
     initializeClientSeed();
   }, []);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (isDemoClicked && animationComplete != numCases) {
       setCases(generateCases());
       if (connectionStatus === "connected") {
@@ -127,7 +126,11 @@ export default function CasePage({ params }: { params: { id: string } }) {
   return (
     <div className="w-full h-full flex flex-col space-y-10 p-2">
       <CaseDetails {...caseExample} />
-      <ProvablyFair serverSeedHash={serverSeedHash || "Please Login"} clientSeed={clientSeed || "Generating..."} onClientSeedChange={handleClientSeedChange}/>
+      <ProvablyFair
+        serverSeedHash={serverSeedHash || "Please Login"}
+        clientSeed={clientSeed || "Generating..."}
+        onClientSeedChange={handleClientSeedChange}
+      />
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
         {Array.from({ length: numCases }, (_, index) => (
           <CaseCarousel
@@ -140,7 +143,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         ))}
       </div>
       <CaseItems />
-      <PreviousDrops />
+      {/*<PreviousDrops />*/}
     </div>
   );
 }
