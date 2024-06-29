@@ -1,43 +1,46 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { toast } from "sonner";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { sendSolTransaction } from "./utils/transactions";
+import { useSolPrice } from "./hooks/useSolPrice";
+import { useWalletBalance } from "./hooks/useWalletBalance";
 
 interface DepositPopUpProps {
   handleClose: () => void;
 }
 
+const HOUSE_WALLET_ADDRESS = process.env.NEXT_PUBLIC_HOUSE_WALLET_PUBLIC_KEY;
+
+if (!HOUSE_WALLET_ADDRESS) {
+  throw new Error("House wallet address not provided");
+}
+
 export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
-  const [priceSol, setPriceSol] = React.useState<number | null>(null);
-  const [availableBalance, setAvailableBalance] = React.useState<number>(0);
-  const [dollarValue, setDollarValue] = React.useState<string>("");
-  const [cryptoValue, setCryptoValue] = React.useState<string>("");
+  const [dollarValue, setDollarValue] = useState<string>("");
+  const [cryptoValue, setCryptoValue] = useState<string>("");
+  const [availableBalance, setAvailableBalance] = useState<number>(0);
+
   const connection = useConnection().connection;
   const wallet = useWallet();
+  const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
+  const balance = useWalletBalance(wallet.publicKey, connection);
 
-  const fetchAvailableBalance = async () => {
-    if (!wallet.publicKey) return;
-    const balance = await connection.getBalance(wallet.publicKey);
-    setAvailableBalance(balance);
-  };
+  const handleClickOutside = useCallback(
+    (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        // Check if the click is on a toast or within a toast
+        const isToastClick = (event.target as Element).closest("[data-sonner-toast]") !== null;
 
-  const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow only numbers and a single decimal point
-    if (/^\d*\.?\d*$/.test(value)) {
-      setDollarValue(value);
-      setCryptoValue((parseFloat(value === "" ? "0" : value) / (priceSol || 0)).toFixed(2));
-    }
-  };
-
-  const handleCryptoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow only numbers and a single decimal point
-    if (/^\d*\.?\d*$/.test(value)) {
-      setCryptoValue(value);
-      setDollarValue((parseFloat(value === "" ? "0" : value) * (priceSol || 0)).toFixed(2));
-    }
-  };
+        if (!isToastClick) {
+          handleClose();
+        }
+      }
+    },
+    [handleClose]
+  );
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -48,46 +51,68 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     [handleClose]
   );
 
-  const handleClickOutside = useCallback(
-    (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        handleClose();
-      }
-    },
-    [handleClose]
-  );
-
-  const handleMaxClick = () => {
-    setCryptoValue(availableBalance.toString());
-    setDollarValue((availableBalance * (priceSol || 0)).toFixed(2));
-  };
-
-  const handleDepositClick = () => {
-    // Validate input
-    // Call deposit function
-  };
   useEffect(() => {
-    const fetchSolPrice = async () => {
-      try {
-        const response = await fetch("https://price.jup.ag/v4/price?ids=SOL");
-        const data = await response.json();
-        setPriceSol(data.data.SOL.price);
-      } catch (error) {
-        console.error("Error fetching SOL price:", error);
-      }
-    };
-
     document.addEventListener("keydown", handleKeyPress);
     document.addEventListener("mousedown", handleClickOutside);
-
-    fetchSolPrice();
-    fetchAvailableBalance();
 
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleKeyPress, handleClickOutside]);
+
+  const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value)) {
+      setDollarValue(value);
+      setCryptoValue((parseFloat(value || "0") / (priceSol || 1)).toFixed(2));
+    }
+  };
+
+  const handleCryptoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value)) {
+      setCryptoValue(value);
+      setDollarValue((parseFloat(value || "0") * (priceSol || 1)).toFixed(2));
+    }
+  };
+
+  const handleMaxClick = () => {
+    const maxSol = balance / LAMPORTS_PER_SOL;
+    setCryptoValue(maxSol.toString());
+    setDollarValue((maxSol * (priceSol || 0)).toFixed(2));
+  };
+
+  /**
+   * Validate input and send deposit transaction
+   */
+  const handleDepositClick = async () => {
+    if (!wallet.publicKey) {
+      toast.error("Wallet not connected!");
+      return;
+    }
+
+    const amount = parseFloat(cryptoValue);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error("Invalid deposit amount");
+      return;
+    }
+
+    if (amount * LAMPORTS_PER_SOL > balance) {
+      toast.error("Insufficient balance");
+      return;
+    }
+
+    try {
+      const signature = await sendSolTransaction(connection, wallet, HOUSE_WALLET_ADDRESS, amount);
+      toast.success(
+        `The transaction is processing. You can follow it here: https://https://solscan.io/tx/${signature}`
+      );
+      handleClose();
+    } catch (error) {
+      toast.error(`Error sending transaction. Please try again later. ${error}`);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -142,7 +167,13 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
         <p className="text-white text-sm mt-2 text-center">
           {`Current SOL price: ${priceSol ? "$" + priceSol.toFixed(2) : "Loading..."}`}
         </p>
-        <button className="bg-green-500 text-white py-2 px-5 rounded-md">Deposit</button>
+        <button
+          className="bg-green-500 text-white py-2 px-5 rounded-md"
+          onClick={handleDepositClick}
+          disabled={isPriceSolLoading || isPriceSolError}
+        >
+          Deposit
+        </button>
         <p className="text-gray-400 text-sm mt-4 text-center italic">
           Enter the amount you wish to deposit. Please note that the conversion rate shown is an
           estimate. The actual conversion will be based on the current market rate at the time your
