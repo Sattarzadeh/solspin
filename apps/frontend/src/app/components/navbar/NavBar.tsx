@@ -8,6 +8,8 @@ import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
 import { WalletSignInButton } from "../sign-in/WalletSignIn";
 import { Balance } from "./Balance";
+import { useDispatch } from "react-redux";
+import { toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
 
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
@@ -40,9 +42,14 @@ const navLinks = [
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleWithdrawClick = () => {
+    dispatch(toggleWithdrawClicked());
   };
 
   /* TODO - Add condition for signed in or not (dont display balance if not signed in) */
@@ -87,7 +94,10 @@ export const NavBar = () => {
         </div>
         <div className="flex space-x-4 item-center h-12">
           {<Balance />}
-          <button className="hidden lg:block bg-custom_gray text-white py-2 px-5 rounded">
+          <button
+            className="hidden lg:block bg-custom_gray text-white py-2 px-5 rounded"
+            onClick={handleWithdrawClick}
+          >
             Withdraw
           </button>
           <WalletSignInButton />

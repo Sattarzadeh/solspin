@@ -5,7 +5,8 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { DepositPopUp } from "./navbar/DepositPopUp";
-import { toggleDepositClicked } from "../../store/slices/navbarSlice";
+import { toggleDepositClicked, toggleWithdrawClicked } from "../../store/slices/navbarSlice";
+import { WithdrawPopUp } from "./navbar/WithdrawPopUp";
 
 export const MainSection = ({ children }: { children: React.ReactNode }) => {
   const [isChatOpen, setChatOpen] = React.useState(true);
@@ -21,9 +22,14 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
     dispatch(toggleDepositClicked());
   };
 
+  const toggleWithdrawOpen = () => {
+    dispatch(toggleWithdrawClicked());
+  };
+
   return (
     <div className="flex flex-1 overflow-hidden relative">
       {isDepositOpen && <DepositPopUp handleClose={toggleDepositOpen} />}
+      {isWithdrawOpen && <WithdrawPopUp handleClose={toggleWithdrawOpen} />}
       <Chatbar chatOpenCallback={toggleChatOpen} />
       <main className="flex-grow overflow-y-auto relative h-full transition-all duration-500 ease-in-out bg-main_background">
         <div className="min-h-full">{children}</div>

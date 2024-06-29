@@ -1,42 +1,38 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { toast } from "sonner";
 
-interface DepositPopUpProps {
+interface WithdrawPopUpProps {
   handleClose: () => void;
 }
 
-export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
+export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [priceSol, setPriceSol] = React.useState<number | null>(null);
-  const [availableBalance, setAvailableBalance] = React.useState<number>(0);
   const [dollarValue, setDollarValue] = React.useState<string>("");
-  const [cryptoValue, setCryptoValue] = React.useState<string>("");
-  const connection = useConnection().connection;
-  const wallet = useWallet();
+  const [walletAddressValue, setWalletAddressValue] = React.useState<string>("");
 
-  const fetchAvailableBalance = async () => {
-    if (!wallet.publicKey) return;
-    const balance = await connection.getBalance(wallet.publicKey);
-    setAvailableBalance(balance);
-  };
+  function isValidSolanaAddress(address: string): boolean {
+    try {
+      new PublicKey(address);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 
   const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow only numbers and a single decimal point
     if (/^\d*\.?\d*$/.test(value)) {
       setDollarValue(value);
-      setCryptoValue((parseFloat(value === "" ? "0" : value) / (priceSol || 0)).toFixed(2));
     }
   };
 
-  const handleCryptoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWalletAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow only numbers and a single decimal point
-    if (/^\d*\.?\d*$/.test(value)) {
-      setCryptoValue(value);
-      setDollarValue((parseFloat(value === "" ? "0" : value) * (priceSol || 0)).toFixed(2));
-    }
+    setWalletAddressValue(value);
   };
 
   const handleKeyPress = useCallback(
@@ -51,21 +47,26 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        handleClose();
+        // Check if the click is on a toast or within a toast
+        const isToastClick = (event.target as Element).closest("[data-sonner-toast]") !== null;
+
+        if (!isToastClick) {
+          handleClose();
+        }
       }
     },
     [handleClose]
   );
 
-  const handleMaxClick = () => {
-    setCryptoValue(availableBalance.toString());
-    setDollarValue((availableBalance * (priceSol || 0)).toFixed(2));
+  const handleWithdrawClick = () => {
+    if (dollarValue === "") {
+      toast.error("Please enter a valid amount");
+    } else if (!isValidSolanaAddress(walletAddressValue)) {
+      toast.error("Invalid wallet address");
+      setWalletAddressValue("");
+    }
   };
 
-  const handleDepositClick = () => {
-    // Validate input
-    // Call deposit function
-  };
   useEffect(() => {
     const fetchSolPrice = async () => {
       try {
@@ -74,6 +75,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
         setPriceSol(data.data.SOL.price);
       } catch (error) {
         console.error("Error fetching SOL price:", error);
+        toast.error("Error fetching SOL price");
       }
     };
 
@@ -81,7 +83,6 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     document.addEventListener("mousedown", handleClickOutside);
 
     fetchSolPrice();
-    fetchAvailableBalance();
 
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
@@ -101,40 +102,32 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
         >
           X
         </button>
-        <span className="text-white text-2xl font-semibold mb-6">Deposit</span>
-        <div className="flex flex-col items-start w-full space-y-1">
-          <div className="flex justify-between w-full px-2">
-            <span className="text-white text-sm">Conversion</span>
-            <div className="flex items-center space-x-2 justify-between">
-              <div className="flex items-center space-x-1">
-                <span className="text-white text-sm">{availableBalance}</span>
-                <span className="text-white text-sm">SOL</span>
-              </div>
-              <span className="text-white text-sm hover:cursor-pointer" onClick={handleMaxClick}>
-                Max
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between w-full space-x-2">
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 flex-grow">
+        <span className="text-white text-2xl font-semibold mb-6">Withdraw</span>
+        <div className="flex flex-col items-start justify-start w-2/3">
+          <span className="text-white text-sm mb-1 ml-2">Amount</span>
+          <div className="flex items-center justify-center w-full space-x-2">
+            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 w-full">
               <Image src="/icons/dollar.svg" alt="Coin" width={20} height={20} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
                 type="text"
-                placeholder={priceSol ? priceSol.toString() : "Loading..."}
+                placeholder={"0"}
                 value={dollarValue}
                 onChange={handleDollarInputChange}
               />
             </div>
-            <Image src="/icons/arrows-horizontal.svg" alt="Arrows" width={32} height={32} />
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 flex-grow">
-              <Image src="/icons/sol-logo.svg" alt="Coin" width={20} height={20} />
+          </div>
+        </div>
+        <div className="flex flex-col items-start justify-start w-2/3">
+          <span className="text-white text-sm mb-1 ml-2">Wallet Address</span>
+          <div className="flex items-center justify-center w-full space-x-2">
+            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 w-full">
+              <Image src="/icons/wallet.svg" alt="Coin" width={20} height={20} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
                 type="text"
-                value={cryptoValue}
-                placeholder={"1"}
-                onChange={handleCryptoInputChange}
+                value={walletAddressValue}
+                onChange={handleWalletAddressInputChange}
               />
             </div>
           </div>
@@ -142,9 +135,14 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
         <p className="text-white text-sm mt-2 text-center">
           {`Current SOL price: ${priceSol ? "$" + priceSol.toFixed(2) : "Loading..."}`}
         </p>
-        <button className="bg-green-500 text-white py-2 px-5 rounded-md">Deposit</button>
+        <button
+          className="bg-green-500 text-white py-2 px-5 rounded-md"
+          onClick={handleWithdrawClick}
+        >
+          Withdraw
+        </button>
         <p className="text-gray-400 text-sm mt-4 text-center italic">
-          Enter the amount you wish to deposit. Please note that the conversion rate shown is an
+          Enter the amount you wish to withdraw. Please note that the conversion rate shown is an
           estimate. The actual conversion will be based on the current market rate at the time your
           transaction is processed.
         </p>
