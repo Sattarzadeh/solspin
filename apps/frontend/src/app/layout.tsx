@@ -8,7 +8,7 @@ import { MainSection } from "./components/MainSection";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="w-screen h-screen overflow-hidden">
+    <html lang="en" className="w-full h-full overflow-x-hidden overscroll-none">
       <body className="flex flex-col w-full h-full overflow-x-hidden bg-background">
         <Providers>
           <NavBar />

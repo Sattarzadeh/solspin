@@ -11,22 +11,20 @@ import { useWebSocket } from "../../context/WebSocketContext";
 import { toggleDemoClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
 
-const caseExample = {
+interface CaseItem {
+  name: string;
+  price: number;
+  rarity: string;
+  tag: string;
+  image: string;
+}
+
+const caseExample: CaseItem = {
   name: "Watson Power",
   price: 4.99,
   rarity: "Extraordinary",
   tag: "Hot",
   image: "/cases/dota_3.svg",
-};
-
-const generateCases = (): CaseProps[] => {
-  return Array.from({ length: 59 }, (_, i) => ({
-    name: Math.random() < 0.5 ? "XXX" : "YYY",
-    price: 4.99,
-    rarity: "Extraordinary",
-    tag: "Hot",
-    image: Math.random() < 0.5 ? "/cases/dota_3.svg" : "/cases/gun.svg",
-  }));
 };
 
 const generateClientSeed = async (): Promise<string> => {
@@ -35,9 +33,22 @@ const generateClientSeed = async (): Promise<string> => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
+const generateCases = (numCases: number): CaseProps[][] => {
+  return Array.from(
+    { length: numCases },
+    () =>
+      Array.from({ length: 59 }, () => ({
+        name: Math.random() < 0.5 ? "XXX" : "YYY",
+        price: 4.99,
+        rarity: "Extraordinary",
+        tag: "Hot",
+        image: Math.random() < 0.5 ? "/cases/dota_3.svg" : "/cases/gun.svg",
+      })) as CaseItem[]
+  );
+};
+
 export default function CasePage({ params }: { params: { id: string } }) {
   const id = params.id;
-  const [cases, setCases] = useState<CaseProps[]>(generateCases());
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
   const [serverSeedHash, setServerSeedHash] = useState<string | null>(null);
@@ -46,10 +57,14 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [generateSeed, setGenerateSeed] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(0);
   const dispatch = useDispatch();
-
+  const [cases, setCases] = useState<CaseProps[][]>(generateCases(numCases));
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };
+
+  useEffect(() => {
+    setCases(generateCases(numCases));
+  }, [numCases, generateCases]);
 
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete((prev) => prev + 1);
@@ -65,8 +80,9 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    if (isDemoClicked && animationComplete != numCases) {
-      setCases(generateCases());
+    if (isDemoClicked && animationComplete == 0) {
+      console.log("Spinning cases");
+      setCases(generateCases(numCases));
       if (connectionStatus === "connected") {
         sendMessage(
           JSON.stringify({
@@ -78,6 +94,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
       }
     }
   }, [isDemoClicked, animationComplete, numCases, connectionStatus, sendMessage, clientSeed, id]);
+
+  console.log(cases);
 
   useEffect(() => {
     if (animationComplete === numCases && isDemoClicked) {
@@ -132,7 +150,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         onClientSeedChange={handleClientSeedChange}
       />
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
-        {Array.from({ length: numCases }, (_, index) => (
+        {cases.map((cases, index) => (
           <CaseCarousel
             key={index}
             cases={cases}
