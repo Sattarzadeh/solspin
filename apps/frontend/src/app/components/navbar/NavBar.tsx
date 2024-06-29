@@ -61,7 +61,7 @@ export const NavBar = () => {
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold text-gradient">SolSpin</span>
           </div>
-          <ul className="hidden space-x-8 lg:flex h-full">
+          <ul className="hidden xl:space-x-8 lg:flex h-full">
             {navLinks.map((navLink, index) => (
               <li
                 className="relative flex items-center space-x-3 group hover:cursor-pointer pr-4"
@@ -105,11 +105,10 @@ export const NavBar = () => {
           {connected && publicKey ? (
             <UserProfile username={publicKey.toBase58()} profilePictureURL={""} />
           ) : (
-            <WalletSignInButton />
+            <div className="hidden xl:block">
+              <WalletSignInButton />
+            </div>
           )}
-          <div className="hidden xl:block">
-            <WalletSignInButton />
-          </div>
           <Hamburger className={"lg:hidden"} onClick={() => {}} />
         </div>
       </div>
