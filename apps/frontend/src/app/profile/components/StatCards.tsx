@@ -30,21 +30,21 @@ const StatCard: React.FC<StatCardProps> = ({ image, title, value, unit, descript
 const StatCards: React.FC = () => {
   const cardsData = [
     {
-        image: '/../../../../coins.png', // Example image path
+        image: '/coins.png', // Example image path
         title: 'Total Wagered',
         value: '15,527.56',
         unit: '🪙', // Replace with the appropriate icon
         description: 'Total wagered',
     },
     {
-        image: '/../../../../coins.png', // Example image path
+        image: '/coins.png', // Example image path
         title: 'Total Profit',
         value: '2000.00',
         unit: '🪙', // Replace with the appropriate icon
         description: 'Total Profit',
     },
     {
-        image: '/../../../../coins.png', //xample image path
+        image: '/coins.png', //xample image path
         title: 'Total Deposited',
         value: '5141.31',
         unit: '🪙', // Replace with the appropriate icon

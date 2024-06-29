@@ -18,7 +18,7 @@ export const UserHeading: React.FC<UserInfoProps> = ({
     <div className="w-4/5 mx-auto my-4 flex items-center p-4 py-8 bg-background rounded-lg">
       <div className="relative w-16 h-16 rounded-full overflow-hidden">
         <Image
-          src="/../../../../header-image.png"
+          src="/header-image.png"
           alt={`${username}'s profile`}
           layout="fill"
           objectFit="cover"

@@ -57,7 +57,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
       >
         <div className="relative w-10 h-10 rounded-full overflow-hidden">
           <Image
-            src={profilePictureURL || "/../../../../header-image.png"}
+            src={profilePictureURL || "/header-image.png"}
             alt=""
             layout="fill"
             objectFit="cover"
