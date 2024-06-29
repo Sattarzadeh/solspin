@@ -107,9 +107,6 @@ export const NavBar = () => {
           ) : (
             <WalletSignInButton />
           )}
-          <div className="hidden xl:block">
-            <WalletSignInButton />
-          </div>
           <Hamburger className={"lg:hidden"} onClick={() => {}} />
         </div>
       </div>
