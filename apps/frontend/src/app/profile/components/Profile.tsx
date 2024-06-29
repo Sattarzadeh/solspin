@@ -7,10 +7,12 @@ interface UserInfoProps {
 const Profile: React.FC<UserInfoProps> = ({ username }) => {
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
+  const [showChangeProfilePicturePopup, setShowChangeProfilePicturePopup] = useState(false);
   const [currentUsername, setCurrentUsername] = useState(username);
   const [newUsername, setNewUsername] = useState(username);
   const [excludeDuration, setExcludeDuration] = useState('1 week');
   const [isMuted, setIsMuted] = useState(false);
+  const [profilePicture, setProfilePicture] = useState('/../../../../header-image.png');
 
   const handleSelfExclude = () => {
     setShowSelfExcludePopup(true);
@@ -37,8 +39,29 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
     console.log(`Sounds ${!isMuted ? 'muted' : 'unmuted'}`);
   };
 
+  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const newProfilePicture = URL.createObjectURL(event.target.files[0]);
+      setProfilePicture(newProfilePicture);
+      setShowChangeProfilePicturePopup(false);
+      console.log(`Profile picture changed`);
+    }
+  };
+
   return (
     <div className="w-full mx-auto my-4 p-6 rounded-lg relative">
+      <div className="flex items-center mb-4">
+        <div className="relative w-16 h-16 rounded-full overflow-hidden">
+          <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+        </div>
+        <button
+          className="ml-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-300 ease-in-out"
+          onClick={() => setShowChangeProfilePicturePopup(true)}
+        >
+          Change Profile Picture
+        </button>
+      </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
         <div className="flex items-center">
@@ -150,6 +173,38 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
               <button 
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out"
                 onClick={handleConfirmChangeUsername}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Profile Picture popup */}
+      {showChangeProfilePicturePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
+            <h2 className="text-xl font-bold text-white mb-4">Change Profile Picture</h2>
+            <input
+              className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePictureChange}
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-300 ease-in-out"
+                onClick={() => setShowChangeProfilePicturePopup(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out"
+                onClick={() => {
+                  setShowChangeProfilePicturePopup(false);
+                  console.log('Profile picture upload confirmed');
+                }}
               >
                 Confirm
               </button>
