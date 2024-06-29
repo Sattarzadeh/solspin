@@ -4,16 +4,16 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 
-import { WalletModalProvider, WalletDisconnectButton, } from '@solana/wallet-adapter-react-ui';
-
 import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
 import { WalletSignInButton } from "../sign-in/WalletSignIn";
+import { Balance } from "./Balance";
+
 const WalletMultiButtonDynamic = dynamic(
-  async () =>
-    (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  async () => (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
+
 const navLinks = [
   {
     name: "Games",
@@ -44,6 +44,8 @@ export const NavBar = () => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  /* TODO - Add condition for signed in or not (dont display balance if not signed in) */
 
   return (
     <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-20">
@@ -83,11 +85,12 @@ export const NavBar = () => {
             ))}
           </ul>
         </div>
-        <div className="flex space-x-4 item-center">
+        <div className="flex space-x-4 item-center h-12">
+          {<Balance />}
           <button className="hidden lg:block bg-custom_gray text-white py-2 px-5 rounded">
             Withdraw
           </button>
-          <WalletSignInButton/>
+          <WalletSignInButton />
           <Hamburger className={"lg:hidden"} onClick={() => {}} />
         </div>
       </div>

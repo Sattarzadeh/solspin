@@ -2,11 +2,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import demoReducer from "./slices/demoSlice";
 import chatBarReducer from "./slices/chatBarSlice";
+import navbarReducer from "./slices/navbarSlice";
 
 const store = configureStore({
   reducer: {
     demo: demoReducer,
     chatBar: chatBarReducer,
+    navbar: navbarReducer,
   },
 });
 
