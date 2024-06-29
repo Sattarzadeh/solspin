@@ -2,14 +2,12 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { useDispatch } from "react-redux";
 import { toggleDepositClicked } from "../../../store/slices/navbarSlice";
 
 export const Balance = () => {
   const [balance, setBalance] = useState(100);
   const dispatch = useDispatch();
-  const isDepositClicked = useSelector((state: RootState) => state.navbar.isDepositOpen);
 
   const handleDepositClick = () => {
     dispatch(toggleDepositClicked());

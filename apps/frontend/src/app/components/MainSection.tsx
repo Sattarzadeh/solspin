@@ -11,6 +11,7 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
   const [isChatOpen, setChatOpen] = React.useState(true);
   const dispatch = useDispatch();
   const isDepositOpen = useSelector((state: RootState) => state.navbar.isDepositOpen);
+  const isWithdrawOpen = useSelector((state: RootState) => state.navbar.isWithdrawOpen);
 
   const toggleChatOpen = () => {
     setChatOpen(!isChatOpen);

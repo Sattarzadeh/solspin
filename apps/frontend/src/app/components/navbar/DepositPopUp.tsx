@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 interface DepositPopUpProps {
   handleClose: () => void;
@@ -11,12 +12,21 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const [availableBalance, setAvailableBalance] = React.useState<number>(0);
   const [dollarValue, setDollarValue] = React.useState<string>("");
   const [cryptoValue, setCryptoValue] = React.useState<string>("");
+  const connection = useConnection().connection;
+  const wallet = useWallet();
+
+  const fetchAvailableBalance = async () => {
+    if (!wallet.publicKey) return;
+    const balance = await connection.getBalance(wallet.publicKey);
+    setAvailableBalance(balance);
+  };
 
   const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow only numbers and a single decimal point
     if (/^\d*\.?\d*$/.test(value)) {
       setDollarValue(value);
+      setCryptoValue((parseFloat(value === "" ? "0" : value) / (priceSol || 0)).toFixed(2));
     }
   };
 
@@ -25,6 +35,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     // Allow only numbers and a single decimal point
     if (/^\d*\.?\d*$/.test(value)) {
       setCryptoValue(value);
+      setDollarValue((parseFloat(value === "" ? "0" : value) * (priceSol || 0)).toFixed(2));
     }
   };
 
@@ -46,6 +57,11 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     [handleClose]
   );
 
+  const handleMaxClick = () => {
+    setCryptoValue(availableBalance.toString());
+    setDollarValue((availableBalance * (priceSol || 0)).toFixed(2));
+  };
+
   useEffect(() => {
     const fetchSolPrice = async () => {
       try {
@@ -61,6 +77,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     document.addEventListener("mousedown", handleClickOutside);
 
     fetchSolPrice();
+    fetchAvailableBalance();
 
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
@@ -89,7 +106,9 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
                 <span className="text-white text-sm">{availableBalance}</span>
                 <span className="text-white text-sm">SOL</span>
               </div>
-              <span className="text-white text-sm hover:cursor-pointer">Max</span>
+              <span className="text-white text-sm hover:cursor-pointer" onClick={handleMaxClick}>
+                Max
+              </span>
             </div>
           </div>
           <div className="flex items-center justify-between w-full space-x-2">
@@ -111,6 +130,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
                 type="text"
                 value={cryptoValue}
                 placeholder={"1"}
+                onChange={handleCryptoInputChange}
               />
             </div>
           </div>
