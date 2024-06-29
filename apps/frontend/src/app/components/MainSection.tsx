@@ -27,7 +27,7 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden relative">
+    <div className="flex flex-1 overflow-hidden relative w-full max-w-full">
       {isDepositOpen && <DepositPopUp handleClose={toggleDepositOpen} />}
       {isWithdrawOpen && <WithdrawPopUp handleClose={toggleWithdrawOpen} />}
       <Chatbar chatOpenCallback={toggleChatOpen} />

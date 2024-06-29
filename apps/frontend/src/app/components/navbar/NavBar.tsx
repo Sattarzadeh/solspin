@@ -3,8 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
-import { useWallet } from '@solana/wallet-adapter-react';
-
+import { useWallet } from "@solana/wallet-adapter-react";
 import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
@@ -44,7 +43,9 @@ const navLinks = [
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
   const [isOpen, setIsOpen] = useState(false);
-  const {connected, publicKey} = useWallet()
+  const { connected, publicKey } = useWallet();
+  const dispatch = useDispatch();
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -52,8 +53,6 @@ export const NavBar = () => {
   const handleWithdrawClick = () => {
     dispatch(toggleWithdrawClicked());
   };
-
-  /* TODO - Add condition for signed in or not (dont display balance if not signed in) */
 
   return (
     <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-20">
@@ -94,16 +93,23 @@ export const NavBar = () => {
           </ul>
         </div>
         <div className="flex space-x-4 item-center h-12">
-          {<Balance />}
-          <button
-            className="hidden lg:block bg-custom_gray text-white py-2 px-5 rounded"
-            onClick={handleWithdrawClick}
-          >
-            Withdraw
-          </button>
-          {
-            connected && publicKey ? <UserProfile username={publicKey.toBase58()} profilePictureURL={""}/> : <WalletSignInButton/>
-          }
+          {connected && <Balance />}
+          {connected && (
+            <button
+              className="hidden xl:block bg-custom_gray text-white py-2 px-5 rounded"
+              onClick={handleWithdrawClick}
+            >
+              Withdraw
+            </button>
+          )}
+          {connected && publicKey ? (
+            <UserProfile username={publicKey.toBase58()} profilePictureURL={""} />
+          ) : (
+            <WalletSignInButton />
+          )}
+          <div className="hidden xl:block">
+            <WalletSignInButton />
+          </div>
           <Hamburger className={"lg:hidden"} onClick={() => {}} />
         </div>
       </div>
