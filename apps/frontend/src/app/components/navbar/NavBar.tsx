@@ -3,9 +3,9 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
+import { useWallet } from '@solana/wallet-adapter-react';
 
-import { WalletModalProvider, WalletDisconnectButton, } from '@solana/wallet-adapter-react-ui';
-
+import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
 import { WalletSignInButton } from "../sign-in/WalletSignIn";
@@ -40,7 +40,7 @@ const navLinks = [
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
   const [isOpen, setIsOpen] = useState(false);
-
+  const {connected, publicKey} = useWallet()
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -87,7 +87,9 @@ export const NavBar = () => {
           <button className="hidden lg:block bg-custom_gray text-white py-2 px-5 rounded">
             Withdraw
           </button>
-          <WalletSignInButton/>
+          {
+            connected && publicKey ? <UserProfile username={publicKey.toBase58()} profilePictureURL={""}/> : <WalletSignInButton/>
+          }
           <Hamburger className={"lg:hidden"} onClick={() => {}} />
         </div>
       </div>
