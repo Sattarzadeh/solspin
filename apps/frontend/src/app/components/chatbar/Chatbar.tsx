@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { ChatHeader } from "./ChatHeader";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
 import { DismissButton } from "./DismissButton";
@@ -32,7 +31,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
           transform: isChatOpen ? "translateX(0)" : "translateX(-320px)", // Adjust based on your collapsed width
         }}
       >
-        <ChatHeader />
         <ChatBody />
         <ChatInput />
       </div>
