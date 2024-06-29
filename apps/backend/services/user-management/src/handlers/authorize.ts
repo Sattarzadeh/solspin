@@ -26,11 +26,6 @@ async function getSecret(): Promise<string> {
 
 export const handler = ApiHandler(async (event) => {
   const secret = await getSecret();
-  // const payload = {
-  //   sub: "adowadoawkdawd", // Use `sub` to store the userId
-  // };
-  // const token = jwt.sign(payload, secret, { algorithm: "HS256", expiresIn: "24h" });
-  // console.log(token);
   const token = event.queryStringParameters?.token;
 
   if (!token) {

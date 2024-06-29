@@ -16,7 +16,6 @@ async function getSecret(): Promise<string> {
     return cachedSecret;
   }
 
-  // Directly use the secret from Config
   const secret = Config.TEST_SECRET;
 
   if (!secret) {
@@ -55,34 +54,42 @@ export const handler = ApiHandler(async (event) => {
     let user = await getUserByWalletAddress(walletAddress);
 
     if (user) {
-      logger.info(`User already exists with wallet address: ${walletAddress}`);
+      logger.info(`User already exists with wallet address: ${walletAddress}...`);
     } else {
       logger.info(`Creating new user with wallet address: ${walletAddress}`);
       const now = new Date().toISOString();
       user = {
         userId: randomUUID(),
-        username: walletAddress, // Use walletAddress as username if no username is provided
+        username: walletAddress,
         walletAddress: walletAddress,
         createdAt: now,
         updatedAt: now,
-        level: 0, // Default level to 0
-        discord: "", // Default discord to empty string
+        level: 0,
+        discord: "",
       };
 
       validateUser(user);
       await createUser(user);
     }
 
-    const userId = user.userId;
     const jwtpayload = {
       sub: userId,
     };
     const secret = await getSecret();
     const token = jwt.sign(jwtpayload, secret, { algorithm: "HS256", expiresIn: "24h" });
 
+    // Set the expiration date for the cookie
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 1); // 24 hours from now
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ token }),
+      headers: {
+        "Set-Cookie": `token=${token}; HttpOnly; Secure; SameSite=Strict; Expires=${expirationDate.toUTCString()}; Path=/`,
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Credentials": "true",
+      },
+      body: JSON.stringify({ message: "Authentication successful", data: user }),
     };
   } catch (error) {
     logger.error("Error processing wallet authentication:", error);
