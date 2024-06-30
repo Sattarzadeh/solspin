@@ -73,7 +73,7 @@ export const handler = ApiHandler(async (event) => {
     }
 
     const jwtpayload = {
-      sub: userId,
+      sub: user.userId,
     };
     const secret = await getSecret();
     const token = jwt.sign(jwtpayload, secret, { algorithm: "HS256", expiresIn: "24h" });
@@ -85,11 +85,10 @@ export const handler = ApiHandler(async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Set-Cookie": `token=${token}; HttpOnly; Secure; SameSite=Strict; Expires=${expirationDate.toUTCString()}; Path=/`,
+        "Set-Cookie": `token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`,
         "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Access-Control-Allow-Credentials": "true",
       },
-      body: JSON.stringify({ message: "Authentication successful", data: user }),
+      body: JSON.stringify({ message: "Authentication successful", data: { user, token } }),
     };
   } catch (error) {
     logger.error("Error processing wallet authentication:", error);

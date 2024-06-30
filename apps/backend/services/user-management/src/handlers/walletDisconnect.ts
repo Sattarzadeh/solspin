@@ -11,7 +11,6 @@ export const handler = ApiHandler(async (event) => {
         "Set-Cookie":
           "token=; HttpOnly; Secure; SameSite=Strict; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
         "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Access-Control-Allow-Credentials": "true",
       },
       body: JSON.stringify({ message: "Logout successful" }),
     };
