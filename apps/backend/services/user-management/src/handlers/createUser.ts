@@ -69,6 +69,8 @@ export const handler = ApiHandler(async (event) => {
       updatedAt: now,
       level: 0, // Default level to 0
       discord: "", // Default discord to empty string
+      muteAllSounds: false,
+      profileImageUrl: "",
     };
 
     validateUser(user);
