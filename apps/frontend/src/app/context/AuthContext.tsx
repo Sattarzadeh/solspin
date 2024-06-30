@@ -27,46 +27,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (connected && publicKey) {
-      checkAndRefreshSession();
+      login();
     } else {
       setUser(null);
     }
   }, [connected, publicKey]);
 
-  const checkAndRefreshSession = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/auth/check`, {
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const userData: User = await response.json();
-        setUser(userData);
-      } else {
-        // If session is invalid or expired, try to login again
-        localStorage.removeItem("token")
-        await login();
-      }
-    } catch (error) {
-      console.error('Error checking session:', error);
-      setUser(null);
-    }
-  };
 
   const login = async () => {
     if (!publicKey) return;
 
     try {
-      const response = await fetch(`${apiUrl}/auth/login`, {
+      const response = await fetch(`${apiUrl}/auth/connect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ publicKey: publicKey.toString() }),
-        credentials: 'include',
+        body: JSON.stringify({ walletAddress: publicKey.toString() }),
       });
 
       if (response.ok) {
-        const userData: User = await response.json();
-        setUser(userData);
+        const responsePayload = await response.json();
+        const data = responsePayload.data
+        const user: User = data.user
+        const token: string = data.token
+        setUser(user);
+        localStorage.setItem("token", token)
       } else {
         console.error('Login failed');
         setUser(null);
@@ -79,9 +63,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async () => {
     try {
+      const token = localStorage.getItem("token")
+      
       const response = await fetch(`${apiUrl}/auth/logout`, { 
-        method: 'POST',
-        credentials: 'include',
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
       });
 
       if (response.ok) {
