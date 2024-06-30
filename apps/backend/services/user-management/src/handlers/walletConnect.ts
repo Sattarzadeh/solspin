@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import { createUser, getUserByWalletAddress } from "../data-access/userRepository";
-import { UserSchema } from "@solspin/user-management-types";
+import { CreateUserRequestSchema, User, UserSchema } from "@solspin/user-management-types";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
 import { randomUUID } from "crypto";
@@ -66,6 +66,8 @@ export const handler = ApiHandler(async (event) => {
         updatedAt: now,
         level: 0,
         discord: "",
+        muteAllSounds: true,
+        profileImageUrl: "",
       };
 
       validateUser(user);
