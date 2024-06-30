@@ -31,7 +31,7 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
       {isDepositOpen && <DepositPopUp handleClose={toggleDepositOpen} />}
       {isWithdrawOpen && <WithdrawPopUp handleClose={toggleWithdrawOpen} />}
       <Chatbar chatOpenCallback={toggleChatOpen} />
-      <main className="flex-grow overflow-y-auto relative h-full transition-all duration-500 ease-in-out bg-main_background">
+      <main className="flex-grow overflow-y-auto relative h-full transition-all duration-500 ease-in-out bg-main_background overflow-x-hidden">
         <div className="min-h-full">{children}</div>
       </main>
     </div>

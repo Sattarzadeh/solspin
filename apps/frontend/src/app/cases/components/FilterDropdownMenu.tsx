@@ -1,24 +1,39 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
-interface DropdownMenuProps {
+interface FilterDropdownMenuProps {
   title: string;
   options: string[];
-  onSelect: (option: string) => void;
+  onSelect: (options: string[]) => void;
+  type: "checkbox" | "radio";
+  width: string;
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({ title, options, onSelect }) => {
+const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
+  title,
+  options,
+  onSelect,
+  type,
+  width,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    onSelect(option);
-    setIsOpen(false);
+    let newSelectedOptions: string[];
+    if (type === "checkbox") {
+      newSelectedOptions = selectedOptions.includes(option)
+        ? selectedOptions.filter((item) => item !== option)
+        : [...selectedOptions, option];
+    } else {
+      newSelectedOptions = [option];
+    }
+    setSelectedOptions(newSelectedOptions);
+    onSelect(newSelectedOptions);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -27,28 +42,30 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ title, options, onSelect })
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const displayText = selectedOptions.length > 0 ? selectedOptions.join(", ") : "None";
+
   return (
-    <div ref={dropdownRef} className="relative inline-block text-left">
+    <div ref={dropdownRef} className="relative inline-block text-left" style={{ width }}>
       <div>
         <button
           type="button"
+          aria-haspopup="true"
+          aria-expanded={isOpen}
           className={`inline-flex justify-between items-center w-full rounded-md h-10 ${
             isOpen ? "rounded-b-none" : ""
-          } filter-dropdown shadow-sm px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
+          } bg-gray-800 px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
           onClick={toggleDropdown}
         >
-          <span className={"text-xs"}>
-            {selectedOption || (title !== "Order" && title !== "Price") ? "None" : options[0]}
-          </span>
+          <span className="text-xs truncate">{displayText}</span>
           <svg
-            className="ml-2 h-5 w-5"
+            className={`ml-2 h-5 w-5 transition-transform ${isOpen ? "transform rotate-180" : ""}`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -64,19 +81,26 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ title, options, onSelect })
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 w-full round-b-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-          <div className="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            {options.map((option, index) => (
-              <button
+        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-gray-800 z-50">
+          <div
+            className="py-1"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="options-menu"
+          >
+            {options.map((option) => (
+              <label
                 key={option}
-                onClick={() => handleOptionClick(option)}
-                className={`block w-full text-left px-4 py-2 text-xs text-white filter-dropdown ${
-                  index === options.length - 1 ? "rounded-b-md" : ""
-                }`}
-                role="menuitem"
+                className="flex items-center w-full px-4 py-2 text-xs text-white hover:bg-gray-700 cursor-pointer"
               >
+                <input
+                  type={type}
+                  checked={selectedOptions.includes(option)}
+                  onChange={() => handleOptionClick(option)}
+                  className="mr-2"
+                />
                 {option}
-              </button>
+              </label>
             ))}
           </div>
         </div>
@@ -85,4 +109,4 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ title, options, onSelect })
   );
 };
 
-export default DropdownMenu;
+export default FilterDropdownMenu;
