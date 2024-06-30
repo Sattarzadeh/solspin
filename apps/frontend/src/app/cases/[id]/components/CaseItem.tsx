@@ -27,7 +27,7 @@ export const CaseItem = () => {
       </div>
       <div className="flex flex-col justify-center items-start space-y-1">
         <span className="text-white text-sm">Watson Power</span>
-        <span className="text-white text-sm">Extrodinary</span>
+        <span className="text-white text-sm">Exceptional</span>
         <span className="text-white text-sm">$4.99</span>
         <div className="rounded-md bg-dark p-1">
           <span className="text-white text-xs">2.5%</span>

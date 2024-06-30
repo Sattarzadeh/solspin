@@ -43,8 +43,14 @@
   background: var(--filter-dropdown-hover);
 }
 
-.case {
+.case-exceptional {
   background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%);
+  min-height: var(--case-min-height, 272px);
+  min-width: var(--case-min-width, 280px);
+}
+
+.case-exotic {
+  background: linear-gradient(180deg, var(--case-background) 30%, rgba(255, 105, 180, 0.5) 100%);
   min-height: var(--case-min-height, 272px);
   min-width: var(--case-min-width, 280px);
 }

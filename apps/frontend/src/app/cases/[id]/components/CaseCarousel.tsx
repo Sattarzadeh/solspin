@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useReducer, useRef } from "react";
 import Image from "next/image";
 import { CarouselItem } from "./CarouselItem";
-import { CaseProps } from "../../components/Case";
+import { ICase } from "../../hooks/useCases";
 
 type AnimationCalculation = {
   distance: number;
@@ -11,7 +11,7 @@ type AnimationCalculation = {
 };
 
 interface CaseCarouselProps {
-  cases: CaseProps[];
+  cases: ICase[];
   isDemoClicked: boolean;
   numCases: number;
   onAnimationComplete: () => void;

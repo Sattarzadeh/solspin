@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { CaseCarousel } from "./components/CaseCarousel";
-import { CaseProps } from "../components/Case";
 import { useWebSocket } from "../../context/WebSocketContext";
 import { toggleDemoClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
@@ -33,7 +32,7 @@ const generateClientSeed = async (): Promise<string> => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
-const generateCases = (numCases: number): CaseProps[][] => {
+const generateCases = (numCases: number): CaseItem[][] => {
   return Array.from(
     { length: numCases },
     () =>
@@ -57,7 +56,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [generateSeed, setGenerateSeed] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(0);
   const dispatch = useDispatch();
-  const [cases, setCases] = useState<CaseProps[][]>(generateCases(numCases));
+  const [cases, setCases] = useState<CaseItem[][]>(generateCases(numCases));
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };

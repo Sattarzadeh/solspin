@@ -1,15 +1,8 @@
 import Image from "next/image";
 import React from "react";
+import { ICase } from "../../hooks/useCases";
 
-interface CarouselItemProps {
-  name: string;
-  price: number;
-  rarity: string;
-  tag: string;
-  image: string;
-}
-
-export const CarouselItem: React.FC<CarouselItemProps> = ({ name, price, rarity, tag, image }) => {
+export const CarouselItem: React.FC<ICase> = ({ name, price, rarity, tag, image }) => {
   return (
     <div
       className={`relative flex flex-col items-center justify-center transition-transform duration-300`}
