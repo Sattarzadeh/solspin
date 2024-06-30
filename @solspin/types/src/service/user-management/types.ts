@@ -14,7 +14,6 @@ export const UpdateFieldsSchema = z
   .object({
     username: z.string().optional(),
     discord: z.string().optional(),
-    walletId: z.string().optional(),
     createdAt: z.coerce
       .date()
       .transform((date) => date.toISOString())
@@ -41,7 +40,6 @@ export const CreateUserRequestSchema = UserSchema.omit({
 
 // Define the schema for the updateUser request
 export const UpdateUserRequestSchema = z.object({
-  userId: z.string().uuid(),
   updateFields: UpdateFieldsSchema,
 });
 export const GetUserByIdRequestSchema = UserSchema.pick({ userId: true });

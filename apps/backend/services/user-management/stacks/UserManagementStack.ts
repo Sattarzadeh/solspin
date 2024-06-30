@@ -34,6 +34,12 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
 
   const api = new Api(stack, "UserManagementApi", {
+    authorizers: {
+      CustomAuthorizer: {
+        type: "lambda",
+        function: callAuthorizerFunction,
+      },
+    },
     defaults: {
       function: {
         timeout: 20,
@@ -85,6 +91,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           bind: [userTable],
           environment: { TABLE_NAME: userTable.tableName },
         },
+        authorizer: "CustomAuthorizer",
       },
       "DELETE /user": {
         function: {

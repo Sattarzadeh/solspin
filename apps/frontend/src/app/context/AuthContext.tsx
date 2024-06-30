@@ -19,8 +19,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const apiUrl: string = "https://kk34oux917.execute-api.eu-west-2.amazonaws.com";
-
+const apiUrl: string = `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}`;
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { ApiHandler } from "sst/node/api";
 import { Config } from "sst/node/config";
 import { getLogger } from "@solspin/logger";
+import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult } from "aws-lambda";
 
 const logger = getLogger("authenticate-user-handler");
 
@@ -24,21 +24,22 @@ async function getSecret(): Promise<string> {
   return cachedSecret as string;
 }
 
-export const handler = ApiHandler(async (event) => {
+export const handler = async (
+  event: APIGatewayTokenAuthorizerEvent
+): Promise<APIGatewayAuthorizerResult> => {
   const secret = await getSecret();
-  const token = event.queryStringParameters?.token;
 
-  if (!token) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Token is missing in query parameters" }),
-    };
+  if (!event.authorizationToken) {
+    logger.error("No authorization token provided");
+    return generatePolicy("user", "Deny", event.methodArn);
   }
 
-  try {
-    logger.info(`Authenticate user lambda handler invoked with token: ${token}`);
+  const token = event.authorizationToken.split(" ")[1];
 
-    const decoded = jwt.verify(token, secret);
+  try {
+    logger.info(`Authenticate user lambda handler invoked`);
+
+    const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
 
     if (!decoded || typeof decoded === "string" || !decoded.sub) {
       throw new Error("Unauthorized");
@@ -47,18 +48,34 @@ export const handler = ApiHandler(async (event) => {
     const userId = decoded.sub;
     logger.info(`User authenticated successfully for userId: ${userId}`);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ userId }),
-    };
+    return generatePolicy(userId, "Allow", event.methodArn, { userId });
   } catch (error) {
     logger.error(`Error in authenticate user lambda: ${(error as Error).message}`);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Failed to authenticate user",
-        error: (error as Error).message,
-      }),
-    };
+    return generatePolicy("user", "Deny", event.methodArn);
   }
-});
+};
+
+// Helper function to generate an IAM policy
+function generatePolicy(
+  principalId: string,
+  effect: "Allow" | "Deny",
+  resource: string,
+  context?: { [key: string]: any }
+): APIGatewayAuthorizerResult {
+  const authResponse: APIGatewayAuthorizerResult = {
+    principalId,
+    policyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "execute-api:Invoke",
+          Effect: effect,
+          Resource: resource,
+        },
+      ],
+    },
+    context,
+  };
+
+  return authResponse;
+}

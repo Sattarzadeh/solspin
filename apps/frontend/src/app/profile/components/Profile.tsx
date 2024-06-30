@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { useAuth } from '../../context/AuthContext'; // Ensure the correct import for useAuth context
 
 interface UserInfoProps {
   username: string;
 }
 
 const Profile: React.FC<UserInfoProps> = ({ username }) => {
+  const { getUser } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(true);
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
   const [showChangeProfilePicturePopup, setShowChangeProfilePicturePopup] = useState(false);
-  const [currentUsername, setCurrentUsername] = useState(username);
-  const [newUsername, setNewUsername] = useState(username);
+  const [currentUsername, setCurrentUsername] = useState('');
+  const [newUsername, setNewUsername] = useState('');
   const [excludeDuration, setExcludeDuration] = useState('1 week');
   const [isMuted, setIsMuted] = useState(false);
-  const [profilePicture, setProfilePicture] = useState('/../../../../header-image.png');
+  const [profilePicture, setProfilePicture] = useState('/header-image.png');
+
+  useEffect(() => {
+    if (getUser) {
+      setCurrentUsername(getUser.username);
+      setNewUsername(getUser.username);
+      setIsLoading(false);
+    }
+  }, [getUser]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleSelfExclude = () => {
     setShowSelfExcludePopup(true);
@@ -28,9 +46,33 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
     setShowChangeUsernamePopup(true);
   };
 
-  const handleConfirmChangeUsername = () => {
+  const handleConfirmChangeUsername = async () => {
     setCurrentUsername(newUsername);
-    console.log(`Username changed to ${newUsername}`);
+
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user`,
+        {
+          updateFields: {
+            username: newUsername,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // Add the Authorization header
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error('Failed to update username');
+    }
+
     setShowChangeUsernamePopup(false);
   };
 
@@ -44,7 +86,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
       const newProfilePicture = URL.createObjectURL(event.target.files[0]);
       setProfilePicture(newProfilePicture);
       setShowChangeProfilePicturePopup(false);
-      console.log(`Profile picture changed`);
+      console.log('Profile picture changed');
     }
   };
 
@@ -67,11 +109,11 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
         <div className="flex items-center">
           <input
             type="text"
-            value={currentUsername || "4ejwaodawdpowakdpa"}
+            value={currentUsername}
             readOnly
             className="block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
-          <button 
+          <button
             className="ml-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-300 ease-in-out"
             onClick={handleChangeUsername}
           >
@@ -109,7 +151,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
           </svg>
           Link Discord
         </button>
-        <button 
+        <button
           className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-300 ease-in-out"
           onClick={handleSelfExclude}
         >
@@ -123,7 +165,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
           <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
             <h2 className="text-xl font-bold text-white mb-4">Self Exclusion</h2>
             <p className="text-gray-300 mb-4">How long would you like to self-exclude?</p>
-            <select 
+            <select
               className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
               value={excludeDuration}
               onChange={(e) => setExcludeDuration(e.target.value)}
@@ -135,13 +177,13 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
               <option value="1 year">1 year</option>
             </select>
             <div className="flex justify-end space-x-2">
-              <button 
+              <button
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-300 ease-in-out"
                 onClick={() => setShowSelfExcludePopup(false)}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-300 ease-in-out"
                 onClick={handleConfirmExclusion}
               >
@@ -157,20 +199,20 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
             <h2 className="text-xl font-bold text-white mb-4">Change Username</h2>
-            <input 
+            <input
               className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
               type="text"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
             />
             <div className="flex justify-end space-x-2">
-              <button 
+              <button
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-300 ease-in-out"
                 onClick={() => setShowChangeUsernamePopup(false)}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out"
                 onClick={handleConfirmChangeUsername}
               >
