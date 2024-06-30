@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-export const Search = () => {
+interface SearchProps {
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export const Search: React.FC<SearchProps> = ({ handleSearch }) => {
   const [searchValue, setSearchValue] = useState<string>("");
 
   return (
@@ -12,7 +16,10 @@ export const Search = () => {
         type="text"
         placeholder="Search"
         className="bg-search_bar_gray max-w-full text-white active:border-none outline-none flex-grow-1"
-        onChange={(e) => setSearchValue(e.target.value)}
+        onChange={(e) => {
+          setSearchValue(e.target.value);
+          handleSearch(e);
+        }}
       />
     </div>
   );

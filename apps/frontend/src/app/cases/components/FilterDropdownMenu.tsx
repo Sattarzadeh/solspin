@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface FilterDropdownMenuProps {
   title: string;
@@ -42,7 +42,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -60,7 +60,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
           aria-expanded={isOpen}
           className={`inline-flex justify-between items-center w-full rounded-md h-10 ${
             isOpen ? "rounded-b-none" : ""
-          } bg-gray-800 px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
+          } bg-gray-700 px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
           onClick={toggleDropdown}
         >
           <span className="text-xs truncate">{displayText}</span>
@@ -81,7 +81,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-gray-800 z-50">
+        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-gray-700 z-50">
           <div
             className="py-1"
             role="menu"
@@ -91,7 +91,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
             {options.map((option) => (
               <label
                 key={option}
-                className="flex items-center w-full px-4 py-2 text-xs text-white hover:bg-gray-700 cursor-pointer"
+                className="flex items-center w-full px-4 py-2 text-xs text-white hover:bg-gray-600 cursor-pointer"
               >
                 <input
                   type={type}

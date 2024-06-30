@@ -12,9 +12,6 @@ export const useWalletBalance = (publicKey: PublicKey | null, connection: Connec
     };
 
     fetchBalance();
-    const interval = setInterval(fetchBalance, 10000); // Update every 10 seconds
-
-    return () => clearInterval(interval);
   }, [publicKey, connection]);
 
   return balance;

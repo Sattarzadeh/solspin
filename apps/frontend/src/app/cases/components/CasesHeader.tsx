@@ -5,30 +5,38 @@ import React from "react";
 
 interface CasesHeaderProps {
   updateFilters: (filterType: string, selectedOptions: string[]) => void;
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters }) => {
+export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleSearch }) => {
   const dropdownItems = [
     {
       title: "Category",
       options: ["Hot", "New", "Special"],
       onSelect: (selectedOptions: string[]) => updateFilters("category", selectedOptions),
       type: "checkbox",
-      width: "200px",
+      width: "150px",
     },
     {
       title: "Rarity",
-      options: ["Extraordinary", "Exotic", "Rarity 3"],
+      options: ["Exceptional", "Exotic", "Rarity 3"],
       onSelect: (selectedOptions: string[]) => updateFilters("rarity", selectedOptions),
       type: "checkbox",
       width: "180px",
     },
     {
       title: "Order",
-      options: ["Order 1", "Order 2", "Order 3"],
+      options: [
+        "Ascending price",
+        "Descending price",
+        "Popularity (Low to High)",
+        "Popularity (High to Low)",
+        "Newest",
+        "Oldest",
+      ],
       onSelect: (selectedOptions: string[]) => updateFilters("order", selectedOptions),
       type: "radio",
-      width: "150px",
+      width: "200px",
     },
     {
       title: "Price",
@@ -61,7 +69,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters }) => {
           Filters
         </button>
         <div className="lg:flex-grow-0 lg:flex-shrink lg:basis-auto flex-1 h-10 overflow-clip">
-          <Search />
+          <Search handleSearch={handleSearch} />
         </div>
       </div>
     </div>
