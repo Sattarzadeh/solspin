@@ -12,6 +12,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       updatedAt: "string",
       level: "number",
       walletAddress: "string",
+      muteAllSounds: "binary",
     },
     primaryIndex: { partitionKey: "userId" },
     globalIndexes: {

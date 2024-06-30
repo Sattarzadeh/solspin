@@ -9,6 +9,8 @@ export const UserSchema = z.object({
   updatedAt: z.coerce.date().transform((date) => date.toISOString()),
   level: z.number().int(),
   walletAddress: z.string(),
+  muteAllSounds: z.boolean(),
+  profileImageUrl: z.string(),
 });
 export const UpdateFieldsSchema = z
   .object({
@@ -23,6 +25,8 @@ export const UpdateFieldsSchema = z
       .transform((date) => date.toISOString())
       .optional(),
     level: z.number().int().optional(),
+    muteAllSounds: z.boolean().optional(),
+    profileImageUrl: z.string().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "updateFields must contain at least one valid field",
@@ -36,6 +40,8 @@ export const CreateUserRequestSchema = UserSchema.omit({
   username: true,
   discord: true,
   level: true,
+  muteAllSounds: true,
+  profileImageUrl: true,
 });
 
 // Define the schema for the updateUser request
