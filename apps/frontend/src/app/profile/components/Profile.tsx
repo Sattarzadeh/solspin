@@ -85,7 +85,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
         `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user`,
         {
           updateFields: {
-            setIsMuted: !isMuted,
+            muteAllSounds: !isMuted,
           },
         },
         {
