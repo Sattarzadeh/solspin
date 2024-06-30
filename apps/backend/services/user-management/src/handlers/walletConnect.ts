@@ -66,7 +66,7 @@ export const handler = ApiHandler(async (event) => {
         updatedAt: now,
         level: 0,
         discord: "",
-        muteAllSounds: true,
+        muteAllSounds: false,
         profileImageUrl: "",
       };
 
