@@ -6,10 +6,15 @@ import { useWebSocket } from "./WebSocketContext";
 interface User {
   userId: string;
   username: string;
+  updatedAt: string;
+  createdAt: string;
+  level: number;
+  discord: string;
+  walletAddress: string;
 }
 
 interface AuthContextType {
-  user: User | null;
+  getUser: User | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -23,7 +28,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [getUser, setUser] = useState<User | null>(null);
   const { connected, disconnect, publicKey } = useWallet();
   const { sendMessage, connectionStatus } = useWebSocket();
 
@@ -105,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const contextValue: AuthContextType = {
-    user,
+    getUser,
     login,
     logout,
   };

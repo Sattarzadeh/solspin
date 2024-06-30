@@ -4,20 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface UserProfileProps {
-  username: string;
-  profilePictureURL?: string;
-}
-
-export const UserProfile: React.FC<UserProfileProps> = ({
-  username,
-  profilePictureURL
-}) => {
-  const { connected, disconnect } = useWallet();
-  const { login, logout } = useAuth();
+export const UserProfile: React.FC = () => {
+  const { connected } = useWallet();
+  const { getUser, logout } = useAuth();  // Changed from getUser to user
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -31,13 +23,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     };
   }, []);
 
-  if (!connected) {
+  if (!connected || !getUser) {  // Check if user is null/undefined
     return null;
   }
 
   // Truncate the username if it's too long
   const maxUsernameLength = 10;
-  const truncatedUsername = username.length > maxUsernameLength ? username.slice(0, maxUsernameLength) + '...' : username;
+  const truncatedUsername = getUser.username.length > maxUsernameLength 
+    ? getUser.username.slice(0, maxUsernameLength) + '...' 
+    : getUser.username;
 
   const handleLogout = async () => {
     try {
@@ -56,7 +50,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
       >
         <div className="relative w-10 h-10 rounded-full overflow-hidden">
           <Image
-            src={profilePictureURL || "/header-image.png"}
+            src={"/header-image.png"} 
             alt=""
             layout="fill"
             objectFit="cover"

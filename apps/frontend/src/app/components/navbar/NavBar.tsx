@@ -103,7 +103,7 @@ export const NavBar = () => {
             </button>
           )}
           {connected && publicKey ? (
-            <UserProfile username={publicKey.toBase58()} profilePictureURL={""} />
+            <UserProfile/>
           ) : (
             <div className="hidden xl:block">
               <WalletSignInButton />
