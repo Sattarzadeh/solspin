@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useReducer, useRef } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Image from "next/image";
 import { CarouselItem } from "./CarouselItem";
 import { ICase } from "../../hooks/useCases";
@@ -24,7 +24,7 @@ function getRandomInt(min: number, max: number) {
 }
 
 const itemWidth = 176;
-const distanceInItems = 25;
+const distanceInItems = 35;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
   upper: (distanceInItems + 0.5) * itemWidth,
@@ -42,7 +42,6 @@ const animationCalculation = (): AnimationCalculation => {
   };
 };
 
-// Define action types
 enum Action {
   RESET,
   START_ANIMATION,
@@ -50,13 +49,11 @@ enum Action {
   SECOND_STAGE_END,
 }
 
-// Define the state type
 type State = {
   animationStage: number;
   offset: AnimationCalculation;
 };
 
-// Reducer function
 function carouselReducer(state: State, action: Action): State {
   switch (action) {
     case Action.RESET:
@@ -74,13 +71,19 @@ function carouselReducer(state: State, action: Action): State {
 
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
   ({ cases, isDemoClicked, numCases, onAnimationComplete }) => {
+    const MemoizedCarouselItem = React.memo(CarouselItem);
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
       offset: { distance: 0, tickerOffset: 0 },
     });
-
+    const [currentPosition, setCurrentPosition] = useState(0);
     const carouselRef = useRef<HTMLDivElement | null>(null);
     const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const middleItemIndexRef = useRef<number>(0);
+
+    const updatePosition = (position: number) => {
+      setCurrentPosition(position);
+    };
 
     useEffect(() => {
       if ((state.animationStage === 3 || state.animationStage === 0) && isDemoClicked) {
@@ -112,7 +115,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [state.animationStage, onAnimationComplete]);
 
-    // Cleanup effect
     useEffect(() => {
       return () => {
         if (animationTimeoutRef.current) {
@@ -120,6 +122,30 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         }
       };
     }, []);
+
+    useEffect(() => {
+      let animationFrameId: number;
+
+      const animate = () => {
+        if (carouselRef.current) {
+          const transform = getComputedStyle(carouselRef.current).transform;
+          const matrix = new DOMMatrix(transform);
+          const position = numCases > 1 ? matrix.m42 : matrix.m41; // m42 for Y, m41 for X
+          updatePosition(position);
+        }
+        animationFrameId = requestAnimationFrame(animate);
+      };
+
+      if (state.animationStage === 1 || state.animationStage === 2) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+      };
+    }, [state.animationStage, numCases]);
 
     const carouselStyle = useMemo(() => {
       const { distance, tickerOffset } = state.offset;
@@ -145,7 +171,30 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       } as React.CSSProperties & { "--transform-distance": string };
     }, [state.animationStage, state.offset, numCases]);
 
-    console.log("Rendering CaseCarousel", state);
+    const calculateMiddleItem = () => {
+      const containerSize =
+        numCases > 1
+          ? carouselRef.current?.clientHeight || 0
+          : carouselRef.current?.clientWidth || 0;
+      const containerCenter = containerSize / 2;
+
+      const adjustedPosition = Math.abs(currentPosition);
+      const approximateIndex = Math.floor(adjustedPosition / itemWidth);
+
+      const itemOffsets = cases.map((_, index) => index * itemWidth);
+      const closestOffset = itemOffsets.reduce((prev, curr) => {
+        return Math.abs(curr - adjustedPosition) < Math.abs(prev - adjustedPosition) ? curr : prev;
+      });
+
+      const middleIndex = itemOffsets.indexOf(closestOffset);
+      return middleIndex;
+    };
+
+    useEffect(() => {
+      middleItemIndexRef.current = calculateMiddleItem();
+    }, [currentPosition, cases]);
+
+    console.log("Rendering CaseCarousel", state, "Middle Item Index:", middleItemIndexRef.current);
 
     return (
       <div
@@ -154,8 +203,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         } rounded-md main-element flex-grow w-full`}
       >
         <Image
-          src="/icons/down-arrow.svg"
-          alt="Arrow Down"
+          src={numCases > 1 ? "/icons/down-arrow.svg" : "/icons/right-arrow.svg"}
+          alt={numCases > 1 ? "Arrow Down" : "Arrow Right"}
           width={24}
           height={24}
           className={`absolute ${
@@ -176,7 +225,11 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
               style={carouselStyle}
             >
               {cases.map((item, index) => (
-                <CarouselItem key={index} {...item} />
+                <MemoizedCarouselItem
+                  key={index}
+                  {...item}
+                  isMiddle={index === Math.round(cases.length / 2) - 1 + middleItemIndexRef.current}
+                />
               ))}
             </div>
           </div>

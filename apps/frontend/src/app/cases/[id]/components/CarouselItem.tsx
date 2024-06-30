@@ -2,10 +2,23 @@ import Image from "next/image";
 import React from "react";
 import { ICase } from "../../hooks/useCases";
 
-export const CarouselItem: React.FC<ICase> = ({ name, price, rarity, tag, image }) => {
+interface CarouselItemProps extends ICase {
+  isMiddle: boolean;
+}
+
+export const CarouselItem: React.FC<CarouselItemProps> = ({
+  name,
+  price,
+  rarity,
+  tag,
+  image,
+  isMiddle,
+}) => {
   return (
     <div
-      className={`relative flex flex-col items-center justify-center transition-transform duration-300`}
+      className={`relative flex flex-col items-center justify-center opacity-80 transition-all duration-75 ease-in-out ${
+        isMiddle ? "scale-110 opacity-100" : ""
+      }`}
       style={{ width: 176, height: 176 }}
     >
       <div className="relative flex justify-center items-center h-full w-full">
