@@ -15,8 +15,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
         <WalletContextProvider>
-        <AuthProvider>
+        
           <WebSocketProvider url="wss://h55zjyx6tg.execute-api.eu-west-2.amazonaws.com/dev">
+          <AuthProvider>
             <QueryClientProvider client={queryClient}>
               <Toaster
                 richColors
@@ -31,8 +32,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
               />
               {children}
             </QueryClientProvider>
+            </AuthProvider>
           </WebSocketProvider>
-          </AuthProvider>
+          
         </WalletContextProvider>
 
     </Provider>

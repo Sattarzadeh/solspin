@@ -99,9 +99,22 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           environment: { TABLE_NAME: userTable.tableName },
         },
       },
-      "POST /wallet-connect": {
+      "POST /auth/connect": {
         function: {
           handler: "../user-management/src/handlers/walletConnect.handler",
+          permissions: [
+            new PolicyStatement({
+              actions: ["dynamodb:GetItem", "dyamodb:PutItem"],
+              resources: [userTable.tableArn],
+            }),
+          ],
+          bind: [userTable, TEST_SECRET],
+          environment: { TABLE_NAME: userTable.tableName },
+        },
+      },
+      "POST /auth/disconnect": {
+        function: {
+          handler: "../user-management/src/handlers/walletDisconnect.handler",
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:GetItem", "dyamodb:PutItem"],

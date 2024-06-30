@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useAuth } from '../../context/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,6 +14,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   profilePictureURL
 }) => {
   const { connected, disconnect } = useWallet();
+  const { login, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -39,10 +41,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
   const handleLogout = async () => {
     try {
-      await disconnect();
-      console.log('Disconnected from wallet');
-      // You can add additional logic here, such as redirecting to a home page
-      // or clearing any user-specific data from your app's state
+      await logout();
     } catch (error) {
       console.error('Error during logout:', error);
     }

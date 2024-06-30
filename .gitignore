@@ -45,3 +45,4 @@ test-ledger/*
 # Next.js
 .next
 out
+*.local
