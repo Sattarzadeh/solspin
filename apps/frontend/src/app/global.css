@@ -44,13 +44,15 @@
 }
 
 .case-exceptional {
-  background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%);
-  min-height: var(--case-min-height, 272px);
-  min-width: var(--case-min-width, 280px);
+  background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%) !important;
 }
 
 .case-exotic {
-  background: linear-gradient(180deg, var(--case-background) 30%, rgba(255, 105, 180, 0.5) 100%);
+  background: linear-gradient(180deg, var(--case-background) 30%, rgba(255, 105, 180, 0.5) 100%) !important;
+}
+
+.case {
+  background: var(--case-background);
   min-height: var(--case-min-height, 272px);
   min-width: var(--case-min-width, 280px);
 }
@@ -92,4 +94,15 @@
 
 .main-element {
   box-shadow: 0 4px #1a1d22, 0 20px 50px #00000073, inset 0 1px #252a30;
+}
+
+@keyframes shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+.shimmer {
+  background: linear-gradient(to right, #2c3440 8%, #3c4858 18%, #2c3440 33%);
+  background-size: 800px 104px;
+  animation: shimmer 1.5s linear infinite;
 }

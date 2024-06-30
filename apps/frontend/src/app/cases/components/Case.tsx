@@ -15,7 +15,7 @@ export interface CaseProps {
   lowestPrice: number;
 }
 
-export const Case: React.FC<CaseProps> = ({
+const Case: React.FC<CaseProps> = ({
   name,
   price,
   rarity,
@@ -27,7 +27,7 @@ export const Case: React.FC<CaseProps> = ({
   return (
     <Link href={`/cases/${name}`}>
       <div
-        className={`relative rounded-md hover:cursor-pointer shadow-lg case-${rarity.toLowerCase()} p-2 group overflow-hidden`}
+        className={`relative rounded-md hover:cursor-pointer shadow-lg case case-${rarity.toLowerCase()} p-2 group overflow-hidden`}
       >
         <Tag name={tag} customStyle={"absolute top-4 left-4"} />
         <div className="relative -top-4">
@@ -63,3 +63,5 @@ export const Case: React.FC<CaseProps> = ({
     </Link>
   );
 };
+
+export default Case;
