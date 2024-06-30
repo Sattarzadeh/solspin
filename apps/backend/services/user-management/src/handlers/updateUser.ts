@@ -8,7 +8,7 @@ const logger = getLogger("update-user-handler");
 export const handler = ApiHandler(async (event) => {
   try {
     const payload = JSON.parse(event.body || "{}");
-
+    const userId: string = event.requestContext.authorizer.lambda.userId;
     const parsedPayload = UpdateUserRequestSchema.safeParse(payload);
     if (!parsedPayload.success) {
       logger.error("Validation error in request payload", { error: parsedPayload.error.errors });
@@ -21,7 +21,7 @@ export const handler = ApiHandler(async (event) => {
       };
     }
 
-    const { userId, updateFields } = parsedPayload.data;
+    const { updateFields } = parsedPayload.data;
 
     logger.info(
       `Updating user data for userId: ${userId} with fields: ${JSON.stringify(updateFields)}`
