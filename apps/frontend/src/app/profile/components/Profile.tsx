@@ -48,6 +48,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
 
   const handleConfirmChangeUsername = async () => {
     setCurrentUsername(newUsername);
+    setShowChangeUsernamePopup(false);
 
     try {
       const response = await axios.put(
@@ -65,9 +66,9 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
       );
 
       if (response.status === 200) {
-        toast.success(response.data.message);
+        toast.success("Successfully updated username!");
       } else {
-        toast.error(response.data.message);
+        toast.error("Something went wrong...");
       }
     } catch (error) {
       toast.error('Failed to update username');
@@ -76,9 +77,33 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
     setShowChangeUsernamePopup(false);
   };
 
-  const toggleMute = () => {
+  const toggleMute = async () => {
     setIsMuted(!isMuted);
-    console.log(`Sounds ${!isMuted ? 'muted' : 'unmuted'}`);
+
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user`,
+        {
+          updateFields: {
+            setIsMuted: !isMuted,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success(`Successfully turned sounds ${isMuted ? "off" : "on"}!`);
+      } else {
+        toast.error("Something went wrong...");
+      }
+    } catch (error) {
+      toast.error('Failed to change the sound setting');
+    }
+
   };
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
