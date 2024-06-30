@@ -7,7 +7,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
-import { WalletSignInButton } from "../sign-in/WalletSignIn";
+import { WalletSignInButton } from "../sign-in/WalletSignIn"
 import { Balance } from "./Balance";
 import { useDispatch } from "react-redux";
 import { toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
@@ -106,7 +106,7 @@ export const NavBar = () => {
             <UserProfile/>
           ) : (
             <div className="hidden xl:block">
-              <WalletSignInButton />
+              <WalletSignInButton/>
             </div>
           )}
           <Hamburger className={"lg:hidden"} onClick={() => {}} />

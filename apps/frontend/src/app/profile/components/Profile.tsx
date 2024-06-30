@@ -24,6 +24,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
     if (getUser) {
       setCurrentUsername(getUser.username);
       setNewUsername(getUser.username);
+      setIsMuted(getUser.muteAllSounds)
       setIsLoading(false);
     }
   }, [getUser]);
