@@ -3,6 +3,7 @@
 import React from "react";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
+import { ExpandButton } from "./ExpandButton";
 import { DismissButton } from "./DismissButton";
 
 interface ChatbarProps {
@@ -35,11 +36,18 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
         <ChatInput />
       </div>
       <div
-        className={`absolute bottom-5 right-0 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
-          isChatOpen ? "" : "rotate-180"
+        className={`absolute bottom-12 -right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
+          isChatOpen ? "hidden" : ""
         }`}
       >
-        <DismissButton toggleChatOpen={toggleChatOpen} />
+        <ExpandButton toggleChatOpen={toggleChatOpen} />
+      </div>
+      <div
+        className={`absolute top-6 right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
+          !isChatOpen ? "hidden" : ""
+        }`}
+      >
+        <DismissButton toggleChatClose={toggleChatOpen} />
       </div>
     </div>
   );

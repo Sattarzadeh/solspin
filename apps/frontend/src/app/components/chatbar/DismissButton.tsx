@@ -1,16 +1,24 @@
+import Image from "next/image";
+
 interface DismissButtonProps {
-  toggleChatOpen: () => void;
+  toggleChatClose: () => void;
 }
 
-export const DismissButton: React.FC<DismissButtonProps> = ({ toggleChatOpen }) => {
+export const DismissButton: React.FC<DismissButtonProps> = ({ toggleChatClose }) => {
   return (
     <button
-      className="p-1.5 bg-gray-900 rounded-lg w-8 h-8 z-20"
+      className="flex justify-center items-center bg-gray-800 rounded-md w-8 h-8 p-1 z-20 hover:cursor-pointer shadow-circle hover:bg-gray-700 transition-all duration-250 ease-in-out"
       onClick={() => {
-        toggleChatOpen();
+        toggleChatClose();
       }}
     >
-      <img src="/icons/close-left.svg" alt="close" className="w-5 h-5" />
+      <Image
+        width={24}
+        height={24}
+        src={"/icons/close-left.svg"}
+        alt={"close"}
+        className={"filter-white"}
+      />
     </button>
   );
 };
