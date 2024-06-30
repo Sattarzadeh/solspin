@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWebSocket } from "./WebSocketContext";
-
+import { toast } from 'sonner';
 interface User {
   userId: string;
   username: string;
@@ -11,6 +11,8 @@ interface User {
   level: number;
   discord: string;
   walletAddress: string;
+  muteAllSounds: boolean;
+  profileImageUrl: string;
 }
 
 interface AuthContextType {
@@ -41,7 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [connected, publicKey]);
 
   const login = async () => {
-    console.log('Login function called');
+
     if (!publicKey) return;
 
     try {
@@ -66,45 +68,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
             })
           );
         }
+        toast.success("Successfully logged in!")
 
       } else {
-        console.error('Login failed');
+        toast.error("Failed to establish websocket connection!")
         setUser(null);
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      toast.error("Failed to log in!")
       setUser(null);
     }
   };
 
   const logout = async () => {
-    console.log('Logout function called');
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`${apiUrl}/auth/disconnect`, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      });
+      await disconnect();
+      setUser(null);
+      toast.success('Logged out successfully!');
+      sendMessage(
+        JSON.stringify({
+          action: "unauthenticate",
+          token: token,
+        })
+      );
+      localStorage.removeItem("token");
+      
+      
 
-      if (response.ok) {
-        await disconnect();
-        setUser(null);
-        sendMessage(
-          JSON.stringify({
-            action: "unauthenticate",
-            token: token,
-          })
-        );
-        localStorage.removeItem("token");
-        
-        console.log('Logged out successfully');
-      } else {
-        console.error('Logout failed');
-      }
     } catch (error) {
-      console.error('Error during logout:', error);
+      toast.error('Error occured during logout!');
     }
   };
 
