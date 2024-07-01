@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface ICase {
   name: string;
@@ -18,7 +19,6 @@ interface IFilters {
   order: string[];
   price: string[];
 }
-// ... (keep ICase and IFilters interfaces as they are)
 
 export const useCases = () => {
   const [filters, setFilters] = useState<IFilters>({
@@ -29,6 +29,14 @@ export const useCases = () => {
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const casesRef = useRef<ICase[]>();
+
+  useQuery({
+    queryKey: ["cases"],
+    queryFn: async () => {
+      const response = await fetch("https://api.example.com/cases");
+      return await response.json();
+    },
+  });
 
   if (!casesRef.current) {
     casesRef.current = Array.from({ length: 50 }, () => ({

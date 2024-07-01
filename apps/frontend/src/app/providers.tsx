@@ -14,9 +14,8 @@ const queryClient = new QueryClient();
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-        <WalletContextProvider>
-        
-          <WebSocketProvider url="wss://h55zjyx6tg.execute-api.eu-west-2.amazonaws.com/dev">
+      <WalletContextProvider>
+        <WebSocketProvider url="wss://hhxmybjh09.execute-api.eu-west-2.amazonaws.com/dev">
           <AuthProvider>
             <QueryClientProvider client={queryClient}>
               <Toaster
@@ -32,11 +31,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
               />
               {children}
             </QueryClientProvider>
-            </AuthProvider>
-          </WebSocketProvider>
-          
-        </WalletContextProvider>
-
+          </AuthProvider>
+        </WebSocketProvider>
+      </WalletContextProvider>
     </Provider>
   );
 }

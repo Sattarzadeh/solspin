@@ -2,8 +2,8 @@
 
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Image from "next/image";
-import { CarouselItem } from "./CarouselItem";
 import { ICase } from "../../hooks/useCases";
+import CarouselItem from "./CarouselItem";
 
 type AnimationCalculation = {
   distance: number;
@@ -24,7 +24,7 @@ function getRandomInt(min: number, max: number) {
 }
 
 const itemWidth = 176;
-const distanceInItems = 35;
+const distanceInItems = 20;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
   upper: (distanceInItems + 0.5) * itemWidth,
@@ -84,6 +84,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const updatePosition = (position: number) => {
       setCurrentPosition(position);
     };
+
+    console.log("Spinning cases");
 
     useEffect(() => {
       if ((state.animationStage === 3 || state.animationStage === 0) && isDemoClicked) {
@@ -172,29 +174,19 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, [state.animationStage, state.offset, numCases]);
 
     const calculateMiddleItem = () => {
-      const containerSize =
-        numCases > 1
-          ? carouselRef.current?.clientHeight || 0
-          : carouselRef.current?.clientWidth || 0;
-      const containerCenter = containerSize / 2;
-
       const adjustedPosition = Math.abs(currentPosition);
-      const approximateIndex = Math.floor(adjustedPosition / itemWidth);
 
       const itemOffsets = cases.map((_, index) => index * itemWidth);
       const closestOffset = itemOffsets.reduce((prev, curr) => {
         return Math.abs(curr - adjustedPosition) < Math.abs(prev - adjustedPosition) ? curr : prev;
       });
 
-      const middleIndex = itemOffsets.indexOf(closestOffset);
-      return middleIndex;
+      return itemOffsets.indexOf(closestOffset);
     };
 
     useEffect(() => {
       middleItemIndexRef.current = calculateMiddleItem();
     }, [currentPosition, cases]);
-
-    console.log("Rendering CaseCarousel", state, "Middle Item Index:", middleItemIndexRef.current);
 
     return (
       <div

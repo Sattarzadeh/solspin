@@ -6,7 +6,7 @@ interface CarouselItemProps extends ICase {
   isMiddle: boolean;
 }
 
-export const CarouselItem: React.FC<CarouselItemProps> = ({
+const CarouselItem: React.FC<CarouselItemProps> = ({
   name,
   price,
   rarity,
@@ -16,8 +16,8 @@ export const CarouselItem: React.FC<CarouselItemProps> = ({
 }) => {
   return (
     <div
-      className={`relative flex flex-col items-center justify-center opacity-80 transition-all duration-75 ease-in-out ${
-        isMiddle ? "scale-110 opacity-100" : ""
+      className={`relative flex flex-col items-center justify-center opacity-80 transition-transform duration-700 ease-in-out will-change-transform ${
+        isMiddle ? "scale-110 opacity-100 brightness-125" : ""
       }`}
       style={{ width: 176, height: 176 }}
     >
@@ -28,9 +28,11 @@ export const CarouselItem: React.FC<CarouselItemProps> = ({
         className="absolute top-0 right-0 w-full h-full opacity-30 z-[-1]"
         style={{
           background:
-            "radial-gradient(50% 50% at 50% 50%, rgb(235, 76, 75) 0%, rgba(74, 34, 34, 0) 100%)",
+            "radial-gradient(50% 50% at 50% 50%, rgb(235, 76, 75) 0%, rgba(74, 34, 34, 0.2) 100%)",
         }}
       ></div>
     </div>
   );
 };
+
+export default CarouselItem;

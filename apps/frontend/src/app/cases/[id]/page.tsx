@@ -36,7 +36,7 @@ const generateCases = (numCases: number): CaseItem[][] => {
   return Array.from(
     { length: numCases },
     () =>
-      Array.from({ length: 79 }, () => ({
+      Array.from({ length: 51 }, () => ({
         name: Math.random() < 0.5 ? "XXX" : "YYY",
         price: 4.99,
         rarity: "Extraordinary",
