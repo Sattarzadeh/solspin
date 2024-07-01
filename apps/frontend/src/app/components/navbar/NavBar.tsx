@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -11,11 +10,6 @@ import { WalletSignInButton } from "../sign-in/WalletSignIn";
 import { Balance } from "./Balance";
 import { useDispatch } from "react-redux";
 import { toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
-
-const WalletMultiButtonDynamic = dynamic(
-  async () => (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-  { ssr: false }
-);
 
 const navLinks = [
   {
@@ -42,13 +36,8 @@ const navLinks = [
 
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
-  const [isOpen, setIsOpen] = useState(false);
   const { connected, publicKey } = useWallet();
   const dispatch = useDispatch();
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
 
   const handleWithdrawClick = () => {
     dispatch(toggleWithdrawClicked());
@@ -56,15 +45,15 @@ export const NavBar = () => {
 
   return (
     <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-20">
-      <div className="flex justify-between items-center w-full h-full z-10 px-5">
-        <div className="flex items-center justify-between space-x-24 h-full">
-          <div className="flex items-center space-x-2">
+      <div className="flex justify-between items-center w-full h-full z-10">
+        <div className="flex items-center justify-between h-full">
+          <div className="flex items-center w-[320px] justify-center">
             <span className="text-xl font-bold text-gradient">SolSpin</span>
           </div>
           <ul className="hidden xl:space-x-8 lg:flex h-full">
             {navLinks.map((navLink, index) => (
               <li
-                className="relative flex items-center space-x-3 group hover:cursor-pointer pr-4"
+                className="relative flex items-center space-x-3 group hover:cursor-pointer pr-4 first:pl-2"
                 key={index}
               >
                 <div
